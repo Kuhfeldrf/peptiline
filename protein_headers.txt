@@ -1,0 +1,947 @@
+>sp|A0JNP2|SG1D_BOVIN Secretoglobin family 1D member OS=Bos taurus GN=SCGB1D PE=3 SV=2
+>sp|A4D7S0|WNT2_BOVIN Protein Wnt-2 OS=Bos taurus GN=WNT2 PE=3 SV=1
+>sp|A5PK46|LIPR2_BOVIN Pancreatic lipase-related protein 2 OS=Bos taurus GN=PNLIPRP2 PE=2 SV=1
+>sp|O02703|BAX_BOVIN Apoptosis regulator BAX OS=Bos taurus GN=BAX PE=2 SV=1
+>sp|O18971|PPARG_BOVIN Peroxisome proliferator-activated receptor gamma OS=Bos taurus GN=PPARG PE=2 SV=1
+>sp|O46600|GHR_BOVIN Growth hormone receptor OS=Bos taurus GN=GHR PE=2 SV=2
+>sp|P00711|LALBA_BOVIN Alpha-lactalbumin OS=Bos taurus GN=LALBA PE=1 SV=2
+>sp|P00794|CHYM_BOVIN Chymosin OS=Bos taurus GN=CYM PE=1 SV=3
+>sp|P01175|NEU1_BOVIN Oxytocin-neurophysin 1 OS=Bos taurus GN=OXT PE=1 SV=1
+>sp|P01239|PRL_BOVIN Prolactin OS=Bos taurus GN=PRL PE=1 SV=1
+>sp|P02662|CASA1_BOVIN Alpha-S1-casein OS=Bos taurus GN=CSN1S1 PE=1 SV=2
+>sp|P02663|CASA2_BOVIN Alpha-S2-casein OS=Bos taurus GN=CSN1S2 PE=1 SV=2
+>sp|P02666|CASB_BOVIN Beta-casein OS=Bos taurus GN=CSN2 PE=1 SV=2
+>sp|P02668|CASK_BOVIN Kappa-casein OS=Bos taurus GN=CSN3 PE=1 SV=1
+>sp|P02702|FOLR1_BOVIN Folate receptor alpha OS=Bos taurus GN=FOLR1 PE=1 SV=2
+>sp|P02754|LACB_BOVIN Beta-lactoglobulin OS=Bos taurus GN=LGB PE=1 SV=3
+>sp|P03969|FGF2_BOVIN Fibroblast growth factor 2 OS=Bos taurus GN=FGF2 PE=1 SV=1
+>sp|P08037|B4GT1_BOVIN Beta-1,4-galactosyltransferase 1 OS=Bos taurus GN=B4GALT1 PE=1 SV=3
+>sp|P10152|ANG1_BOVIN Angiogenin-1 OS=Bos taurus GN=ANG1 PE=1 SV=4
+>sp|P10790|FABPH_BOVIN Fatty acid-binding protein, heart OS=Bos taurus GN=FABP3 PE=1 SV=2
+>sp|P11151|LIPL_BOVIN Lipoprotein lipase OS=Bos taurus GN=LPL PE=1 SV=2
+>sp|P18892|BT1A1_BOVIN Butyrophilin subfamily 1 member A1 OS=Bos taurus GN=BTN1A1 PE=1 SV=2
+>sp|P21214|TGFB2_BOVIN Transforming growth factor beta-2 OS=Bos taurus GN=TGFB2 PE=1 SV=3
+>sp|P24627|TRFL_BOVIN Lactotransferrin OS=Bos taurus GN=LTF PE=1 SV=2
+>sp|P26201|CD36_BOVIN Platelet glycoprotein 4 OS=Bos taurus GN=CD36 PE=1 SV=5
+>sp|P26779|SAP_BOVIN Proactivator polypeptide OS=Bos taurus GN=PSAP PE=1 SV=3
+>sp|P30122|CEL_BOVIN Bile salt-activated lipase (Fragment) OS=Bos taurus GN=CEL PE=1 SV=2
+>sp|P30922|CH3L1_BOVIN Chitinase-3-like protein 1 OS=Bos taurus GN=CHI3L1 PE=1 SV=3
+>sp|P31096|OSTP_BOVIN Osteopontin OS=Bos taurus GN=SPP1 PE=1 SV=2
+>sp|P46168|DFB10_BOVIN Beta-defensin 10 OS=Bos taurus GN=DEFB10 PE=1 SV=3
+>sp|P46169|DFB11_BOVIN Beta-defensin 11 OS=Bos taurus GN=DEFB11 PE=1 SV=2
+>sp|P46196|MK01_BOVIN Mitogen-activated protein kinase 1 OS=Bos taurus GN=MAPK1 PE=2 SV=3
+>sp|P46201|UTMP_BOVIN Uterine milk protein OS=Bos taurus PE=2 SV=1
+>sp|P48035|FABP4_BOVIN Fatty acid-binding protein, adipocyte OS=Bos taurus GN=FABP4 PE=2 SV=2
+>sp|P58073|PTHR_BOVIN Parathyroid hormone-related protein OS=Bos taurus GN=PTHLH PE=2 SV=1
+>sp|P58354|GTR8_BOVIN Solute carrier family 2, facilitated glucose transporter member 8 OS=Bos taurus GN=SLC2A8 PE=2 SV=2
+>sp|P59760|GLYL_BOVIN Glycolactin (Fragments) OS=Bos taurus PE=1 SV=1
+>sp|P59761|LGEN_BOVIN Lactogenin (Fragments) OS=Bos taurus PE=1 SV=1
+>sp|P60712|ACTB_BOVIN Actin, cytoplasmic 1 OS=Bos taurus GN=ACTB PE=1 SV=1
+>sp|P61257|RL26_BOVIN 60S ribosomal protein L26 OS=Bos taurus GN=RPL26 PE=2 SV=1
+>sp|P61286|PABP1_BOVIN Polyadenylate-binding protein 1 OS=Bos taurus GN=PABPC1 PE=2 SV=1
+>sp|P61635|STAT3_BOVIN Signal transducer and activator of transcription 3 OS=Bos taurus GN=STAT3 PE=2 SV=1
+>sp|P62811|EXPI_BOVIN Extracellular peptidase inhibitor OS=Bos taurus GN=EXPI PE=4 SV=1
+>sp|P79132|CAV1_BOVIN Caveolin-1 OS=Bos taurus GN=CAV1 PE=2 SV=1
+>sp|P79345|NPC2_BOVIN Epididymal secretory protein E1 OS=Bos taurus GN=NPC2 PE=1 SV=1
+>sp|P80025|PERL_BOVIN Lactoperoxidase OS=Bos taurus GN=LPO PE=1 SV=1
+>sp|P80189|LYSCN_BOVIN Lysozyme C, non-stomach isozyme OS=Bos taurus GN=LYS PE=2 SV=4
+>sp|P80195|GLCM1_BOVIN Glycosylation-dependent cell adhesion molecule 1 OS=Bos taurus GN=GLYCAM1 PE=1 SV=2
+>sp|P80209|CATD_BOVIN Cathepsin D OS=Bos taurus GN=CTSD PE=1 SV=2
+>sp|P80457|XDH_BOVIN Xanthine dehydrogenase/oxidase OS=Bos taurus GN=XDH PE=1 SV=4
+>sp|P80746|ITAV_BOVIN Integrin alpha-V OS=Bos taurus GN=ITGAV PE=1 SV=3
+>sp|P80747|ITB5_BOVIN Integrin beta-5 OS=Bos taurus GN=ITGB5 PE=1 SV=2
+>sp|P80929|ANG2_BOVIN Angiogenin-2 OS=Bos taurus GN=ANG2 PE=1 SV=1
+>sp|P81265|PIGR_BOVIN Polymeric immunoglobulin receptor OS=Bos taurus GN=PIGR PE=2 SV=1
+>sp|P81287|ANXA5_BOVIN Annexin A5 OS=Bos taurus GN=ANXA5 PE=1 SV=3
+>sp|Q05688|IGF1R_BOVIN Insulin-like growth factor 1 receptor (Fragment) OS=Bos taurus GN=IGF1R PE=2 SV=1
+>sp|Q05717|IBP5_BOVIN Insulin-like growth factor-binding protein 5 OS=Bos taurus GN=IGFBP5 PE=2 SV=2
+>sp|Q07537|GALT1_BOVIN Polypeptide N-acetylgalactosaminyltransferase 1 OS=Bos taurus GN=GALNT1 PE=1 SV=1
+>sp|Q08DD6|IRF6_BOVIN Interferon regulatory factor 6 OS=Bos taurus GN=IRF6 PE=2 SV=1
+>sp|Q0P5C3|MSX2_BOVIN Homeobox protein MSX-2 OS=Bos taurus GN=MSX2 PE=2 SV=1
+>sp|Q27956|LIF_BOVIN Leukemia inhibitory factor OS=Bos taurus GN=LIF PE=2 SV=1
+>sp|Q28022|MFAP5_BOVIN Microfibrillar-associated protein 5 OS=Bos taurus GN=MFAP5 PE=1 SV=1
+>sp|Q28037|VDR_BOVIN Vitamin D3 receptor OS=Bos taurus GN=VDR PE=2 SV=2
+>sp|Q28125|ICAM3_BOVIN Intercellular adhesion molecule 3 OS=Bos taurus GN=ICAM3 PE=2 SV=1
+>sp|Q28172|PRLR_BOVIN Prolactin receptor OS=Bos taurus GN=PRLR PE=1 SV=1
+>sp|Q2HJ67|HXA5_BOVIN Homeobox protein Hox-A5 OS=Bos taurus GN=HOXA5 PE=2 SV=1
+>sp|Q2HJ78|CITE4_BOVIN Cbp/p300-interacting transactivator 4 OS=Bos taurus GN=CITED4 PE=2 SV=1
+>sp|Q2HJ97|PHB2_BOVIN Prohibitin-2 OS=Bos taurus GN=PHB2 PE=2 SV=1
+>sp|Q2KI22|CCND1_BOVIN G1/S-specific cyclin-D1 OS=Bos taurus GN=CCND1 PE=2 SV=1
+>sp|Q2KJH1|BMP4_BOVIN Bone morphogenetic protein 4 OS=Bos taurus GN=BMP4 PE=2 SV=1
+>sp|Q2LGB3|IRAK1_BOVIN Interleukin-1 receptor-associated kinase 1 OS=Bos taurus GN=IRAK1 PE=2 SV=2
+>sp|Q2LGB5|TOLIP_BOVIN Toll-interacting protein OS=Bos taurus GN=TOLLIP PE=2 SV=1
+>sp|Q2LGB7|TCAM2_BOVIN TIR domain-containing adapter molecule 2 OS=Bos taurus GN=TICAM2 PE=2 SV=1
+>sp|Q2VWH6|FEZF2_BOVIN Fez family zinc finger protein 2 OS=Bos taurus GN=FEZF2 PE=2 SV=2
+>sp|Q32PJ7|TENS4_BOVIN Tensin-4 OS=Bos taurus GN=TNS4 PE=2 SV=2
+>sp|Q3SYX0|NDRG1_BOVIN Protein NDRG1 OS=Bos taurus GN=NDRG1 PE=2 SV=1
+>sp|Q3T110|T4S18_BOVIN Transmembrane 4 L6 family member 18 OS=Bos taurus GN=TM4SF18 PE=2 SV=1
+>sp|Q3ZC46|ID2_BOVIN DNA-binding protein inhibitor ID-2 OS=Bos taurus GN=ID2 PE=2 SV=1
+>sp|Q3ZCC3|TRAF6_BOVIN TNF receptor-associated factor 6 OS=Bos taurus GN=TRAF6 PE=2 SV=1
+>sp|Q3ZCH5|ZA2G_BOVIN Zinc-alpha-2-glycoprotein OS=Bos taurus GN=AZGP1 PE=2 SV=1
+>sp|Q3ZCH6|ATF4_BOVIN Cyclic AMP-dependent transcription factor ATF-4 OS=Bos taurus GN=ATF4 PE=1 SV=1
+>sp|Q3ZCI6|F204A_BOVIN Protein FAM204A OS=Bos taurus GN=FAM204A PE=2 SV=1
+>sp|Q4GZT3|PKD2_BOVIN Polycystin-2 OS=Bos taurus GN=PKD2 PE=2 SV=1
+>sp|Q4GZT4|ABCG2_BOVIN ATP-binding cassette sub-family G member 2 OS=Bos taurus GN=ABCG2 PE=3 SV=2
+>sp|Q4JF28|IRF3_BOVIN Interferon regulatory factor 3 OS=Bos taurus GN=IRF3 PE=2 SV=1
+>sp|Q4JF29|TCAM1_BOVIN TIR domain-containing adapter molecule 1 OS=Bos taurus GN=TICAM1 PE=2 SV=2
+>sp|Q58DT0|ELF5_BOVIN ETS-related transcription factor Elf-5 OS=Bos taurus GN=ELF5 PE=2 SV=1
+>sp|Q599T9|MYD88_BOVIN Myeloid differentiation primary response protein MyD88 OS=Bos taurus GN=MYD88 PE=2 SV=1
+>sp|Q5E9B1|LDHB_BOVIN L-lactate dehydrogenase B chain OS=Bos taurus GN=LDHB PE=2 SV=4
+>sp|Q5E9H7|DHB12_BOVIN Estradiol 17-beta-dehydrogenase 12 OS=Bos taurus GN=HSD17B12 PE=2 SV=1
+>sp|Q5I3B1|IOD3_BOVIN Type III iodothyronine deiodinase OS=Bos taurus GN=DIO3 PE=2 SV=2
+>sp|Q5I3B2|IOD2_BOVIN Type II iodothyronine deiodinase OS=Bos taurus GN=DIO2 PE=2 SV=2
+>sp|Q5J316|GTR12_BOVIN Solute carrier family 2, facilitated glucose transporter member 12 OS=Bos taurus GN=SLC2A12 PE=1 SV=1
+>sp|Q5TJ59|TLR3_BOVIN Toll-like receptor 3 OS=Bos taurus GN=TLR3 PE=2 SV=1
+>sp|Q687Y7|IL17_BOVIN Interleukin-17A OS=Bos taurus GN=IL17A PE=2 SV=1
+>sp|Q6B411|LYSM_BOVIN Lysozyme C, milk isozyme OS=Bos taurus PE=2 SV=1
+>sp|Q704V6|TLR6_BOVIN Toll-like receptor 6 OS=Bos taurus GN=TLR6 PE=2 SV=1
+>sp|Q769I5|MET_BOVIN Hepatocyte growth factor receptor OS=Bos taurus GN=MET PE=2 SV=1
+>sp|Q76BS1|HGF_BOVIN Hepatocyte growth factor OS=Bos taurus GN=HGF PE=2 SV=1
+>sp|Q76LV1|HS90B_BOVIN Heat shock protein HSP 90-beta OS=Bos taurus GN=HSP90AB1 PE=2 SV=3
+>sp|Q76LV2|HS90A_BOVIN Heat shock protein HSP 90-alpha OS=Bos taurus GN=HSP90AA1 PE=2 SV=3
+>sp|Q863B3|SND1_BOVIN Staphylococcal nuclease domain-containing protein 1 OS=Bos taurus GN=SND1 PE=1 SV=1
+>sp|Q865B7|PRGC1_BOVIN Peroxisome proliferator-activated receptor gamma coactivator 1-alpha OS=Bos taurus GN=PPARGC1A PE=2 SV=1
+>sp|Q8HXQ5|MRP1_BOVIN Multidrug resistance-associated protein 1 OS=Bos taurus GN=ABCC1 PE=2 SV=1
+>sp|Q8HYJ9|FMO3_BOVIN Dimethylaniline monooxygenase [N-oxide-forming] 3 OS=Bos taurus GN=FMO3 PE=2 SV=1
+>sp|Q8HYW0|FA13A_BOVIN Protein FAM13A OS=Bos taurus GN=FAM13A PE=2 SV=1
+>sp|Q8MI01|MUC15_BOVIN Mucin-15 OS=Bos taurus GN=MUC15 PE=1 SV=1
+>sp|Q8MK44|DGAT1_BOVIN Diacylglycerol O-acyltransferase 1 OS=Bos taurus GN=DGAT1 PE=2 SV=2
+>sp|Q8SPP7|PGRP1_BOVIN Peptidoglycan recognition protein 1 OS=Bos taurus GN=PGLYRP1 PE=1 SV=1
+>sp|Q8WML4|MUC1_BOVIN Mucin-1 OS=Bos taurus GN=MUC1 PE=1 SV=1
+>sp|Q95114|MFGM_BOVIN Lactadherin OS=Bos taurus GN=MFGE8 PE=1 SV=2
+>sp|Q95115|STA5A_BOVIN Signal transducer and activator of transcription 5A OS=Bos taurus GN=STAT5A PE=2 SV=2
+>sp|Q95117|SFRP3_BOVIN Secreted frizzled-related protein 3 OS=Bos taurus GN=FRZB PE=1 SV=1
+>sp|Q95JH2|PLCA_BOVIN 1-acyl-sn-glycerol-3-phosphate acyltransferase alpha OS=Bos taurus GN=AGPAT1 PE=2 SV=1
+>sp|Q95KV1|IKKA_BOVIN Inhibitor of nuclear factor kappa-B kinase subunit alpha OS=Bos taurus GN=CHUK PE=1 SV=1
+>sp|Q95M18|ENPL_BOVIN Endoplasmin OS=Bos taurus GN=HSP90B1 PE=2 SV=1
+>sp|Q9GJW7|GBRAP_BOVIN Gamma-aminobutyric acid receptor-associated protein OS=Bos taurus GN=GABARAP PE=3 SV=2
+>sp|Q9GL65|TLR4_BOVIN Toll-like receptor 4 OS=Bos taurus GN=TLR4 PE=2 SV=2
+>sp|Q9MZ06|FGFP1_BOVIN Fibroblast growth factor-binding protein 1 OS=Bos taurus GN=FGFBP1 PE=1 SV=1
+>sp|Q9N0T5|IF4E_BOVIN Eukaryotic translation initiation factor 4E OS=Bos taurus GN=EIF4E PE=2 SV=2
+>sp|Q9TTC5|BTC_BOVIN Probetacellulin OS=Bos taurus GN=BTC PE=2 SV=1
+>sp|Q9TTS6|CCL11_BOVIN Eotaxin OS=Bos taurus GN=CCL11 PE=3 SV=1
+>sp|Q9TU47|IF6_BOVIN Eukaryotic translation initiation factor 6 OS=Bos taurus GN=EIF6 PE=2 SV=2
+>sp|Q9TUI9|APEL_BOVIN Apelin OS=Bos taurus GN=APLN PE=1 SV=1
+>sp|Q9TUM3|STA5B_BOVIN Signal transducer and activator of transcription 5B OS=Bos taurus GN=STAT5B PE=2 SV=2
+>sp|Q9TUM6|PLIN2_BOVIN Perilipin-2 OS=Bos taurus GN=PLIN2 PE=2 SV=1
+>sp|Q9XSC9|TCO2_BOVIN Transcobalamin-2 OS=Bos taurus GN=TCN2 PE=1 SV=1
+>tr|A0FKN7|A0FKN7_BOVIN Prolactin receptor (Fragment) OS=Bos taurus GN=PRLR PE=4 SV=1
+>tr|A0JNC5|A0JNC5_BOVIN Chromosome 6 open reading frame 62 OS=Bos taurus GN=C23H6ORF62 PE=2 SV=1
+>tr|A0JND0|A0JND0_BOVIN Hypoxia inducible factor 1, alpha subunit (Basic helix-loop-helix transcription factor) OS=Bos taurus GN=HIF1A PE=2 SV=1
+>tr|A0NA01|A0NA01_BOVIN Insulin-like growth factor-1 (Fragment) OS=Bos taurus GN=IGF-1 PE=4 SV=1
+>tr|A1A4M0|A1A4M0_BOVIN Translocase of inner mitochondrial membrane 13 OS=Bos taurus GN=TIMM13 PE=4 SV=1
+>tr|A1L597|A1L597_BOVIN Apoptosis related protein 3 isoform b (Fragment) OS=Bos taurus GN=C2orf28 PE=2 SV=1
+>tr|A1L598|A1L598_BOVIN Phosphoglucomutase 5 (Fragment) OS=Bos taurus GN=PGM5 PE=2 SV=1
+>tr|A1L5A1|A1L5A1_BOVIN 26S proteasome non-ATPase regulatory subunit 11 OS=Bos taurus GN=PSMD11 PE=2 SV=1
+>tr|A1L5A4|A1L5A4_BOVIN Death effector domain-containing protein OS=Bos taurus GN=DEDD PE=2 SV=1
+>tr|A1L5A7|A1L5A7_BOVIN Enigma protein OS=Bos taurus GN=PDLIM7 PE=2 SV=1
+>tr|A1L5B0|A1L5B0_BOVIN Myosin regulatory light polypeptide 9 (Fragment) OS=Bos taurus GN=MYL9 PE=2 SV=1
+>tr|A1L5B1|A1L5B1_BOVIN Proteasome 26S non-ATPase subunit 7 (Fragment) OS=Bos taurus GN=PSMD7 PE=2 SV=1
+>tr|A1L5B3|A1L5B3_BOVIN Glucosamine-6-phosphate deaminase 1 OS=Bos taurus GN=GNPDA1 PE=2 SV=1
+>tr|A1L5B6|A1L5B6_BOVIN Annexin OS=Bos taurus GN=ANXA5 PE=2 SV=1
+>tr|A1L5B7|A1L5B7_BOVIN SERPINE1 mRNA binding protein 1 OS=Bos taurus GN=SERBP1 PE=2 SV=1
+>tr|A1L5C0|A1L5C0_BOVIN Adhesion molecule, interacts with CXADR antigen 1 OS=Bos taurus GN=AMICA1 PE=2 SV=1
+>tr|A1L5C1|A1L5C1_BOVIN APR3 protein OS=Bos taurus GN=C2orf28 PE=2 SV=1
+>tr|A1L5C2|A1L5C2_BOVIN Adipose differentiation-related protein OS=Bos taurus GN=ADFP PE=2 SV=1
+>tr|A1L5C4|A1L5C4_BOVIN Claudin 15 OS=Bos taurus GN=CLDN15 PE=2 SV=1
+>tr|A1L5C6|A1L5C6_BOVIN HPN protein OS=Bos taurus GN=HPN PE=2 SV=1
+>tr|A1L5C7|A1L5C7_BOVIN Major histocompatibility complex, class II, DR beta 3 OS=Bos taurus GN=HLA-DRB3 PE=2 SV=1
+>tr|A2VDN9|A2VDN9_BOVIN KIAA0020 protein OS=Bos taurus GN=KIAA0020 PE=2 SV=1
+>tr|A5D7J7|A5D7J7_BOVIN ARSE protein OS=Bos taurus GN=ARSE PE=2 SV=1
+>tr|A5D969|A5D969_BOVIN Nuclear autoantigenic sperm protein OS=Bos taurus GN=NASP PE=2 SV=1
+>tr|A5D973|A5D973_BOVIN Alpha isoform of regulatory subunit A, protein phosphatase 2 OS=Bos taurus GN=PPP2R1A PE=2 SV=1
+>tr|A5D974|A5D974_BOVIN Acyl-Coenzyme A dehydrogenase family, member 9 OS=Bos taurus GN=ACAD9 PE=2 SV=1
+>tr|A5D975|A5D975_BOVIN Nuclear factor (Erythroid-derived 2)-like 2 OS=Bos taurus GN=NFE2L2 PE=2 SV=1
+>tr|A5D977|A5D977_BOVIN RALB protein OS=Bos taurus GN=RALB PE=2 SV=1
+>tr|A5D980|A5D980_BOVIN Protein tyrosine phosphatase, non-receptor type 6 OS=Bos taurus GN=PTPN6 PE=2 SV=1
+>tr|A5D982|A5D982_BOVIN Protein tyrosine phosphatase, non-receptor type 2 OS=Bos taurus GN=PTPN2 PE=2 SV=1
+>tr|A5D984|A5D984_BOVIN Pyruvate kinase OS=Bos taurus GN=PKM2 PE=2 SV=1
+>tr|A5D986|A5D986_BOVIN Cytosolic sialic acid 9-O-acetylesterase homolog OS=Bos taurus GN=SIAE PE=2 SV=1
+>tr|A5D987|A5D987_BOVIN Ubiquitin-conjugating enzyme E2N-like OS=Bos taurus GN=UBE2N PE=2 SV=1
+>tr|A5D991|A5D991_BOVIN Cytoplasmic cysteine conjugate-beta lyase OS=Bos taurus GN=CCBL1 PE=2 SV=1
+>tr|A5D9A2|A5D9A2_BOVIN Kelch repeat and BTB (POZ) domain containing 4 OS=Bos taurus GN=KBTBD4 PE=2 SV=1
+>tr|A5D9A5|A5D9A5_BOVIN Transcription factor-like protein 4 (Fragment) OS=Bos taurus GN=MLX PE=2 SV=1
+>tr|A5D9A8|A5D9A8_BOVIN Squalene epoxidase OS=Bos taurus GN=SQLE PE=2 SV=1
+>tr|A5D9B4|A5D9B4_BOVIN Heterogeneous nuclear ribonucleoprotein H2 OS=Bos taurus GN=HNRPH2 PE=2 SV=1
+>tr|A5D9B6|A5D9B6_BOVIN Syntenin OS=Bos taurus GN=SDCBP PE=2 SV=1
+>tr|A5D9C1|A5D9C1_BOVIN Monoamine oxidase A OS=Bos taurus GN=MAOA PE=2 SV=1
+>tr|A5D9C3|A5D9C3_BOVIN Zinc finger, C3HC type 1 OS=Bos taurus GN=ZC3HC1 PE=2 SV=1
+>tr|A5D9C4|A5D9C4_BOVIN Nuclear factor 1 (Fragment) OS=Bos taurus GN=NFIC PE=2 SV=1
+>tr|A5D9C8|A5D9C8_BOVIN Early growth response 2 protein (Fragment) OS=Bos taurus GN=EGR2 PE=2 SV=1
+>tr|A5D9D1|A5D9D1_BOVIN Vanin 2 OS=Bos taurus GN=VNN2 PE=2 SV=1
+>tr|A5D9D2|A5D9D2_BOVIN Complement component 4 binding protein, alpha chain OS=Bos taurus GN=C4BPA PE=2 SV=1
+>tr|A5D9D3|A5D9D3_BOVIN NADPH--cytochrome P450 reductase OS=Bos taurus GN=POR PE=2 SV=1
+>tr|A5D9D6|A5D9D6_BOVIN Rhomboid domain containing 1 OS=Bos taurus GN=RHBDD1 PE=2 SV=1
+>tr|A5D9D7|A5D9D7_BOVIN Procollagen-lysine, 2-oxoglutarate 5-dioxygenase 3 (Fragment) OS=Bos taurus GN=PLOD3 PE=2 SV=1
+>tr|A5D9D8|A5D9D8_BOVIN Cytochrome P450, subfamily IIIA, polypeptide 4 OS=Bos taurus GN=CYP3A4 PE=2 SV=1
+>tr|A5D9E0|A5D9E0_BOVIN Putative uncharacterized protein DKFZp686F02235 (Fragment) OS=Bos taurus GN=DKFZp686F02235 PE=2 SV=1
+>tr|A5D9E1|A5D9E1_BOVIN Tumor protein D52 OS=Bos taurus GN=TPD52 PE=2 SV=1
+>tr|A5D9E5|A5D9E5_BOVIN C-terminal binding protein 2 (Fragment) OS=Bos taurus GN=CTBP2 PE=2 SV=1
+>tr|A5D9E6|A5D9E6_BOVIN Raftlin family member 2 OS=Bos taurus GN=RFTN2 PE=2 SV=1
+>tr|A5D9E7|A5D9E7_BOVIN Mitochondrial trifunctional protein, beta subunit OS=Bos taurus GN=HADHB PE=2 SV=1
+>tr|A5D9E8|A5D9E8_BOVIN Corneal keratan sulfate proteoglycan 25 core protein OS=Bos taurus GN=OGN PE=2 SV=1
+>tr|A5D9E9|A5D9E9_BOVIN Complement component 1, r subcomponent OS=Bos taurus GN=C1R PE=2 SV=1
+>tr|A5D9F0|A5D9F0_BOVIN Calcium/calmodulin-dependent protein kinase II delta OS=Bos taurus GN=CAMK2D PE=2 SV=1
+>tr|A5D9F1|A5D9F1_BOVIN C-terminal binding protein 1 (Fragment) OS=Bos taurus GN=CTBP1 PE=2 SV=1
+>tr|A5D9F2|A5D9F2_BOVIN Asparagine-linked glycosylation 10 homolog B (Fragment) OS=Bos taurus GN=ALG10B PE=2 SV=1
+>tr|A5D9F3|A5D9F3_BOVIN SPFH domain family, member 1 OS=Bos taurus GN=ERLIN1 PE=2 SV=1
+>tr|A5D9F6|A5D9F6_BOVIN Putative uncharacterized protein DKFZp434K1815 (Fragment) OS=Bos taurus GN=DKFZp434K1815 PE=2 SV=1
+>tr|A5D9F7|A5D9F7_BOVIN Sorting nexin 6 (Fragment) OS=Bos taurus GN=SNX6 PE=2 SV=1
+>tr|A5D9F9|A5D9F9_BOVIN Transducer of ERBB2, 1 (Fragment) OS=Bos taurus GN=TOB1 PE=2 SV=1
+>tr|A5D9G1|A5D9G1_BOVIN UDP-N-acteylglucosamine pyrophosphorylase 1 OS=Bos taurus GN=UAP1 PE=2 SV=1
+>tr|A5D9G3|A5D9G3_BOVIN Similar to Succinyl-CoA ligase [GDP-forming] beta-chain, mitochondrial (Succinyl-CoA synthetase, betaG chain) (SCS-betaG) (GTP-specific succinyl-CoA synthetase beta subunit) (Fragment) OS=Bos taurus GN=LOC283398 PE=2 SV=1
+>tr|A5D9G4|A5D9G4_BOVIN Putative uncharacterized protein TMEM86A OS=Bos taurus GN=TMEM86A PE=2 SV=1
+>tr|A5D9G5|A5D9G5_BOVIN WD repeat domain 10 (Fragment) OS=Bos taurus GN=IFT122 PE=2 SV=1
+>tr|A5PJQ8|A5PJQ8_BOVIN ELF3 protein OS=Bos taurus GN=ELF3 PE=2 SV=1
+>tr|A6H7J6|A6H7J6_BOVIN P4HB protein OS=Bos taurus GN=P4HB PE=2 SV=1
+>tr|A6QP91|A6QP91_BOVIN TGFB3 protein OS=Bos taurus GN=TGFB3 PE=2 SV=1
+>tr|A6QQS0|A6QQS0_BOVIN D4, zinc and double PHD fingers family 2 OS=Bos taurus GN=DPF2 PE=2 SV=1
+>tr|A7E310|A7E310_BOVIN Fibroblast growth factor receptor (Fragment) OS=Bos taurus GN=FGFR2 PE=2 SV=1
+>tr|A7E348|A7E348_BOVIN PYGO2 protein OS=Bos taurus GN=PYGO2 PE=2 SV=1
+>tr|A7E3P7|A7E3P7_BOVIN Histone mRNA 3' end-specific exonuclease OS=Bos taurus GN=THEX1 PE=2 SV=1
+>tr|A7E3Q0|A7E3Q0_BOVIN Related to CPSF subunits 68 kDa OS=Bos taurus GN=CPSF3L PE=2 SV=1
+>tr|A7E3Q1|A7E3Q1_BOVIN Threonyl-tRNA synthetase-like 1 OS=Bos taurus GN=TARSL1 PE=2 SV=1
+>tr|A7E3Q2|A7E3Q2_BOVIN Heat shock 70kDa protein 1A OS=Bos taurus GN=HSPA2 PE=2 SV=1
+>tr|A7E3Q3|A7E3Q3_BOVIN Rho guanine exchange factor 16 OS=Bos taurus GN=ARHGEF16 PE=2 SV=1
+>tr|A7E3Q4|A7E3Q4_BOVIN HMG-box transcription factor 1 OS=Bos taurus GN=HBP1 PE=2 SV=1
+>tr|A7E3R1|A7E3R1_BOVIN Transmembrane protein 19 OS=Bos taurus GN=TMEM19 PE=2 SV=1
+>tr|A7E3R3|A7E3R3_BOVIN TERF1 (TRF1)-interacting nuclear factor 2 OS=Bos taurus GN=TINF2 PE=2 SV=1
+>tr|A7E3R8|A7E3R8_BOVIN Transmembrane protein 109 OS=Bos taurus GN=TMEM109 PE=2 SV=1
+>tr|A7E3S1|A7E3S1_BOVIN Nuclear prelamin A recognition factor-like OS=Bos taurus GN=NARFL PE=2 SV=1
+>tr|A7E3S2|A7E3S2_BOVIN EGL nine (C.elegans) homolog 2 OS=Bos taurus GN=EGLN2 PE=2 SV=1
+>tr|A7E3S6|A7E3S6_BOVIN Zinc finger, CCHC domain containing 10 (Fragment) OS=Bos taurus GN=ZCCHC10 PE=2 SV=1
+>tr|A7E3S8|A7E3S8_BOVIN Heat shock 70kD protein binding protein OS=Bos taurus GN=ST13 PE=2 SV=1
+>tr|A7E3T1|A7E3T1_BOVIN CD151 antigen OS=Bos taurus GN=CD151 PE=2 SV=1
+>tr|A7E3T2|A7E3T2_BOVIN DNA polymerase delta interacting protein 2 (Fragment) OS=Bos taurus GN=POLDIP2 PE=2 SV=1
+>tr|A7E3T4|A7E3T4_BOVIN Integral membrane protein 1 OS=Bos taurus GN=STT3A PE=2 SV=1
+>tr|A7E3T6|A7E3T6_BOVIN Centrosomal protein 27kDa OS=Bos taurus GN=CEP27 PE=2 SV=1
+>tr|A7E3T7|A7E3T7_BOVIN S-adenosylmethionine synthase OS=Bos taurus GN=MAT2A PE=2 SV=1
+>tr|A7E3T8|A7E3T8_BOVIN ATP-binding cassette, sub-family G, member 2 OS=Bos taurus GN=ABCG2 PE=2 SV=1
+>tr|A7E3T9|A7E3T9_BOVIN Microtubule-associated protein 7 (Fragment) OS=Bos taurus GN=MAP7 PE=2 SV=1
+>tr|A7E3U1|A7E3U1_BOVIN Transcription factor RAM2 OS=Bos taurus GN=CDCA7L PE=2 SV=1
+>tr|A7E3U2|A7E3U2_BOVIN Activator of basal transcription 1 (Fragment) OS=Bos taurus GN=ABT1 PE=2 SV=1
+>tr|A7E3V0|A7E3V0_BOVIN Sequestosome 1 OS=Bos taurus GN=SQSTM1 PE=2 SV=1
+>tr|A7E3V1|A7E3V1_BOVIN Succinate dehydrogenase complex, subunit A, flavoprotein (Fragment) OS=Bos taurus GN=SDHA PE=2 SV=1
+>tr|A7E3V3|A7E3V3_BOVIN Inner membrane protein, mitochondrial OS=Bos taurus GN=IMMT PE=2 SV=1
+>tr|A7E3V4|A7E3V4_BOVIN Transmembrane protein 39A OS=Bos taurus GN=TMEM39A PE=2 SV=1
+>tr|A7E3V7|A7E3V7_BOVIN Guanine nucleotide-binding protein, beta-1 subunit (Fragment) OS=Bos taurus GN=GNB1 PE=2 SV=1
+>tr|A7E3V8|A7E3V8_BOVIN Signal recognition particle 68kDa (Fragment) OS=Bos taurus GN=SRP68 PE=2 SV=1
+>tr|A7E3W1|A7E3W1_BOVIN R-spondin1 (Fragment) OS=Bos taurus GN=RSPO1 PE=2 SV=1
+>tr|A7E3W4|A7E3W4_BOVIN Transketolase OS=Bos taurus GN=TKT PE=2 SV=1
+>tr|A7E3W7|A7E3W7_BOVIN DEAD (Asp-Glu-Ala-Asp) box polypeptide 1 OS=Bos taurus GN=DDX1 PE=2 SV=1
+>tr|A7E3W9|A7E3W9_BOVIN Tumor differentially expressed 2 (Fragment) OS=Bos taurus GN=SERINC1 PE=2 SV=1
+>tr|A7E3X0|A7E3X0_BOVIN Fanconi anemia, complementation group G OS=Bos taurus GN=FANCG PE=2 SV=1
+>tr|A7E3X4|A7E3X4_BOVIN WNT1 inducible signaling pathway protein 2 OS=Bos taurus GN=WISP2 PE=2 SV=1
+>tr|A7E3X7|A7E3X7_BOVIN Putative uncharacterized protein TMEM97 OS=Bos taurus GN=TMEM97 PE=2 SV=1
+>tr|A7L833|A7L833_BOVIN Natural resistance-associated macrophage protein 1 (Fragment) OS=Bos taurus PE=4 SV=1
+>tr|A9XTK4|A9XTK4_BOVIN 17-beta hydroxysteroid dehydrogenase OS=Bos taurus GN=HSD17B7 PE=2 SV=1
+>tr|B0JYP9|B0JYP9_BOVIN E74-like factor 5 (Ets domain transcription factor) OS=Bos taurus GN=ELF5 PE=2 SV=1
+>tr|B1GVX9|B1GVX9_BOVIN BCL2-associated X protein (Fragment) OS=Bos taurus GN=BAX PE=4 SV=1
+>tr|B2D1N9|B2D1N9_BOVIN Breast cancer resistance protein OS=Bos taurus GN=ABCG2 PE=2 SV=1
+>tr|B3FXL1|B3FXL1_BOVIN Interleukin-1 receptor-associated kinase 2 transcript variant 1 OS=Bos taurus GN=Irak2 PE=2 SV=1
+>tr|B3FXL2|B3FXL2_BOVIN Interleukin-1 receptor-associated kinase 2 transcript variant 2 OS=Bos taurus GN=Irak2 PE=2 SV=1
+>tr|B3FXL3|B3FXL3_BOVIN Interleukin-1 receptor-associated kinase M transcript variant 1 OS=Bos taurus GN=IrakM PE=2 SV=1
+>tr|B3FXL5|B3FXL5_BOVIN Interleukin-1 receptor-associated kinase M transcript variant 3 OS=Bos taurus GN=IrakM PE=2 SV=1
+>tr|B3FXL6|B3FXL6_BOVIN Interleukin-1 receptor-associated kinase 4 transcript variant 1 OS=Bos taurus GN=Irak4 PE=2 SV=1
+>tr|B3VH90|B3VH90_BOVIN Eotaxin OS=Bos taurus GN=CCL11 PE=4 SV=1
+>tr|B3VHN0|B3VHN0_BOVIN Tracheal antimicrobial peptide (Fragment) OS=Bos taurus PE=2 SV=1
+>tr|B7SFC1|B7SFC1_BOVIN Natural resistance-associated macrophage protein 1 (Fragment) OS=Bos taurus PE=4 SV=1
+>tr|B8Y7I4|B8Y7I4_BOVIN Serum amyloid A protein (Fragment) OS=Bos taurus GN=SAA3 PE=2 SV=1
+>tr|B9VPZ5|B9VPZ5_BOVIN Lactoferrin OS=Bos taurus GN=LF PE=2 SV=1
+>tr|C1IQ52|C1IQ52_BOVIN Prolactin (Fragment) OS=Bos taurus GN=PRL PE=4 SV=1
+>tr|C4PU73|C4PU73_BOVIN Serin peptidase inhibitor, clade A (Alpha-1 antiproteinase, antitrypsin)-like OS=Bos taurus GN=LOC286871 PE=2 SV=1
+>tr|C6KGD7|C6KGD7_BOVIN Histatherin OS=Bos taurus PE=4 SV=1
+>tr|C6KGD8|C6KGD8_BOVIN Histatherin OS=Bos taurus GN=Bt.57786 PE=4 SV=1
+>tr|C6KGD9|C6KGD9_BOVIN Histatherin OS=Bos taurus PE=4 SV=1
+>tr|C6KYY4|C6KYY4_BOVIN Vascular endothelial growth factor 188 OS=Bos taurus GN=vegf PE=2 SV=1
+>tr|C6KZS7|C6KZS7_BOVIN Vascular endothelial growth factor 120 OS=Bos taurus GN=vegf PE=2 SV=1
+>tr|C7FE01|C7FE01_BOVIN Lactoferrin (Fragment) OS=Bos taurus PE=2 SV=1
+>tr|C7T4W9|C7T4W9_BOVIN Prolactin receptor (Fragment) OS=Bos taurus GN=PRLR PE=4 SV=1
+>tr|C7T4X1|C7T4X1_BOVIN Prolactin receptor (Fragment) OS=Bos taurus GN=PRLR PE=4 SV=1
+>tr|C7T4X2|C7T4X2_BOVIN Prolactin receptor (Fragment) OS=Bos taurus GN=PRLR PE=4 SV=1
+>tr|C7T4X5|C7T4X5_BOVIN Prolactin receptor (Fragment) OS=Bos taurus GN=PRLR PE=4 SV=1
+>tr|C9EEZ1|C9EEZ1_BOVIN Insulin-like growth factor 1 receptor (Fragment) OS=Bos taurus GN=IGF1R PE=4 SV=1
+>tr|C9WF16|C9WF16_BOVIN GLI-kruppel family member 3-like protein (Fragment) OS=Bos taurus PE=4 SV=1
+>tr|D2DVW5|D2DVW5_BOVIN Gli3 (Fragment) OS=Bos taurus GN=Gli3 PE=4 SV=1
+>tr|D5FLG3|D5FLG3_BOVIN Gli3 (Fragment) OS=Bos taurus GN=Gli3 PE=4 SV=1
+>tr|D5FLG4|D5FLG4_BOVIN Gli3 (Fragment) OS=Bos taurus GN=Gli3 PE=4 SV=1
+>tr|E1B7H0|E1B7H0_BOVIN Uncharacterized protein OS=Bos taurus GN=FOXB1 PE=4 SV=2
+>tr|E1B7Q6|E1B7Q6_BOVIN Uncharacterized protein OS=Bos taurus GN=MED1 PE=4 SV=1
+>tr|E1B8X8|E1B8X8_BOVIN Uncharacterized protein OS=Bos taurus GN=BRCA2 PE=4 SV=2
+>tr|E1B946|E1B946_BOVIN Uncharacterized protein OS=Bos taurus GN=IQGAP3 PE=4 SV=2
+>tr|E1BAF5|E1BAF5_BOVIN Uncharacterized protein OS=Bos taurus GN=Bt.106481 PE=3 SV=1
+>tr|E1BCP6|E1BCP6_BOVIN Tyrosine-protein kinase OS=Bos taurus GN=BT.25287 PE=3 SV=1
+>tr|E1BCP8|E1BCP8_BOVIN Uncharacterized protein OS=Bos taurus GN=Bt.70784 PE=3 SV=1
+>tr|E1BDG5|E1BDG5_BOVIN Protein Wnt OS=Bos taurus GN=BT.88484 PE=3 SV=1
+>tr|E1BE57|E1BE57_BOVIN Uncharacterized protein OS=Bos taurus GN=SMO PE=4 SV=1
+>tr|E1BIM8|E1BIM8_BOVIN Uncharacterized protein OS=Bos taurus GN=BT.61976 PE=4 SV=1
+>tr|E1BIP0|E1BIP0_BOVIN Uncharacterized protein OS=Bos taurus GN=TNFSF11 PE=4 SV=1
+>tr|E1BIQ2|E1BIQ2_BOVIN Uncharacterized protein OS=Bos taurus GN=AGAP2 PE=4 SV=2
+>tr|E1BJ31|E1BJ31_BOVIN Uncharacterized protein OS=Bos taurus GN=EPHA2 PE=4 SV=1
+>tr|E1BJ93|E1BJ93_BOVIN Uncharacterized protein OS=Bos taurus GN=LEF1 PE=4 SV=2
+>tr|E1BK57|E1BK57_BOVIN Uncharacterized protein OS=Bos taurus GN=TBX3 PE=4 SV=2
+>tr|E1BLV0|E1BLV0_BOVIN Uncharacterized protein OS=Bos taurus GN=Bt.12550 PE=4 SV=1
+>tr|E1BLY0|E1BLY0_BOVIN Uncharacterized protein OS=Bos taurus GN=TBX2 PE=4 SV=2
+>tr|E6YCQ7|E6YCQ7_BOVIN Lactoferrin (Fragment) OS=Bos taurus GN=lf PE=4 SV=1
+>tr|E6YCQ8|E6YCQ8_BOVIN Lactoferrin (Fragment) OS=Bos taurus GN=lf PE=4 SV=1
+>tr|F1MBH4|F1MBH4_BOVIN Uncharacterized protein (Fragment) OS=Bos taurus GN=FOXF1 PE=4 SV=2
+>tr|F1MCA1|F1MCA1_BOVIN Uncharacterized protein (Fragment) OS=Bos taurus GN=Bt.28934 PE=4 SV=1
+>tr|F1MDE1|F1MDE1_BOVIN Uncharacterized protein (Fragment) OS=Bos taurus GN=BT.60913 PE=4 SV=2
+>tr|F1MDZ7|F1MDZ7_BOVIN Protein Wnt (Fragment) OS=Bos taurus GN=BT.71501 PE=3 SV=1
+>tr|F1MER9|F1MER9_BOVIN Signal transducer and activator of transcription 5A OS=Bos taurus GN=STAT5A PE=4 SV=2
+>tr|F1MEV4|F1MEV4_BOVIN Uncharacterized protein OS=Bos taurus GN=BT.28934 PE=4 SV=1
+>tr|F1MFM8|F1MFM8_BOVIN Uncharacterized protein (Fragment) OS=Bos taurus GN=MAPK1 PE=4 SV=1
+>tr|F1MGS9|F1MGS9_BOVIN Uncharacterized protein OS=Bos taurus GN=CSF1 PE=4 SV=1
+>tr|F1MHE0|F1MHE0_BOVIN Uncharacterized protein (Fragment) OS=Bos taurus GN=Bt.4184 PE=4 SV=1
+>tr|F1MI27|F1MI27_BOVIN Mitogen-activated protein kinase 1 (Fragment) OS=Bos taurus GN=MAPK1 PE=4 SV=2
+>tr|F1MJE0|F1MJE0_BOVIN Uncharacterized protein (Fragment) OS=Bos taurus GN=IRS2 PE=4 SV=2
+>tr|F1MN19|F1MN19_BOVIN Uncharacterized protein OS=Bos taurus GN=BT.22888 PE=3 SV=1
+>tr|F1MNW0|F1MNW0_BOVIN Uncharacterized protein (Fragment) OS=Bos taurus GN=Bt.30102 PE=4 SV=1
+>tr|F1MNW2|F1MNW2_BOVIN Fibroblast growth factor receptor OS=Bos taurus GN=FGFR2 PE=3 SV=2
+>tr|F1MS08|F1MS08_BOVIN Uncharacterized protein OS=Bos taurus GN=SLC12A2 PE=4 SV=2
+>tr|F1MTC1|F1MTC1_BOVIN Uncharacterized protein (Fragment) OS=Bos taurus GN=TNFRSF11A PE=4 SV=1
+>tr|F1MTX0|F1MTX0_BOVIN Uncharacterized protein OS=Bos taurus GN=BT.97999 PE=3 SV=2
+>tr|F1MVD0|F1MVD0_BOVIN Uncharacterized protein OS=Bos taurus GN=NCOA3 PE=4 SV=2
+>tr|F1MVN1|F1MVN1_BOVIN Uncharacterized protein OS=Bos taurus GN=BT.25271 PE=4 SV=1
+>tr|F1MYS6|F1MYS6_BOVIN Uncharacterized protein OS=Bos taurus GN=Bt.12550 PE=4 SV=1
+>tr|F1N0C7|F1N0C7_BOVIN Uncharacterized protein OS=Bos taurus GN=NTN1 PE=4 SV=2
+>tr|F1N1K8|F1N1K8_BOVIN Uncharacterized protein (Fragment) OS=Bos taurus GN=Bt.68746 PE=4 SV=1
+>tr|F1N215|F1N215_BOVIN Uncharacterized protein OS=Bos taurus GN=GLI3 PE=4 SV=1
+>tr|F1N279|F1N279_BOVIN Uncharacterized protein (Fragment) OS=Bos taurus GN=ROBO1 PE=4 SV=2
+>tr|F1N2B6|F1N2B6_BOVIN Uncharacterized protein OS=Bos taurus GN=AR PE=3 SV=2
+>tr|F1N2S2|F1N2S2_BOVIN Uncharacterized protein OS=Bos taurus GN=Bt.88265 PE=4 SV=1
+>tr|F1N3T9|F1N3T9_BOVIN Uncharacterized protein OS=Bos taurus GN=BT.66957 PE=4 SV=1
+>tr|F1N4A2|F1N4A2_BOVIN Homeobox protein MSX-1 OS=Bos taurus GN=MSX1 PE=3 SV=1
+>tr|F1N4H8|F1N4H8_BOVIN Prolactin receptor OS=Bos taurus GN=PRLR PE=4 SV=1
+>tr|F1N5Q8|F1N5Q8_BOVIN Uncharacterized protein OS=Bos taurus GN=TPH1 PE=4 SV=2
+>tr|F1N5R1|F1N5R1_BOVIN Protein Wnt (Fragment) OS=Bos taurus GN=BT.88369 PE=3 SV=2
+>tr|F1N739|F1N739_BOVIN Uncharacterized protein OS=Bos taurus GN=ROBO1 PE=4 SV=2
+>tr|F2X047|F2X047_BOVIN Lysozyme OS=Bos taurus GN=LYZ PE=2 SV=1
+>tr|F2X2F1|F2X2F1_BOVIN Insulin-like growth factor I variant 2 OS=Bos taurus GN=IGF-I PE=2 SV=1
+>tr|F6I8C5|F6I8C5_BOVIN Zinc finger protein 496 (Fragment) OS=Bos taurus GN=znf496 PE=2 SV=1
+>tr|F6I8C6|F6I8C6_BOVIN Zinc finger protein 496 OS=Bos taurus GN=znf496 PE=2 SV=1
+>tr|F7VJQ6|F7VJQ6_BOVIN Zinc finger protein 496 OS=Bos taurus GN=znf496 PE=2 SV=1
+>tr|G0YQL1|G0YQL1_BOVIN SLAM family member 7 variant 2 OS=Bos taurus GN=SLAMF7 PE=2 SV=1
+>tr|G0YQL2|G0YQL2_BOVIN SLAM family member 7 OS=Bos taurus GN=SLAMF7 PE=4 SV=1
+>tr|G4XKY3|G4XKY3_BOVIN Growth hormone (Fragment) OS=Bos taurus GN=GH PE=4 SV=1
+>tr|G4XKY4|G4XKY4_BOVIN Prolactin (Fragment) OS=Bos taurus GN=Prol PE=4 SV=1
+>tr|G8FZ88|G8FZ88_BOVIN ATP synthase subunit a OS=Bos taurus PE=3 SV=1
+>tr|G9G9X6|G9G9X6_BOVIN Alpha-lactalbumin protein variant D OS=Bos taurus GN=LALBA PE=3 SV=1
+>tr|Q05KI7|Q05KI7_BOVIN BCL2-antagonist/killer 1 OS=Bos taurus GN=BAK1 PE=2 SV=1
+>tr|Q08DJ4|Q08DJ4_BOVIN Hepatocellular carcinoma-associated antigen 127 OS=Bos taurus GN=ZC4H2 PE=2 SV=1
+>tr|Q08DN5|Q08DN5_BOVIN Carnitine acetyltransferase OS=Bos taurus GN=MGC142781 PE=2 SV=1
+>tr|Q08DU8|Q08DU8_BOVIN Pallidin OS=Bos taurus GN=PLDN PE=2 SV=1
+>tr|Q08DW8|Q08DW8_BOVIN Mammary tumor virus receptor 2 homolog OS=Bos taurus GN=MGC140823 PE=2 SV=1
+>tr|Q0IIA2|Q0IIA2_BOVIN Odorant-binding protein-like OS=Bos taurus GN=MGC151921 PE=2 SV=1
+>tr|Q0P5C9|Q0P5C9_BOVIN Solute carrier family 39 (Zinc transporter), member 7 OS=Bos taurus GN=SLC39A7 PE=2 SV=1
+>tr|Q0VC14|Q0VC14_BOVIN Transcription factor AP-2 gamma (Activating enhancer binding protein 2 gamma) OS=Bos taurus GN=TFAP2C PE=2 SV=1
+>tr|Q0VCX3|Q0VCX3_BOVIN Transmembrane 4 L six family member 1 OS=Bos taurus GN=TM4SF1 PE=2 SV=1
+>tr|Q0Z7W7|Q0Z7W7_BOVIN Paired box protein Pax-3-like protein (Fragment) OS=Bos taurus PE=3 SV=1
+>tr|Q17QL8|Q17QL8_BOVIN Lysophospholipase II OS=Bos taurus GN=LYPLA2 PE=2 SV=1
+>tr|Q17QP5|Q17QP5_BOVIN Secreted frizzled-related protein 4 OS=Bos taurus GN=SFRP4 PE=2 SV=1
+>tr|Q19KS1|Q19KS1_BOVIN Lactoferrin (Fragment) OS=Bos taurus PE=2 SV=1
+>tr|Q19MM0|Q19MM0_BOVIN Vitamin D3 receptor (Fragment) OS=Bos taurus GN=VDR PE=4 SV=1
+>tr|Q1KLV9|Q1KLV9_BOVIN TNF receptor-associated factor 6 OS=Bos taurus GN=TRAF6 PE=2 SV=1
+>tr|Q1LZD7|Q1LZD7_BOVIN MFNG protein OS=Bos taurus GN=MFNG PE=2 SV=2
+>tr|Q1LZF6|Q1LZF6_BOVIN Acyl-CoA synthetase long-chain family member 5 OS=Bos taurus GN=ACSL5 PE=2 SV=1
+>tr|Q1MW20|Q1MW20_BOVIN Low density lipoprotein receptor-related protein 6 (Fragment) OS=Bos taurus GN=LRP6 PE=2 SV=1
+>tr|Q1MW21|Q1MW21_BOVIN Low-density lipoprotein receptor-related protein 5 (Fragment) OS=Bos taurus GN=LRP5 PE=2 SV=1
+>tr|Q1XGH1|Q1XGH1_BOVIN Parathyroid Hormone/Parathyroid Hormone Related Protein Receptor (Fragment) OS=Bos taurus GN=PTHR1 PE=2 SV=1
+>tr|Q28023|Q28023_BOVIN Glucocorticoid receptor (Fragment) OS=Bos taurus PE=4 SV=1
+>tr|Q28078|Q28078_BOVIN Epithelial mucin (Fragment) OS=Bos taurus GN=MUC1 PE=4 SV=1
+>tr|Q28079|Q28079_BOVIN Epithelial mucin (Fragment) OS=Bos taurus GN=MUC1 PE=4 SV=1
+>tr|Q28111|Q28111_BOVIN FGF-receptor (Fragment) OS=Bos taurus PE=2 SV=2
+>tr|Q29630|Q29630_BOVIN CD74 molecule, major histocompatibility complex, class II invariant chain OS=Bos taurus GN=BT.46809 PE=2 SV=1
+>tr|Q2HJ31|Q2HJ31_BOVIN Leucine rich repeat containing 17 OS=Bos taurus GN=LRRC17 PE=2 SV=1
+>tr|Q2KI46|Q2KI46_BOVIN CDC42 effector protein (Rho GTPase binding) 3 OS=Bos taurus GN=CDC42EP3 PE=2 SV=1
+>tr|Q2KI67|Q2KI67_BOVIN Ecdysoneless homolog (Drosophila) OS=Bos taurus GN=ECD PE=2 SV=1
+>tr|Q2KI70|Q2KI70_BOVIN Melanoma antigen family E, 2 OS=Bos taurus GN=MAGEE2 PE=2 SV=1
+>tr|Q2KI91|Q2KI91_BOVIN Ring finger protein 41 OS=Bos taurus GN=RNF41 PE=2 SV=1
+>tr|Q2KJJ1|Q2KJJ1_BOVIN Solute carrier family 25 (Mitochondrial carrier; peroxisomal membrane protein, 34kDa), member 17 OS=Bos taurus GN=SLC25A17 PE=2 SV=1
+>tr|Q2LGB2|Q2LGB2_BOVIN MD-2 protein OS=Bos taurus GN=MD2 PE=2 SV=1
+>tr|Q2LGB6|Q2LGB6_BOVIN Toll-interleukin 1 receptor domain-containing adaptor protein OS=Bos taurus GN=TIRAP PE=2 SV=1
+>tr|Q2LGB8|Q2LGB8_BOVIN Caspase 8 OS=Bos taurus GN=CASP8 PE=2 SV=1
+>tr|Q2NL04|Q2NL04_BOVIN TAP binding protein (Tapasin) OS=Bos taurus GN=TAPBP PE=2 SV=1
+>tr|Q2P9V4|Q2P9V4_BOVIN Growth hormone receptor OS=Bos taurus GN=GHR PE=4 SV=1
+>tr|Q2PBN9|Q2PBN9_BOVIN Prolactin receptor (Fragment) OS=Bos taurus GN=prlr PE=4 SV=1
+>tr|Q2PBP0|Q2PBP0_BOVIN Prolactin receptor (Fragment) OS=Bos taurus GN=prlr PE=4 SV=1
+>tr|Q2T9M8|Q2T9M8_BOVIN Synaptosomal-associated protein OS=Bos taurus GN=SNAP23 PE=2 SV=1
+>tr|Q2TBR3|Q2TBR3_BOVIN SET nuclear oncogene OS=Bos taurus GN=SET PE=2 SV=1
+>tr|Q2WFX3|Q2WFX3_BOVIN IL-1 receptor 2 (Fragment) OS=Bos taurus GN=IL-1R2 PE=2 SV=1
+>tr|Q2YDF0|Q2YDF0_BOVIN BCL2-like 11 (Apoptosis facilitator) OS=Bos taurus GN=BCL2L11 PE=2 SV=1
+>tr|Q30308|Q30308_BOVIN MHC class II DQA2 OS=Bos taurus GN=HLA-DQA1 PE=2 SV=1
+>tr|Q30309|Q30309_BOVIN BoLA-DR-alpha OS=Bos taurus GN=BoLA-DRA PE=2 SV=1
+>tr|Q3HUQ5|Q3HUQ5_BOVIN Glucocorticoid receptor alpha (Fragment) OS=Bos taurus GN=GR-A PE=2 SV=1
+>tr|Q3MHF2|Q3MHF2_BOVIN 3 beta-hydroxy-delta 5-C27-steroid oxidoreductase OS=Bos taurus GN=HSD3B7 PE=2 SV=1
+>tr|Q3SWY7|Q3SWY7_BOVIN Splicing factor 3a, subunit 3 OS=Bos taurus GN=SF3A3 PE=2 SV=1
+>tr|Q3T0W1|Q3T0W1_BOVIN Enoyl-Coenzyme A, hydratase/3-hydroxyacyl Coenzyme A dehydrogenase OS=Bos taurus GN=EHHADH PE=2 SV=1
+>tr|Q3ZBX0|Q3ZBX0_BOVIN Basigin OS=Bos taurus GN=BSG PE=2 SV=1
+>tr|Q3ZBY4|Q3ZBY4_BOVIN Fructose-bisphosphate aldolase OS=Bos taurus GN=ALDOC PE=2 SV=2
+>tr|Q3ZCA7|Q3ZCA7_BOVIN Guanine nucleotide binding protein (G protein), alpha inhibiting activity polypeptide 3 OS=Bos taurus GN=GNAI3 PE=2 SV=1
+>tr|Q3ZCL0|Q3ZCL0_BOVIN Cysteine-rich secretory protein 2 OS=Bos taurus GN=CRISP3 PE=2 SV=1
+>tr|Q4LEV0|Q4LEV0_BOVIN Bone morphogenetic protein-4 (Fragment) OS=Bos taurus GN=BMP-4 PE=2 SV=1
+>tr|Q4VS16|Q4VS16_BOVIN FGFR (Fragment) OS=Bos taurus PE=4 SV=1
+>tr|Q4VS18|Q4VS18_BOVIN BMP4 (Fragment) OS=Bos taurus PE=4 SV=1
+>tr|Q56FL7|Q56FL7_BOVIN STAT5A (Fragment) OS=Bos taurus PE=4 SV=1
+>tr|Q56FL8|Q56FL8_BOVIN STAT5A (Fragment) OS=Bos taurus PE=4 SV=1
+>tr|Q56J78|Q56J78_BOVIN Serum amyloid A protein OS=Bos taurus PE=2 SV=1
+>tr|Q58DM5|Q58DM5_BOVIN Membrane-spanning 4-domains, subfamily A, member 7 isoform 1 OS=Bos taurus GN=MS4A7 PE=2 SV=1
+>tr|Q58DM6|Q58DM6_BOVIN Osteopontin OS=Bos taurus GN=SPP1 PE=2 SV=1
+>tr|Q58DM9|Q58DM9_BOVIN Ribosomal protein L27a OS=Bos taurus GN=RPL27A PE=3 SV=1
+>tr|Q58DP6|Q58DP6_BOVIN Ribonuclease, RNase A family, 4 OS=Bos taurus GN=RNASE4 PE=2 SV=1
+>tr|Q58DP7|Q58DP7_BOVIN Heat shock 27kDa protein 1 OS=Bos taurus GN=HSPB1 PE=2 SV=1
+>tr|Q58DP8|Q58DP8_BOVIN Nucleolar protein family A, member 1 OS=Bos taurus GN=NOLA1 PE=2 SV=1
+>tr|Q58DP9|Q58DP9_BOVIN Mitochondrial ribosomal protein L9 OS=Bos taurus GN=MRPL9 PE=2 SV=1
+>tr|Q58DQ0|Q58DQ0_BOVIN Arsenic (+3 oxidation state) methyltransferase OS=Bos taurus GN=AS3MT PE=2 SV=1
+>tr|Q58DQ1|Q58DQ1_BOVIN Crystallin, zeta-like 1 isoform a OS=Bos taurus GN=CRYZL1 PE=2 SV=1
+>tr|Q58DR1|Q58DR1_BOVIN Histone acetyltransferase 1 OS=Bos taurus GN=HAT1 PE=2 SV=1
+>tr|Q58DR3|Q58DR3_BOVIN Transaldolase OS=Bos taurus GN=TALDO1 PE=2 SV=1
+>tr|Q58DR7|Q58DR7_BOVIN ATPase, H+ transporting, lysosomal 31kD, V1 subunit E isoform 1 OS=Bos taurus GN=ATP6V1E1 PE=2 SV=1
+>tr|Q58DR9|Q58DR9_BOVIN Malate dehydrogenase OS=Bos taurus GN=MDH2 PE=2 SV=1
+>tr|Q58DT9|Q58DT9_BOVIN Alpha 2 actin OS=Bos taurus GN=ACTA2 PE=2 SV=1
+>tr|Q58DU1|Q58DU1_BOVIN CGI-119 protein OS=Bos taurus GN=CGI-119 PE=2 SV=1
+>tr|Q58DU2|Q58DU2_BOVIN Similar to 60S ribosomal protein L10 (QM protein homolog) OS=Bos taurus GN=na PE=2 SV=1
+>tr|Q58DU3|Q58DU3_BOVIN Sulfide dehydrogenase like OS=Bos taurus GN=SQRDL PE=2 SV=1
+>tr|Q58DU4|Q58DU4_BOVIN 15 kDa selenoprotein isoform 1 OS=Bos taurus GN=SEP15 PE=4 SV=1
+>tr|Q58DV4|Q58DV4_BOVIN Fas-activated serine/threonine kinase isoform 1 OS=Bos taurus GN=FASTK PE=2 SV=1
+>tr|Q58DV6|Q58DV6_BOVIN Cellular senescence inhibited gene protein OS=Bos taurus GN=CSIG PE=2 SV=1
+>tr|Q58DV9|Q58DV9_BOVIN Natural killer cell group 7 sequence OS=Bos taurus GN=NKG7 PE=2 SV=1
+>tr|Q58DW1|Q58DW1_BOVIN Fatty acid binding protein 3 OS=Bos taurus GN=FABP3 PE=4 SV=1
+>tr|Q58DW7|Q58DW7_BOVIN MHC class II antigen OS=Bos taurus GN=HLA-DMB PE=2 SV=1
+>tr|Q58DW8|Q58DW8_BOVIN POP4 (Processing of , S. cerevisiae) homolog OS=Bos taurus GN=POP4 PE=2 SV=1
+>tr|Q58HC6|Q58HC6_BOVIN Glycosylphosphatidylinositol-anchored molecule-like protein (Fragment) OS=Bos taurus GN=GML PE=4 SV=1
+>tr|Q5E949|Q5E949_BOVIN HMT1 hnRNP methyltransferase-like 2 isoform 3 OS=Bos taurus GN=HRMT1L2 PE=2 SV=1
+>tr|Q5E952|Q5E952_BOVIN RNA binding protein (Autoantigenic, hnRNP-associated with lethal yellow) short isoform OS=Bos taurus GN=RALY PE=2 SV=1
+>tr|Q5E955|Q5E955_BOVIN Ancient ubiquitous protein 1 isoform 2 OS=Bos taurus GN=AUP1 PE=2 SV=1
+>tr|Q5E962|Q5E962_BOVIN Aldo-keto reductase family 1, member B1 OS=Bos taurus GN=AKR1B1 PE=2 SV=1
+>tr|Q5E970|Q5E970_BOVIN DEAD (Asp-Glu-Ala-Asp) box polypeptide 39 isoform 1 OS=Bos taurus GN=DDX39 PE=2 SV=1
+>tr|Q5E974|Q5E974_BOVIN Deoxyguanosine kinase isoform a OS=Bos taurus GN=DGUOK PE=2 SV=1
+>tr|Q5E9C9|Q5E9C9_BOVIN Major histocompatibility complex, class I, A OS=Bos taurus GN=HLA-A PE=2 SV=1
+>tr|Q5E9D4|Q5E9D4_BOVIN Breast carcinoma amplified sequence 2 OS=Bos taurus GN=BCAS2 PE=2 SV=1
+>tr|Q5E9D7|Q5E9D7_BOVIN Proteasome 26S ATPase subunit 1 OS=Bos taurus GN=PSMC1 PE=2 SV=1
+>tr|Q5E9E0|Q5E9E0_BOVIN Galectin 9 short isoform OS=Bos taurus GN=LGALS9 PE=2 SV=1
+>tr|Q5E9E9|Q5E9E9_BOVIN Exosomal core protein CSL4 OS=Bos taurus GN=EXOSC1 PE=2 SV=1
+>tr|Q5E9F1|Q5E9F1_BOVIN B-cell receptor-associated protein 31 OS=Bos taurus GN=BCAP31 PE=2 SV=1
+>tr|Q5GN72|Q5GN72_BOVIN Alpha-1 acid glycoprotein OS=Bos taurus GN=agp PE=2 SV=2
+>tr|Q5S1W6|Q5S1W6_BOVIN PITSLRE protein kinase beta 1 OS=Bos taurus PE=2 SV=1
+>tr|Q5W5G9|Q5W5G9_BOVIN Neutrophil beta-defensin 7 (Fragment) OS=Bos taurus GN=bnbd7 PE=4 SV=1
+>tr|Q5W5H1|Q5W5H1_BOVIN Neutrophil beta-defensin 9 (Fragment) OS=Bos taurus GN=bnbd9 PE=4 SV=1
+>tr|Q5W5H3|Q5W5H3_BOVIN Neutrophil beta-defensin 3 (Fragment) OS=Bos taurus GN=bnbd3 PE=4 SV=1
+>tr|Q5W5H4|Q5W5H4_BOVIN Beta-defensin 405 (Fragment) OS=Bos taurus GN=defb405 PE=4 SV=1
+>tr|Q5W5H5|Q5W5H5_BOVIN Beta-defensin 404 (Fragment) OS=Bos taurus GN=defb405 PE=4 SV=1
+>tr|Q5W5H6|Q5W5H6_BOVIN Beta-defensin 404 (Fragment) OS=Bos taurus GN=defb404 PE=4 SV=1
+>tr|Q5W5H8|Q5W5H8_BOVIN LAP-like antimicrobial peptide (Fragment) OS=Bos taurus GN=lap-like PE=4 SV=1
+>tr|Q5W5H9|Q5W5H9_BOVIN Beta-defensin 403 (Fragment) OS=Bos taurus GN=lap-like PE=4 SV=1
+>tr|Q5W5I0|Q5W5I0_BOVIN Beta-defensin 403 (Fragment) OS=Bos taurus GN=defb403 PE=4 SV=1
+>tr|Q5W5I5|Q5W5I5_BOVIN Beta-defensin 402 OS=Bos taurus GN=defb402 PE=4 SV=1
+>tr|Q5W5I6|Q5W5I6_BOVIN Beta-defensin 401 OS=Bos taurus GN=defb401 PE=4 SV=1
+>tr|Q690M9|Q690M9_BOVIN Thyroid hormone-responsive protein OS=Bos taurus GN=THRSP PE=2 SV=1
+>tr|Q690N0|Q690N0_BOVIN Progesterone receptor (Fragment) OS=Bos taurus GN=PGR PE=2 SV=1
+>tr|Q6DUZ2|Q6DUZ2_BOVIN Estrogen receptor alpha (Fragment) OS=Bos taurus PE=4 SV=1
+>tr|Q6GWV7|Q6GWV7_BOVIN Interleukin 8 (Fragment) OS=Bos taurus PE=4 SV=1
+>tr|Q6LBN7|Q6LBN7_BOVIN Lactoferrin (Fragment) OS=Bos taurus PE=2 SV=1
+>tr|Q6S019|Q6S019_BOVIN Prolactin receptor (Fragment) OS=Bos taurus PE=4 SV=1
+>tr|Q6VLX0|Q6VLX0_BOVIN STAT5A (Fragment) OS=Bos taurus PE=4 SV=1
+>tr|Q6VLX1|Q6VLX1_BOVIN Prolactin receptor (Fragment) OS=Bos taurus PE=4 SV=1
+>tr|Q704W5|Q704W5_BOVIN Signal transducer and activator of transcription 3 (Fragment) OS=Bos taurus GN=stat3 PE=4 SV=1
+>tr|Q704W6|Q704W6_BOVIN Signal transducer and activator of transcription 3 (Fragment) OS=Bos taurus GN=stat3 PE=4 SV=1
+>tr|Q704W7|Q704W7_BOVIN Signal transducer and activator of transcription 3 (Fragment) OS=Bos taurus GN=stat3 PE=4 SV=1
+>tr|Q704W8|Q704W8_BOVIN Signal transducer and activator of transcription 3 (Fragment) OS=Bos taurus GN=stat3 PE=4 SV=1
+>tr|Q704W9|Q704W9_BOVIN Signal transducer and activator of transcription 3 (Fragment) OS=Bos taurus GN=stat3 PE=4 SV=1
+>tr|Q76L95|Q76L95_BOVIN Membrane tethering protein p115 (Fragment) OS=Bos taurus GN=p115 PE=4 SV=1
+>tr|Q7JAT1|Q7JAT1_BOVIN ATP synthase subunit a OS=Bos taurus GN=ATP6 PE=3 SV=1
+>tr|Q7JAT2|Q7JAT2_BOVIN ATP synthase protein 8 OS=Bos taurus GN=ATP8 PE=3 SV=1
+>tr|Q7M2M1|Q7M2M1_BOVIN Major glycoprotein PAS-6 (Fragment) OS=Bos taurus PE=1 SV=1
+>tr|Q7YSG5|Q7YSG5_BOVIN Class 1 insulin-like growth factor I preproprotein (Fragment) OS=Bos taurus GN=IGF-I PE=2 SV=1
+>tr|Q861V3|Q861V3_BOVIN Similar to Homeobox protein MSX-1 (Fragment) OS=Bos taurus PE=2 SV=1
+>tr|Q866B2|Q866B2_BOVIN Toll-like receptor 9 OS=Bos taurus GN=tlr9 PE=4 SV=1
+>tr|Q8HXV0|Q8HXV0_BOVIN Toll-like receptor 9 (Fragment) OS=Bos taurus GN=tlr9 PE=2 SV=1
+>tr|Q8HY41|Q8HY41_BOVIN Leukocyte integrin alpha-M chain (Fragment) OS=Bos taurus GN=cd11b PE=2 SV=1
+>tr|Q8HY42|Q8HY42_BOVIN CD4 antigen (Fragment) OS=Bos taurus GN=cd4 PE=2 SV=1
+>tr|Q8HY43|Q8HY43_BOVIN Early growth response protein 1 (Fragment) OS=Bos taurus GN=egr1 PE=2 SV=1
+>tr|Q8HY44|Q8HY44_BOVIN Complement receptor type 2 (Fragment) OS=Bos taurus GN=cd21 PE=2 SV=1
+>tr|Q8HYK0|Q8HYK0_BOVIN Flavin-containing monooxygenase 3 (Fragment) OS=Bos taurus GN=FMO3 PE=4 SV=1
+>tr|Q8HYK1|Q8HYK1_BOVIN Flavin-containing monooxygenase 3 (Fragment) OS=Bos taurus GN=FMO3 PE=4 SV=1
+>tr|Q8HYK2|Q8HYK2_BOVIN Truncated flavin-containing monooxygenase 3 (Fragment) OS=Bos taurus GN=FMO3 PE=4 SV=1
+>tr|Q8HYK3|Q8HYK3_BOVIN Flavin-containing monooxygenase 3 (Fragment) OS=Bos taurus GN=FMO3 PE=4 SV=1
+>tr|Q8HYK4|Q8HYK4_BOVIN Flavin-containing monooxygenase 3 (Fragment) OS=Bos taurus GN=FMO3 PE=4 SV=1
+>tr|Q8MI48|Q8MI48_BOVIN Heat Shock Factor Protein 1 (Fragment) OS=Bos taurus GN=hsf1 PE=4 SV=1
+>tr|Q8MII9|Q8MII9_BOVIN Aminopeptidase (Fragment) OS=Bos taurus PE=2 SV=1
+>tr|Q8MK56|Q8MK56_BOVIN Alpha-2C adrenergic receptor (Fragment) OS=Bos taurus GN=adra2c PE=2 SV=1
+>tr|Q8MK57|Q8MK57_BOVIN Alpha-1B adrenergic receptor (Fragment) OS=Bos taurus GN=adra1b PE=2 SV=1
+>tr|Q8MKB7|Q8MKB7_BOVIN Na+/glucose cotransporter OS=Bos taurus GN=SGLT1 PE=2 SV=1
+>tr|Q8SQ28|Q8SQ28_BOVIN Serum amyloid A protein OS=Bos taurus GN=Saa3 PE=2 SV=1
+>tr|Q95394|Q95394_BOVIN MHC class I molecule OS=Bos taurus GN=D18.2 PE=2 SV=2
+>tr|Q957N0|Q957N0_BOVIN Cytochrome b (Fragment) OS=Bos taurus GN=cytb PE=4 SV=1
+>tr|Q95KV2|Q95KV2_BOVIN Fibroblast growth factor receptor 2 (Fragment) OS=Bos taurus GN=FGFR2 PE=2 SV=1
+>tr|Q95L03|Q95L03_BOVIN Leptin (Fragment) OS=Bos taurus PE=2 SV=1
+>tr|Q95M49|Q95M49_BOVIN Acetyl-CoA-carboxylase alpha (Fragment) OS=Bos taurus GN=acc1 PE=4 SV=1
+>tr|Q9BDG3|Q9BDG3_BOVIN Beta lactoglobulin D (Fragment) OS=Bos taurus GN=bLG D PE=4 SV=1
+>tr|Q9BDG4|Q9BDG4_BOVIN Beta lactoglobulin C (Fragment) OS=Bos taurus GN=bLG C PE=4 SV=1
+>tr|Q9BEG3|Q9BEG3_BOVIN 5-lipoxygenase (Fragment) OS=Bos taurus PE=2 SV=1
+>tr|Q9BEG4|Q9BEG4_BOVIN Putative alpha-2,3-sialyltransferase (Fragment) OS=Bos taurus GN=st3GalI PE=2 SV=1
+>tr|Q9G0Y0|Q9G0Y0_BOVIN Cytochrome b (Fragment) OS=Bos taurus GN=cytb PE=4 SV=1
+>tr|Q9GK49|Q9GK49_BOVIN Integrin beta (Fragment) OS=Bos taurus PE=2 SV=1
+>tr|Q9MZT5|Q9MZT5_BOVIN Serum amyloid A protein OS=Bos taurus GN=SAA3 PE=2 SV=1
+>tr|Q9TRB5|Q9TRB5_BOVIN Milk fat globule epidermal growth factor homolog (Fragment) OS=Bos taurus PE=1 SV=1
+>tr|Q9TRB9|Q9TRB9_BOVIN Enterotoxin-binding glycoprotein PP20K (Fragment) OS=Bos taurus PE=1 SV=1
+>tr|Q9TRC0|Q9TRC0_BOVIN Enterotoxin-binding glycoprotein PP16K (Fragment) OS=Bos taurus PE=1 SV=1
+>tr|Q9TS05|Q9TS05_BOVIN 49 kDa milk fat globule membrane protein (Fragment) OS=Bos taurus PE=4 SV=1
+>tr|Q9TS52|Q9TS52_BOVIN Adipocyte differentiation-related protein (Fragments) OS=Bos taurus PE=1 SV=1
+>tr|Q9TS73|Q9TS73_BOVIN Trypsin inhibitor (Fragments) OS=Bos taurus PE=1 SV=1
+>tr|Q9TS74|Q9TS74_BOVIN Pancreatic elastase inhibitor (Fragments) OS=Bos taurus PE=1 SV=1
+>tr|Q9TTU6|Q9TTU6_BOVIN Mucin (Fragment) OS=Bos taurus GN=Muc1 PE=2 SV=1
+>tr|Q9TUM5|Q9TUM5_BOVIN Hormone-sensitive lipase (Fragment) OS=Bos taurus GN=hsl PE=2 SV=1
+>sp|A0M8Q6|LAC7_HUMAN Ig lambda-7 chain C region OS=Homo sapiens GN=IGLC7 PE=1 SV=2
+>sp|A6NL28|TPM3L_HUMAN Putative tropomyosin alpha-3 chain-like protein OS=Homo sapiens PE=5 SV=2
+>sp|O00161|SNP23_HUMAN Synaptosomal-associated protein 23 OS=Homo sapiens GN=SNAP23 PE=1 SV=1
+>sp|O00178|GTPB1_HUMAN GTP-binding protein 1 OS=Homo sapiens GN=GTPBP1 PE=1 SV=3
+>sp|O00300|TR11B_HUMAN Tumor necrosis factor receptor superfamily member 11B OS=Homo sapiens GN=TNFRSF11B PE=1 SV=3
+>sp|O00391|QSOX1_HUMAN Sulfhydryl oxidase 1 OS=Homo sapiens GN=QSOX1 PE=1 SV=3
+>sp|O00458|IFRD1_HUMAN Interferon-related developmental regulator 1 OS=Homo sapiens GN=IFRD1 PE=1 SV=4
+>sp|O00560|SDCB1_HUMAN Syntenin-1 OS=Homo sapiens GN=SDCBP PE=1 SV=1
+>sp|O00592|PODXL_HUMAN Podocalyxin OS=Homo sapiens GN=PODXL PE=1 SV=2
+>sp|O14786|NRP1_HUMAN Neuropilin-1 OS=Homo sapiens GN=NRP1 PE=1 SV=3
+>sp|O14791|APOL1_HUMAN Apolipoprotein L1 OS=Homo sapiens GN=APOL1 PE=1 SV=5
+>sp|O15143|ARC1B_HUMAN Actin-related protein 2/3 complex subunit 1B OS=Homo sapiens GN=ARPC1B PE=1 SV=3
+>sp|O15263|DFB4A_HUMAN Beta-defensin 4A OS=Homo sapiens GN=DEFB4A PE=1 SV=1
+>sp|O43278|SPIT1_HUMAN Kunitz-type protease inhibitor 1 OS=Homo sapiens GN=SPINT1 PE=1 SV=2
+>sp|O43490|PROM1_HUMAN Prominin-1 OS=Homo sapiens GN=PROM1 PE=1 SV=1
+>sp|O43612|OREX_HUMAN Orexin OS=Homo sapiens GN=HCRT PE=1 SV=1
+>sp|O43707|ACTN4_HUMAN Alpha-actinin-4 OS=Homo sapiens GN=ACTN4 PE=1 SV=2
+>sp|O43852|CALU_HUMAN Calumenin OS=Homo sapiens GN=CALU PE=1 SV=2
+>sp|O43915|VEGFD_HUMAN Vascular endothelial growth factor D OS=Homo sapiens OX=9606 GN=VEGFD PE=1 SV=1
+>sp|O60543|CIDEA_HUMAN Cell death activator CIDE-A OS=Homo sapiens GN=CIDEA PE=1 SV=1
+>sp|O60664|PLIN3_HUMAN Perilipin-3 OS=Homo sapiens GN=PLIN3 PE=1 SV=3
+>sp|O75888|TNF13_HUMAN Tumor necrosis factor ligand superfamily member 13 OS=Homo sapiens GN=TNFSF13 PE=1 SV=1
+>sp|O76061|STC2_HUMAN Stanniocalcin-2 OS=Homo sapiens GN=STC2 PE=1 SV=1
+>sp|O95336|6PGL_HUMAN 6-phosphogluconolactonase OS=Homo sapiens GN=PGLS PE=1 SV=2
+>sp|O95760|IL33_HUMAN Interleukin-33 OS=Homo sapiens GN=IL33 PE=1 SV=1
+>sp|P00450|CERU_HUMAN Ceruloplasmin OS=Homo sapiens GN=CP PE=1 SV=1
+>sp|P00709|LALBA_HUMAN Alpha-lactalbumin OS=Homo sapiens GN=LALBA PE=1 SV=1
+>sp|P00738|HPT_HUMAN Haptoglobin OS=Homo sapiens GN=HP PE=1 SV=1
+>sp|P00746|CFAD_HUMAN Complement factor D OS=Homo sapiens GN=CFD PE=1 SV=5
+>sp|P00747|PLMN_HUMAN Plasminogen OS=Homo sapiens GN=PLG PE=1 SV=2
+>sp|P00749|UROK_HUMAN Urokinase-type plasminogen activator OS=Homo sapiens GN=PLAU PE=1 SV=2
+>sp|P00750|TPA_HUMAN Tissue-type plasminogen activator OS=Homo sapiens GN=PLAT PE=1 SV=1
+>sp|P00751|CFAB_HUMAN Complement factor B OS=Homo sapiens GN=CFB PE=1 SV=2
+>sp|P01008|ANT3_HUMAN Antithrombin-III OS=Homo sapiens GN=SERPINC1 PE=1 SV=1
+>sp|P01009|A1AT_HUMAN Alpha-1-antitrypsin OS=Homo sapiens GN=SERPINA1 PE=1 SV=3
+>sp|P01011|AACT_HUMAN Alpha-1-antichymotrypsin OS=Homo sapiens GN=SERPINA3 PE=1 SV=2
+>sp|P01023|A2MG_HUMAN Alpha-2-macroglobulin OS=Homo sapiens GN=A2M PE=1 SV=3
+>sp|P01024|CO3_HUMAN Complement C3 OS=Homo sapiens GN=C3 PE=1 SV=2
+>sp|P01031|CO5_HUMAN Complement C5 OS=Homo sapiens GN=C5 PE=1 SV=4
+>sp|P01034|CYTC_HUMAN Cystatin-C OS=Homo sapiens GN=CST3 PE=1 SV=1
+>sp|P01133|EGF_HUMAN Pro-epidermal growth factor OS=Homo sapiens GN=EGF PE=1 SV=2
+>sp|P01135|TGFA_HUMAN Protransforming growth factor alpha OS=Homo sapiens GN=TGFA PE=1 SV=1
+>sp|P01137|TGFB1_HUMAN Transforming growth factor beta-1 OS=Homo sapiens GN=TGFB1 PE=1 SV=2
+>sp|P01138|NGF_HUMAN Beta-nerve growth factor OS=Homo sapiens GN=NGF PE=1 SV=3
+>sp|P01148|GON1_HUMAN Progonadoliberin-1 OS=Homo sapiens GN=GNRH1 PE=1 SV=1
+>sp|P01160|ANF_HUMAN Natriuretic peptides A OS=Homo sapiens GN=NPPA PE=1 SV=1
+>sp|P01178|NEU1_HUMAN Oxytocin-neurophysin 1 OS=Homo sapiens GN=OXT PE=1 SV=1
+>sp|P01210|PENK_HUMAN Proenkephalin-A OS=Homo sapiens GN=PENK PE=1 SV=1
+>sp|P01215|GLHA_HUMAN Glycoprotein hormones alpha chain OS=Homo sapiens GN=CGA PE=1 SV=1
+>sp|P01222|TSHB_HUMAN Thyrotropin subunit beta OS=Homo sapiens GN=TSHB PE=1 SV=2
+>sp|P01225|FSHB_HUMAN Follitropin subunit beta OS=Homo sapiens GN=FSHB PE=1 SV=2
+>sp|P01236|PRL_HUMAN Prolactin OS=Homo sapiens GN=PRL PE=1 SV=1
+>sp|P01241|SOMA_HUMAN Somatotropin OS=Homo sapiens GN=GH1 PE=1 SV=2
+>sp|P01243|CSH_HUMAN Chorionic somatomammotropin hormone OS=Homo sapiens GN=CSH1 PE=1 SV=2
+>sp|P01258|CALC_HUMAN Calcitonin OS=Homo sapiens GN=CALCA PE=1 SV=2
+>sp|P01275|GLUC_HUMAN Glucagon OS=Homo sapiens GN=GCG PE=1 SV=3
+>sp|P01282|VIP_HUMAN VIP peptides OS=Homo sapiens GN=VIP PE=1 SV=1
+>sp|P01286|SLIB_HUMAN Somatoliberin OS=Homo sapiens GN=GHRH PE=1 SV=1
+>sp|P01298|PAHO_HUMAN Pancreatic prohormone OS=Homo sapiens GN=PPY PE=1 SV=1
+>sp|P01308|INS_HUMAN Insulin OS=Homo sapiens GN=INS PE=1 SV=1
+>sp|P01350|GAST_HUMAN Gastrin OS=Homo sapiens GN=GAST PE=1 SV=1
+>sp|P01375|TNFA_HUMAN Tumor necrosis factor OS=Homo sapiens GN=TNF PE=1 SV=1
+>sp|P01583|IL1A_HUMAN Interleukin-1 alpha OS=Homo sapiens GN=IL1A PE=1 SV=1
+>sp|P01584|IL1B_HUMAN Interleukin-1 beta OS=Homo sapiens GN=IL1B PE=1 SV=2
+>sp|P01591|IGJ_HUMAN Immunoglobulin J chain OS=Homo sapiens GN=IGJ PE=1 SV=4
+>sp|P01593|KV101_HUMAN Ig kappa chain V-I region AG OS=Homo sapiens PE=1 SV=1
+>sp|P01617|KV204_HUMAN Ig kappa chain V-II region TEW OS=Homo sapiens PE=1 SV=1
+>sp|P01620|KV302_HUMAN Ig kappa chain V-III region SIE OS=Homo sapiens PE=1 SV=1
+>sp|P01700|LV102_HUMAN Ig lambda chain V-I region HA OS=Homo sapiens PE=1 SV=1
+>sp|P01714|LV301_HUMAN Ig lambda chain V-III region SH OS=Homo sapiens PE=1 SV=1
+>sp|P01717|LV403_HUMAN Ig lambda chain V-IV region Hil OS=Homo sapiens PE=1 SV=1
+>sp|P01743|HV102_HUMAN Ig heavy chain V-I region HG3 OS=Homo sapiens PE=4 SV=1
+>sp|P01766|HV305_HUMAN Ig heavy chain V-III region BRO OS=Homo sapiens PE=1 SV=1
+>sp|P01833|PIGR_HUMAN Polymeric immunoglobulin receptor OS=Homo sapiens GN=PIGR PE=1 SV=4
+>sp|P01834|IGKC_HUMAN Ig kappa chain C region OS=Homo sapiens GN=IGKC PE=1 SV=1
+>sp|P01857|IGHG1_HUMAN Immunoglobulin heavy constant gamma 1 OS=Homo sapiens OX=9606 GN=IGHG1 PE=1 SV=1
+>sp|P01859|IGHG2_HUMAN Immunoglobulin heavy constant gamma 2 OS=Homo sapiens OX=9606 GN=IGHG2 PE=1 SV=2
+>sp|P01860|IGHG3_HUMAN Immunoglobulin heavy constant gamma 3 OS=Homo sapiens OX=9606 GN=IGHG3 PE=1 SV=2
+>sp|P01861|IGHG4_HUMAN Immunoglobulin heavy constant gamma 4 OS=Homo sapiens OX=9606 GN=IGHG4 PE=1 SV=1
+>sp|P01871|IGHM_HUMAN Ig mu chain C region OS=Homo sapiens GN=IGHM PE=1 SV=3
+>sp|P01876|IGHA1_HUMAN Immunoglobulin heavy constant alpha 1 OS=Homo sapiens OX=9606 GN=IGHA1 PE=1 SV=2
+>sp|P01877|IGHA2_HUMAN Immunoglobulin heavy constant alpha 2 OS=Homo sapiens OX=9606 GN=IGHA2 PE=1 SV=4
+>sp|P01880|IGHD_HUMAN Ig delta chain C region OS=Homo sapiens GN=IGHD PE=1 SV=2
+>sp|P01903|DRA_HUMAN HLA class II histocompatibility antigen, DR alpha chain OS=Homo sapiens GN=HLA-DRA PE=1 SV=1
+>sp|P01911|2B1F_HUMAN HLA class II histocompatibility antigen, DRB1-15 beta chain OS=Homo sapiens GN=HLA-DRB1 PE=1 SV=2
+>sp|P02647|APOA1_HUMAN Apolipoprotein A-I OS=Homo sapiens GN=APOA1 PE=1 SV=1
+>sp|P02649|APOE_HUMAN Apolipoprotein E OS=Homo sapiens GN=APOE PE=1 SV=1
+>sp|P02652|APOA2_HUMAN Apolipoprotein A-II OS=Homo sapiens GN=APOA2 PE=1 SV=1
+>sp|P02654|APOC1_HUMAN Apolipoprotein C-I OS=Homo sapiens GN=APOC1 PE=1 SV=1
+>sp|P02655|APOC2_HUMAN Apolipoprotein C-II OS=Homo sapiens GN=APOC2 PE=1 SV=1
+>sp|P02656|APOC3_HUMAN Apolipoprotein C-III OS=Homo sapiens GN=APOC3 PE=1 SV=1
+>sp|P02671|FIBA_HUMAN Fibrinogen alpha chain OS=Homo sapiens GN=FGA PE=1 SV=2
+>sp|P02675|FIBB_HUMAN Fibrinogen beta chain OS=Homo sapiens GN=FGB PE=1 SV=2
+>sp|P02679|FIBG_HUMAN Fibrinogen gamma chain OS=Homo sapiens GN=FGG PE=1 SV=3
+>sp|P02741|CRP_HUMAN C-reactive protein OS=Homo sapiens GN=CRP PE=1 SV=1
+>sp|P02748|CO9_HUMAN Complement component C9 OS=Homo sapiens GN=C9 PE=1 SV=2
+>sp|P02749|APOH_HUMAN Beta-2-glycoprotein 1 OS=Homo sapiens GN=APOH PE=1 SV=3
+>sp|P02750|A2GL_HUMAN Leucine-rich alpha-2-glycoprotein OS=Homo sapiens GN=LRG1 PE=1 SV=2
+>sp|P02751|FINC_HUMAN Fibronectin OS=Homo sapiens GN=FN1 PE=1 SV=4
+>sp|P02765|FETUA_HUMAN Alpha-2-HS-glycoprotein OS=Homo sapiens GN=AHSG PE=1 SV=1
+>sp|P02768|ALBU_HUMAN Serum albumin OS=Homo sapiens GN=ALB PE=1 SV=2
+>sp|P02774|VTDB_HUMAN Vitamin D-binding protein OS=Homo sapiens GN=GC PE=1 SV=1
+>sp|P02787|TRFE_HUMAN Serotransferrin OS=Homo sapiens GN=TF PE=1 SV=3
+>sp|P02788|TRFL_HUMAN Lactotransferrin OS=Homo sapiens GN=LTF PE=1 SV=6
+>sp|P02790|HEMO_HUMAN Hemopexin OS=Homo sapiens GN=HPX PE=1 SV=2
+>sp|P02794|FRIH_HUMAN Ferritin heavy chain OS=Homo sapiens GN=FTH1 PE=1 SV=2
+>sp|P04003|C4BPA_HUMAN C4b-binding protein alpha chain OS=Homo sapiens GN=C4BPA PE=1 SV=2
+>sp|P04004|VTNC_HUMAN Vitronectin OS=Homo sapiens GN=VTN PE=1 SV=1
+>sp|P04066|FUCO_HUMAN Tissue alpha-L-fucosidase OS=Homo sapiens GN=FUCA1 PE=1 SV=4
+>sp|P04075|ALDOA_HUMAN Fructose-bisphosphate aldolase A OS=Homo sapiens GN=ALDOA PE=1 SV=2
+>sp|P04080|CYTB_HUMAN Cystatin-B OS=Homo sapiens GN=CSTB PE=1 SV=2
+>sp|P04083|ANXA1_HUMAN Annexin A1 OS=Homo sapiens GN=ANXA1 PE=1 SV=2
+>sp|P04114|APOB_HUMAN Apolipoprotein B-100 OS=Homo sapiens GN=APOB PE=1 SV=2
+>sp|P04217|A1BG_HUMAN Alpha-1B-glycoprotein OS=Homo sapiens GN=A1BG PE=1 SV=4
+>sp|P04229|2B11_HUMAN HLA class II histocompatibility antigen, DRB1-1 beta chain OS=Homo sapiens GN=HLA-DRB1 PE=1 SV=2
+>sp|P04406|G3P_HUMAN Glyceraldehyde-3-phosphate dehydrogenase OS=Homo sapiens GN=GAPDH PE=1 SV=3
+>sp|P04745|AMY1_HUMAN Alpha-amylase 1 OS=Homo sapiens GN=AMY1A PE=1 SV=2
+>sp|P05019|IGF1_HUMAN Insulin-like growth factor I OS=Homo sapiens GN=IGF1 PE=1 SV=1
+>sp|P05067|A4_HUMAN Amyloid beta A4 protein OS=Homo sapiens GN=APP PE=1 SV=3
+>sp|P05090|APOD_HUMAN Apolipoprotein D OS=Homo sapiens GN=APOD PE=1 SV=1
+>sp|P05155|IC1_HUMAN Plasma protease C1 inhibitor OS=Homo sapiens GN=SERPING1 PE=1 SV=2
+>sp|P05156|CFAI_HUMAN Complement factor I OS=Homo sapiens GN=CFI PE=1 SV=2
+>sp|P05164|PERM_HUMAN Myeloperoxidase OS=Homo sapiens GN=MPO PE=1 SV=1
+>sp|P05231|IL6_HUMAN Interleukin-6 OS=Homo sapiens GN=IL6 PE=1 SV=1
+>sp|P05305|EDN1_HUMAN Endothelin-1 OS=Homo sapiens GN=EDN1 PE=1 SV=1
+>sp|P05413|FABPH_HUMAN Fatty acid-binding protein, heart OS=Homo sapiens GN=FABP3 PE=1 SV=4
+>sp|P05814|CASB_HUMAN Beta-casein OS=Homo sapiens GN=CSN2 PE=1 SV=4
+>sp|P06307|CCKN_HUMAN Cholecystokinin OS=Homo sapiens GN=CCK PE=1 SV=1
+>sp|P06312|KV401_HUMAN Ig kappa chain V-IV region (Fragment) OS=Homo sapiens GN=IGKV4-1 PE=4 SV=1
+>sp|P06396|GELS_HUMAN Gelsolin OS=Homo sapiens GN=GSN PE=1 SV=1
+>sp|P06681|CO2_HUMAN Complement C2 OS=Homo sapiens GN=C2 PE=1 SV=2
+>sp|P06727|APOA4_HUMAN Apolipoprotein A-IV OS=Homo sapiens GN=APOA4 PE=1 SV=3
+>sp|P06733|ENOA_HUMAN Alpha-enolase OS=Homo sapiens GN=ENO1 PE=1 SV=2
+>sp|P06858|LIPL_HUMAN Lipoprotein lipase OS=Homo sapiens GN=LPL PE=1 SV=1
+>sp|P07195|LDHB_HUMAN L-lactate dehydrogenase B chain OS=Homo sapiens GN=LDHB PE=1 SV=2
+>sp|P07237|PDIA1_HUMAN Protein disulfide-isomerase OS=Homo sapiens GN=P4HB PE=1 SV=3
+>sp|P07339|CATD_HUMAN Cathepsin D OS=Homo sapiens GN=CTSD PE=1 SV=1
+>sp|P07355|ANXA2_HUMAN Annexin A2 OS=Homo sapiens GN=ANXA2 PE=1 SV=2
+>sp|P07477|TRY1_HUMAN Trypsin-1 OS=Homo sapiens GN=PRSS1 PE=1 SV=1
+>sp|P07492|GRP_HUMAN Gastrin-releasing peptide OS=Homo sapiens GN=GRP PE=1 SV=2
+>sp|P07498|CASK_HUMAN Kappa-casein OS=Homo sapiens GN=CSN3 PE=1 SV=3
+>sp|P07602|SAP_HUMAN Proactivator polypeptide OS=Homo sapiens GN=PSAP PE=1 SV=2
+>sp|P07858|CATB_HUMAN Cathepsin B OS=Homo sapiens GN=CTSB PE=1 SV=3
+>sp|P07902|GALT_HUMAN Galactose-1-phosphate uridylyltransferase OS=Homo sapiens GN=GALT PE=1 SV=3
+>sp|P07996|TSP1_HUMAN Thrombospondin-1 OS=Homo sapiens GN=THBS1 PE=1 SV=2
+>sp|P08185|CBG_HUMAN Corticosteroid-binding globulin OS=Homo sapiens GN=SERPINA6 PE=1 SV=1
+>sp|P08195|4F2_HUMAN 4F2 cell-surface antigen heavy chain OS=Homo sapiens GN=SLC3A2 PE=1 SV=3
+>sp|P08493|MGP_HUMAN Matrix Gla protein OS=Homo sapiens GN=MGP PE=1 SV=2
+>sp|P08571|CD14_HUMAN Monocyte differentiation antigen CD14 OS=Homo sapiens GN=CD14 PE=1 SV=2
+>sp|P08697|A2AP_HUMAN Alpha-2-antiplasmin OS=Homo sapiens GN=SERPINF2 PE=1 SV=3
+>sp|P08758|ANXA5_HUMAN Annexin A5 OS=Homo sapiens GN=ANXA5 PE=1 SV=2
+>sp|P09467|F16P1_HUMAN Fructose-1,6-bisphosphatase 1 OS=Homo sapiens GN=FBP1 PE=1 SV=5
+>sp|P09668|CATH_HUMAN Pro-cathepsin H OS=Homo sapiens GN=CTSH PE=1 SV=4
+>sp|P09681|GIP_HUMAN Gastric inhibitory polypeptide OS=Homo sapiens GN=GIP PE=1 SV=1
+>sp|P09919|CSF3_HUMAN Granulocyte colony-stimulating factor OS=Homo sapiens GN=CSF3 PE=1 SV=1
+>sp|P09972|ALDOC_HUMAN Fructose-bisphosphate aldolase C OS=Homo sapiens GN=ALDOC PE=1 SV=2
+>sp|P0C0L4|CO4A_HUMAN Complement C4-A OS=Homo sapiens GN=C4A PE=1 SV=1
+>sp|P0C0L5|CO4B_HUMAN Complement C4-B OS=Homo sapiens GN=C4B PE=1 SV=1
+>sp|P0CG04|LAC1_HUMAN Ig lambda-1 chain C regions OS=Homo sapiens GN=IGLC1 PE=1 SV=1
+>sp|P0CG05|LAC2_HUMAN Ig lambda-2 chain C regions OS=Homo sapiens GN=IGLC2 PE=1 SV=1
+>sp|P0CG47|UBB_HUMAN Polyubiquitin-B OS=Homo sapiens GN=UBB PE=1 SV=1
+>sp|P0CG48|UBC_HUMAN Polyubiquitin-C OS=Homo sapiens GN=UBC PE=1 SV=2
+>sp|P10082|PYY_HUMAN Peptide YY OS=Homo sapiens GN=PYY PE=1 SV=3
+>sp|P10451|OSTP_HUMAN Osteopontin OS=Homo sapiens GN=SPP1 PE=1 SV=1
+>sp|P10600|TGFB3_HUMAN Transforming growth factor beta-3 OS=Homo sapiens GN=TGFB3 PE=1 SV=1
+>sp|P10909|CLUS_HUMAN Clusterin OS=Homo sapiens GN=CLU PE=1 SV=1
+>sp|P10997|IAPP_HUMAN Islet amyloid polypeptide OS=Homo sapiens GN=IAPP PE=1 SV=1
+>sp|P11021|GRP78_HUMAN 78 kDa glucose-regulated protein OS=Homo sapiens GN=HSPA5 PE=1 SV=2
+>sp|P11142|HSP7C_HUMAN  shock cognate 71 kDa protein OS=Homo sapiens GN=HSPA8 PE=1 SV=1
+>sp|P11586|C1TC_HUMAN C-1-tetrahydrofolate synthase, cytoplasmic OS=Homo sapiens GN=MTHFD1 PE=1 SV=3
+>sp|P11717|MPRI_HUMAN Cation-independent mannose-6-phosphate receptor OS=Homo sapiens GN=IGF2R PE=1 SV=3
+>sp|P12273|PIP_HUMAN Prolactin-inducible protein OS=Homo sapiens GN=PIP PE=1 SV=1
+>sp|P12821|ACE_HUMAN Angiotensin-converting enzyme OS=Homo sapiens GN=ACE PE=1 SV=1
+>sp|P12830|CADH1_HUMAN Cadherin-1 OS=Homo sapiens GN=CDH1 PE=1 SV=3
+>sp|P12872|MOTI_HUMAN Promotilin OS=Homo sapiens GN=MLN PE=1 SV=1
+>sp|P13232|IL7_HUMAN Interleukin-7 OS=Homo sapiens GN=IL7 PE=1 SV=1
+>sp|P13639|EF2_HUMAN Elongation factor 2 OS=Homo sapiens GN=EEF2 PE=1 SV=4
+>sp|P13688|CEAM1_HUMAN Carcinoembryonic antigen-related cell adhesion molecule 1 OS=Homo sapiens GN=CEACAM1 PE=1 SV=2
+>sp|P13796|PLSL_HUMAN Plastin-2 OS=Homo sapiens GN=LCP1 PE=1 SV=6
+>sp|P13987|CD59_HUMAN CD59 glycoprotein OS=Homo sapiens GN=CD59 PE=1 SV=1
+>sp|P14138|EDN3_HUMAN Endothelin-3 OS=Homo sapiens GN=EDN3 PE=1 SV=1
+>sp|P14174|MIF_HUMAN Macrophage migration inhibitory factor OS=Homo sapiens GN=MIF PE=1 SV=4
+>sp|P14207|FOLR2_HUMAN Folate receptor beta OS=Homo sapiens GN=FOLR2 PE=1 SV=4
+>sp|P14210|HGF_HUMAN Hepatocyte growth factor OS=Homo sapiens GN=HGF PE=1 SV=2
+>sp|P14550|AK1A1_HUMAN Alcohol dehydrogenase [NADP(+)] OS=Homo sapiens GN=AKR1A1 PE=1 SV=3
+>sp|P14618|KPYM_HUMAN Pyruvate kinase isozymes M1/M2 OS=Homo sapiens GN=PKM2 PE=1 SV=4
+>sp|P14625|ENPL_HUMAN Endoplasmin OS=Homo sapiens GN=HSP90B1 PE=1 SV=1
+>sp|P15144|AMPN_HUMAN Aminopeptidase N OS=Homo sapiens GN=ANPEP PE=1 SV=4
+>sp|P15291|B4GT1_HUMAN Beta-1,4-galactosyltransferase 1 OS=Homo sapiens GN=B4GALT1 PE=1 SV=5
+>sp|P15311|EZRI_HUMAN Ezrin OS=Homo sapiens GN=EZR PE=1 SV=4
+>sp|P15328|FOLR1_HUMAN Folate receptor alpha OS=Homo sapiens GN=FOLR1 PE=1 SV=3
+>sp|P15692|VEGFA_HUMAN Vascular endothelial growth factor A OS=Homo sapiens OX=9606 GN=VEGFA PE=1 SV=2
+>sp|P15941|MUC1_HUMAN Mucin-1 OS=Homo sapiens GN=MUC1 PE=1 SV=3
+>sp|P16671|CD36_HUMAN Platelet glycoprotein 4 OS=Homo sapiens GN=CD36 PE=1 SV=2
+>sp|P17900|SAP3_HUMAN Ganglioside GM2 activator OS=Homo sapiens GN=GM2A PE=1 SV=4
+>sp|P18065|IBP2_HUMAN Insulin-like growth factor-binding protein 2 OS=Homo sapiens GN=IGFBP2 PE=1 SV=2
+>sp|P19440|GGT1_HUMAN Gamma-glutamyltranspeptidase 1 OS=Homo sapiens GN=GGT1 PE=1 SV=2
+>sp|P19823|ITIH2_HUMAN Inter-alpha-trypsin inhibitor heavy chain H2 OS=Homo sapiens GN=ITIH2 PE=1 SV=2
+>sp|P19835|CEL_HUMAN Bile salt-activated lipase OS=Homo sapiens GN=CEL PE=1 SV=3
+>sp|P20061|TCO1_HUMAN Transcobalamin-1 OS=Homo sapiens GN=TCN1 PE=1 SV=2
+>sp|P20396|TRH_HUMAN Prothyroliberin OS=Homo sapiens GN=TRH PE=1 SV=1
+>sp|P20618|PSB1_HUMAN Proteasome subunit beta type-1 OS=Homo sapiens GN=PSMB1 PE=1 SV=2
+>sp|P20783|NTF3_HUMAN Neurotrophin-3 OS=Homo sapiens GN=NTF3 PE=1 SV=1
+>sp|P20800|EDN2_HUMAN Endothelin-2 OS=Homo sapiens GN=EDN2 PE=1 SV=2
+>sp|P21399|ACOC_HUMAN Cytoplasmic aconitate hydratase OS=Homo sapiens GN=ACO1 PE=1 SV=3
+>sp|P21741|MK_HUMAN Midkine OS=Homo sapiens GN=MDK PE=1 SV=1
+>sp|P21926|CD9_HUMAN CD9 antigen OS=Homo sapiens GN=CD9 PE=1 SV=4
+>sp|P22079|PERL_HUMAN Lactoperoxidase OS=Homo sapiens GN=LPO PE=1 SV=2
+>sp|P22301|IL10_HUMAN Interleukin-10 OS=Homo sapiens GN=IL10 PE=1 SV=1
+>sp|P22897|MRC1_HUMAN Macrophage mannose receptor 1 OS=Homo sapiens GN=MRC1 PE=1 SV=1
+>sp|P23280|CAH6_HUMAN Carbonic anhydrase 6 OS=Homo sapiens GN=CA6 PE=1 SV=3
+>sp|P23528|COF1_HUMAN Cofilin-1 OS=Homo sapiens GN=CFL1 PE=1 SV=3
+>sp|P23560|BDNF_HUMAN Brain-derived neurotrophic factor OS=Homo sapiens GN=BDNF PE=1 SV=1
+>sp|P24158|PRTN3_HUMAN Myeloblastin OS=Homo sapiens GN=PRTN3 PE=1 SV=3
+>sp|P24821|TENA_HUMAN Tenascin OS=Homo sapiens GN=TNC PE=1 SV=3
+>sp|P25311|ZA2G_HUMAN Zinc-alpha-2-glycoprotein OS=Homo sapiens GN=AZGP1 PE=1 SV=2
+>sp|P25774|CATS_HUMAN Cathepsin S OS=Homo sapiens GN=CTSS PE=1 SV=3
+>sp|P27105|STOM_HUMAN Erythrocyte band 7 integral membrane protein OS=Homo sapiens GN=STOM PE=1 SV=3
+>sp|P27797|CALR_HUMAN Calreticulin OS=Homo sapiens GN=CALR PE=1 SV=1
+>sp|P28066|PSA5_HUMAN Proteasome subunit alpha type-5 OS=Homo sapiens GN=PSMA5 PE=1 SV=3
+>sp|P28799|GRN_HUMAN Granulins OS=Homo sapiens GN=GRN PE=1 SV=2
+>sp|P29373|RABP2_HUMAN Cellular retinoic acid-binding protein 2 OS=Homo sapiens GN=CRABP2 PE=1 SV=2
+>sp|P29622|KAIN_HUMAN Kallistatin OS=Homo sapiens GN=SERPINA4 PE=1 SV=3
+>sp|P29762|RABP1_HUMAN Cellular retinoic acid-binding protein 1 OS=Homo sapiens GN=CRABP1 PE=1 SV=2
+>sp|P30041|PRDX6_HUMAN Peroxiredoxin-6 OS=Homo sapiens GN=PRDX6 PE=1 SV=3
+>sp|P30043|BLVRB_HUMAN Flavin reductase (NADPH) OS=Homo sapiens GN=BLVRB PE=1 SV=3
+>sp|P30086|PEBP1_HUMAN Phosphatidylethanolamine-binding protein 1 OS=Homo sapiens GN=PEBP1 PE=1 SV=3
+>sp|P30511|HLAF_HUMAN HLA class I histocompatibility antigen, alpha chain F OS=Homo sapiens GN=HLA-F PE=2 SV=3
+>sp|P30740|ILEU_HUMAN Leukocyte elastase inhibitor OS=Homo sapiens GN=SERPINB1 PE=1 SV=1
+>sp|P30990|NEUT_HUMAN Neurotensin/neuromedin N OS=Homo sapiens GN=NTS PE=1 SV=2
+>sp|P33908|MA1A1_HUMAN Mannosyl-oligosaccharide 1,2-alpha-mannosidase IA OS=Homo sapiens GN=MAN1A1 PE=1 SV=3
+>sp|P35225|IL13_HUMAN Interleukin-13 OS=Homo sapiens GN=IL13 PE=1 SV=2
+>sp|P35579|MYH9_HUMAN Myosin-9 OS=Homo sapiens GN=MYH9 PE=1 SV=4
+>sp|P36222|CH3L1_HUMAN Chitinase-3-like protein 1 OS=Homo sapiens GN=CHI3L1 PE=1 SV=2
+>sp|P36269|GGT5_HUMAN Gamma-glutamyltransferase 5 OS=Homo sapiens GN=GGT5 PE=1 SV=2
+>sp|P36871|PGM1_HUMAN Phosphoglucomutase-1 OS=Homo sapiens GN=PGM1 PE=1 SV=3
+>sp|P36969|GPX4_HUMAN Phospholipid hydroperoxide glutathione peroxidase, mitochondrial OS=Homo sapiens GN=GPX4 PE=1 SV=3
+>sp|P38919|IF4A3_HUMAN Eukaryotic initiation factor 4A-III OS=Homo sapiens GN=EIF4A3 PE=1 SV=4
+>sp|P40933|IL15_HUMAN Interleukin-15 OS=Homo sapiens GN=IL15 PE=1 SV=1
+>sp|P41159|LEP_HUMAN Leptin OS=Homo sapiens GN=LEP PE=1 SV=1
+>sp|P43251|BTD_HUMAN Biotinidase OS=Homo sapiens GN=BTD PE=1 SV=2
+>sp|P43490|NAMPT_HUMAN Nicotinamide phosphoribosyltransferase OS=Homo sapiens GN=NAMPT PE=1 SV=1
+>sp|P47710-3|CASA1_HUMAN Isoform 3 of Alpha-S1-casein OS=Homo sapiens GN=CSN1S1
+>sp|P47710|CASA1_HUMAN Alpha-S1-casein OS=Homo sapiens GN=CSN1S1 PE=1 SV=1
+>sp|P47989|XDH_HUMAN Xanthine dehydrogenase/oxidase OS=Homo sapiens GN=XDH PE=1 SV=4
+>sp|P48546|GIPR_HUMAN Gastric inhibitory polypeptide receptor OS=Homo sapiens GN=GIPR PE=1 SV=1
+>sp|P49189|AL9A1_HUMAN 4-trimethylaminobutyraldehyde dehydrogenase OS=Homo sapiens GN=ALDH9A1 PE=1 SV=3
+>sp|P49327|FAS_HUMAN Fatty acid synthase OS=Homo sapiens GN=FASN PE=1 SV=3
+>sp|P49721|PSB2_HUMAN Proteasome subunit beta type-2 OS=Homo sapiens GN=PSMB2 PE=1 SV=1
+>sp|P49765|VEGFB_HUMAN Vascular endothelial growth factor B OS=Homo sapiens OX=9606 GN=VEGFB PE=1 SV=2
+>sp|P49767|VEGFC_HUMAN Vascular endothelial growth factor C OS=Homo sapiens OX=9606 GN=VEGFC PE=1 SV=1
+>sp|P49913|CAMP_HUMAN Cathelicidin antimicrobial peptide OS=Homo sapiens GN=CAMP PE=1 SV=1
+>sp|P50135|HNMT_HUMAN Histamine N-methyltransferase OS=Homo sapiens GN=HNMT PE=1 SV=1
+>sp|P51993|FUT6_HUMAN Alpha-(1,3)-fucosyltransferase OS=Homo sapiens GN=FUT6 PE=1 SV=1
+>sp|P52209|6PGD_HUMAN 6-phosphogluconate dehydrogenase, decarboxylating OS=Homo sapiens GN=PGD PE=1 SV=3
+>sp|P53420|CO4A4_HUMAN Collagen alpha-4(IV) chain OS=Homo sapiens GN=COL4A4 PE=1 SV=3
+>sp|P53634|CATC_HUMAN Dipeptidyl peptidase 1 OS=Homo sapiens GN=CTSC PE=1 SV=2
+>sp|P55056|APOC4_HUMAN Apolipoprotein C-IV OS=Homo sapiens GN=APOC4 PE=1 SV=1
+>sp|P59665|DEF1_HUMAN Neutrophil defensin 1 OS=Homo sapiens GN=DEFA1 PE=1 SV=1
+>sp|P60022|DEFB1_HUMAN Beta-defensin 1 OS=Homo sapiens GN=DEFB1 PE=1 SV=1
+>sp|P60033|CD81_HUMAN CD81 antigen OS=Homo sapiens GN=CD81 PE=1 SV=1
+>sp|P60174|TPIS_HUMAN Triosephosphate isomerase OS=Homo sapiens GN=TPI1 PE=1 SV=3
+>sp|P60568|IL2_HUMAN Interleukin-2 OS=Homo sapiens GN=IL2 PE=1 SV=1
+>sp|P60709|ACTB_HUMAN Actin, cytoplasmic 1 OS=Homo sapiens GN=ACTB PE=1 SV=1
+>sp|P60953|CDC42_HUMAN Cell division control protein 42 homolog OS=Homo sapiens GN=CDC42 PE=1 SV=2
+>sp|P61278|SMS_HUMAN Somatostatin OS=Homo sapiens GN=SST PE=1 SV=1
+>sp|P61586|RHOA_HUMAN Transforming protein RhoA OS=Homo sapiens GN=RHOA PE=1 SV=1
+>sp|P61626|LYSC_HUMAN Lysozyme C OS=Homo sapiens GN=LYZ PE=1 SV=1
+>sp|P61769|B2MG_HUMAN Beta-2-microglobulin OS=Homo sapiens GN=B2M PE=1 SV=1
+>sp|P61812|TGFB2_HUMAN Transforming growth factor beta-2 proprotein OS=Homo sapiens OX=9606 GN=TGFB2 PE=1 SV=1
+>sp|P62158|CALM_HUMAN Calmodulin OS=Homo sapiens GN=CALM1 PE=1 SV=2
+>sp|P62258|1433E_HUMAN 14-3-3 protein epsilon OS=Homo sapiens GN=YWHAE PE=1 SV=1
+>sp|P62269|RS18_HUMAN 40S ribosomal protein S18 OS=Homo sapiens GN=RPS18 PE=1 SV=3
+>sp|P62495|ERF1_HUMAN Eukaryotic peptide chain release factor subunit 1 OS=Homo sapiens GN=ETF1 PE=1 SV=3
+>sp|P62937|PPIA_HUMAN Peptidyl-prolyl cis-trans isomerase A OS=Homo sapiens GN=PPIA PE=1 SV=2
+>sp|P62979|RS27A_HUMAN Ubiquitin-40S ribosomal protein S27a OS=Homo sapiens GN=RPS27A PE=1 SV=2
+>sp|P62987|RL40_HUMAN Ubiquitin-60S ribosomal protein L40 OS=Homo sapiens GN=UBA52 PE=1 SV=2
+>sp|P63104|1433Z_HUMAN 14-3-3 protein zeta/delta OS=Homo sapiens GN=YWHAZ PE=1 SV=1
+>sp|P68104|EF1A1_HUMAN Elongation factor 1-alpha 1 OS=Homo sapiens GN=EEF1A1 PE=1 SV=1
+>sp|P68133|ACTS_HUMAN Actin, alpha skeletal muscle OS=Homo sapiens GN=ACTA1 PE=1 SV=1
+>sp|P78417|GSTO1_HUMAN Glutathione S-transferase omega-1 OS=Homo sapiens GN=GSTO1 PE=1 SV=2
+>sp|P80188|NGAL_HUMAN Neutrophil gelatinase-associated lipocalin OS=Homo sapiens GN=LCN2 PE=1 SV=2
+>sp|P80303|NUCB2_HUMAN Nucleobindin-2 OS=Homo sapiens GN=NUCB2 PE=1 SV=2
+>sp|P80748|LV302_HUMAN Ig lambda chain V-III region LOI OS=Homo sapiens PE=1 SV=1
+>sp|Q01459|DIAC_HUMAN Di-N-acetylchitobiase OS=Homo sapiens GN=CTBS PE=1 SV=1
+>sp|Q02818|NUCB1_HUMAN Nucleobindin-1 OS=Homo sapiens GN=NUCB1 PE=1 SV=4
+>sp|Q03431|PTH1R_HUMAN Parathyroid hormone/parathyroid hormone-related peptide receptor OS=Homo sapiens GN=PTH1R PE=1 SV=1
+>sp|Q04828|AK1C1_HUMAN Aldo-keto reductase family 1 member C1 OS=Homo sapiens GN=AKR1C1 PE=1 SV=1
+>sp|Q08257|QOR_HUMAN Quinone oxidoreductase OS=Homo sapiens GN=CRYZ PE=1 SV=1
+>sp|Q08380|LG3BP_HUMAN Galectin-3-binding protein OS=Homo sapiens GN=LGALS3BP PE=1 SV=1
+>sp|Q08431|MFGM_HUMAN Lactadherin OS=Homo sapiens GN=MFGE8 PE=1 SV=2
+>sp|Q10589|BST2_HUMAN Bone marrow stromal antigen 2 OS=Homo sapiens GN=BST2 PE=1 SV=1
+>sp|Q12805|FBLN3_HUMAN EGF-containing fibulin-like extracellular matrix protein 1 OS=Homo sapiens GN=EFEMP1 PE=1 SV=2
+>sp|Q12841|FSTL1_HUMAN Follistatin-related protein 1 OS=Homo sapiens GN=FSTL1 PE=1 SV=1
+>sp|Q13228|SBP1_HUMAN Selenium-binding protein 1 OS=Homo sapiens GN=SELENBP1 PE=1 SV=2
+>sp|Q13261|I15RA_HUMAN Interleukin-15 receptor subunit alpha OS=Homo sapiens GN=IL15RA PE=1 SV=1
+>sp|Q13410|BT1A1_HUMAN Butyrophilin subfamily 1 member A1 OS=Homo sapiens GN=BTN1A1 PE=1 SV=3
+>sp|Q14005|IL16_HUMAN Pro-interleukin-16 OS=Homo sapiens GN=IL16 PE=1 SV=4
+>sp|Q14195|DPYL3_HUMAN Dihydropyrimidinase-related protein 3 OS=Homo sapiens GN=DPYSL3 PE=1 SV=1
+>sp|Q14406|CSHL_HUMAN Chorionic somatomammotropin hormone-like 1 OS=Homo sapiens GN=CSHL1 PE=1 SV=2
+>sp|Q14512|FGFP1_HUMAN Fibroblast growth factor-binding protein 1 OS=Homo sapiens GN=FGFBP1 PE=1 SV=1
+>sp|Q14624|ITIH4_HUMAN Inter-alpha-trypsin inhibitor heavy chain H4 OS=Homo sapiens GN=ITIH4 PE=1 SV=4
+>sp|Q14697|GANAB_HUMAN Neutral alpha-glucosidase AB OS=Homo sapiens GN=GANAB PE=1 SV=3
+>sp|Q14914|PTGR1_HUMAN Prostaglandin reductase 1 OS=Homo sapiens GN=PTGR1 PE=1 SV=2
+>sp|Q15738|NSDHL_HUMAN Sterol-4-alpha-carboxylate 3-dehydrogenase, decarboxylating OS=Homo sapiens GN=NSDHL PE=1 SV=2
+>sp|Q15848|ADIPO_HUMAN Adiponectin OS=Homo sapiens GN=ADIPOQ PE=1 SV=1
+>sp|Q16543|CDC37_HUMAN Hsp90 co-chaperone Cdc37 OS=Homo sapiens GN=CDC37 PE=1 SV=1
+>sp|Q16651|PRSS8_HUMAN Prostasin OS=Homo sapiens GN=PRSS8 PE=1 SV=1
+>sp|Q16851|UGPA_HUMAN UTP--glucose-1-phosphate uridylyltransferase OS=Homo sapiens GN=UGP2 PE=1 SV=5
+>sp|Q16880|CGT_HUMAN 2-hydroxyacylsphingosine 1-beta-galactosyltransferase OS=Homo sapiens GN=UGT8 PE=2 SV=2
+>sp|Q17RW2|COOA1_HUMAN Collagen alpha-1(XXIV) chain OS=Homo sapiens GN=COL24A1 PE=2 SV=2
+>sp|Q30154|DRB5_HUMAN HLA class II histocompatibility antigen, DR beta 5 chain OS=Homo sapiens GN=HLA-DRB5 PE=1 SV=1
+>sp|Q562R1|ACTBL_HUMAN Beta-actin-like protein 2 OS=Homo sapiens GN=ACTBL2 PE=1 SV=2
+>sp|Q6EBC2|IL31_HUMAN Interleukin-31 OS=Homo sapiens GN=IL31 PE=1 SV=1
+>sp|Q6P531|GGT6_HUMAN Gamma-glutamyltransferase 6 OS=Homo sapiens GN=GGT6 PE=2 SV=2
+>sp|Q6PCB0|VWA1_HUMAN von Willebrand factor A domain-containing protein 1 OS=Homo sapiens GN=VWA1 PE=2 SV=1
+>sp|Q6WN34|CRDL2_HUMAN Chordin-like protein 2 OS=Homo sapiens GN=CHRDL2 PE=1 SV=1
+>sp|Q6ZMJ4|IL34_HUMAN Interleukin-34 OS=Homo sapiens GN=IL34 PE=1 SV=1
+>sp|Q7Z4W1|DCXR_HUMAN L-xylulose reductase OS=Homo sapiens GN=DCXR PE=1 SV=2
+>sp|Q8N104|D106A_HUMAN Beta-defensin 106 OS=Homo sapiens GN=DEFB106A PE=2 SV=1
+>sp|Q8NFL0|B3GN7_HUMAN UDP-GlcNAc:betaGal beta-1,3-N-acetylglucosaminyltransferase 7 OS=Homo sapiens GN=B3GNT7 PE=2 SV=1
+>sp|Q8NG35|D105A_HUMAN Beta-defensin 105 OS=Homo sapiens GN=DEFB105A PE=2 SV=1
+>sp|Q8NHM4|TRY6_HUMAN Putative trypsin-6 OS=Homo sapiens GN=TRY6 PE=5 SV=1
+>sp|Q8TAA3|PSA7L_HUMAN Proteasome subunit alpha type-7-like OS=Homo sapiens GN=PSMA8 PE=1 SV=3
+>sp|Q8TAD2|IL17D_HUMAN Interleukin-17D OS=Homo sapiens GN=IL17D PE=2 SV=1
+>sp|Q8TB96|TIP_HUMAN T-cell immunomodulatory protein OS=Homo sapiens GN=ITFG1 PE=1 SV=1
+>sp|Q8WTS1|ABHD5_HUMAN 1-acylglycerol-3-phosphate O-acyltransferase ABHD5 OS=Homo sapiens GN=ABHD5 PE=1 SV=1
+>sp|Q8WUM4|PDC6I_HUMAN Programmed cell death 6-interacting protein OS=Homo sapiens GN=PDCD6IP PE=1 SV=1
+>sp|Q8WWZ1|IL1FA_HUMAN Interleukin-1 family member 10 OS=Homo sapiens GN=IL1F10 PE=1 SV=1
+>sp|Q8WZA9|IRGQ_HUMAN Immunity-related GTPase family Q protein OS=Homo sapiens GN=IRGQ PE=1 SV=1
+>sp|Q92734|TFG_HUMAN Protein TFG OS=Homo sapiens GN=TFG PE=1 SV=2
+>sp|Q93097|WNT2B_HUMAN Protein Wnt-2b OS=Homo sapiens GN=WNT2B PE=1 SV=2
+>sp|Q96KP4|CNDP2_HUMAN Cytosolic non-specific dipeptidase OS=Homo sapiens GN=CNDP2 PE=1 SV=2
+>sp|Q96LJ7|DHRS1_HUMAN Dehydrogenase/reductase SDR family member 1 OS=Homo sapiens GN=DHRS1 PE=1 SV=1
+>sp|Q96PD4|IL17F_HUMAN Interleukin-17F OS=Homo sapiens GN=IL17F PE=1 SV=3
+>sp|Q96QR1|SG3A1_HUMAN Secretoglobin family 3A member 1 OS=Homo sapiens GN=SCGB3A1 PE=1 SV=2
+>sp|Q96S86|HPLN3_HUMAN Hyaluronan and proteoglycan link protein 3 OS=Homo sapiens GN=HAPLN3 PE=2 SV=1
+>sp|Q99102|MUC4_HUMAN Mucin-4 OS=Homo sapiens GN=MUC4 PE=1 SV=4
+>sp|Q99463|NPY6R_HUMAN Putative neuropeptide Y receptor type 6 OS=Homo sapiens GN=NPY6R PE=5 SV=1
+>sp|Q99536|VAT1_HUMAN Synaptic vesicle membrane protein VAT-1 homolog OS=Homo sapiens GN=VAT1 PE=1 SV=2
+>sp|Q99541|PLIN2_HUMAN Perilipin-2 OS=Homo sapiens GN=PLIN2 PE=1 SV=2
+>sp|Q99941|ATF6B_HUMAN Cyclic AMP-dependent transcription factor ATF-6 beta OS=Homo sapiens GN=ATF6B PE=1 SV=2
+>sp|Q9BQE5|APOL2_HUMAN Apolipoprotein L2 OS=Homo sapiens GN=APOL2 PE=1 SV=1
+>sp|Q9BRK5|CAB45_HUMAN 45 kDa calcium-binding protein OS=Homo sapiens GN=SDF4 PE=1 SV=1
+>sp|Q9BVA6|FICD_HUMAN Adenosine monophosphate-protein transferase FICD OS=Homo sapiens GN=FICD PE=1 SV=2
+>sp|Q9BWW8|APOL6_HUMAN Apolipoprotein L6 OS=Homo sapiens GN=APOL6 PE=1 SV=1
+>sp|Q9BXJ1|C1QT1_HUMAN Complement C1q tumor necrosis factor-related protein 1 OS=Homo sapiens GN=C1QTNF1 PE=1 SV=1
+>sp|Q9BY76|ANGL4_HUMAN Angiopoietin-related protein 4 OS=Homo sapiens GN=ANGPTL4 PE=1 SV=2
+>sp|Q9BYF1|ACE2_HUMAN Angiotensin-converting enzyme 2 OS=Homo sapiens GN=ACE2 PE=1 SV=2
+>sp|Q9H293|IL25_HUMAN Interleukin-25 OS=Homo sapiens GN=IL25 PE=1 SV=1
+>sp|Q9H772|GREM2_HUMAN Gremlin-2 OS=Homo sapiens GN=GREM2 PE=1 SV=1
+>sp|Q9HAT2|SIAE_HUMAN Sialate O-acetylesterase OS=Homo sapiens GN=SIAE PE=1 SV=1
+>sp|Q9HB40|RISC_HUMAN Retinoid-inducible serine carboxypeptidase OS=Homo sapiens GN=SCPEP1 PE=1 SV=1
+>sp|Q9HBE4|IL21_HUMAN Interleukin-21 OS=Homo sapiens GN=IL21 PE=1 SV=2
+>sp|Q9HC38|GLOD4_HUMAN Glyoxalase domain-containing protein 4 OS=Homo sapiens GN=GLOD4 PE=1 SV=1
+>sp|Q9HC84|MUC5B_HUMAN Mucin-5B OS=Homo sapiens GN=MUC5B PE=1 SV=3
+>sp|Q9HCU9|BRMS1_HUMAN Breast cancer metastasis-suppressor 1 OS=Homo sapiens GN=BRMS1 PE=1 SV=1
+>sp|Q9NPF7|IL23A_HUMAN Interleukin-23 subunit alpha OS=Homo sapiens GN=IL23A PE=1 SV=1
+>sp|Q9NR45|SIAS_HUMAN Sialic acid synthase OS=Homo sapiens GN=NANS PE=1 SV=2
+>sp|Q9NRI7|PPY2_HUMAN Putative pancreatic polypeptide 2 OS=Homo sapiens GN=PPY2 PE=5 SV=1
+>sp|Q9NRV9|HEBP1_HUMAN Heme-binding protein 1 OS=Homo sapiens GN=HEBP1 PE=1 SV=1
+>sp|Q9NZ08|ERAP1_HUMAN Endoplasmic reticulum aminopeptidase 1 OS=Homo sapiens GN=ERAP1 PE=1 SV=3
+>sp|Q9NZ20|PA2G3_HUMAN Group 3 secretory phospholipase A2 OS=Homo sapiens GN=PLA2G3 PE=1 SV=2
+>sp|Q9NZ56|FMN2_HUMAN Formin-2 OS=Homo sapiens GN=FMN2 PE=1 SV=4
+>sp|Q9NZH6|IL37_HUMAN Interleukin-37 OS=Homo sapiens GN=IL37 PE=1 SV=1
+>sp|Q9NZH7|IL36B_HUMAN Interleukin-36 beta OS=Homo sapiens GN=IL36B PE=2 SV=1
+>sp|Q9NZH8|IL36G_HUMAN Interleukin-36 gamma OS=Homo sapiens GN=IL36G PE=1 SV=1
+>sp|Q9NZP8|C1RL_HUMAN Complement C1r subcomponent-like protein OS=Homo sapiens GN=C1RL PE=1 SV=2
+>sp|Q9NZT1|CALL5_HUMAN Calmodulin-like protein 5 OS=Homo sapiens GN=CALML5 PE=1 SV=2
+>sp|Q9NZV1|CRIM1_HUMAN Cysteine-rich motor neuron 1 protein OS=Homo sapiens GN=CRIM1 PE=1 SV=1
+>sp|Q9UBU3|GHRL_HUMAN Appetite-regulating hormone OS=Homo sapiens GN=GHRL PE=1 SV=1
+>sp|Q9UHA7|IL36A_HUMAN Interleukin-36 alpha OS=Homo sapiens GN=IL36A PE=1 SV=1
+>sp|Q9UHF5|IL17B_HUMAN Interleukin-17B OS=Homo sapiens GN=IL17B PE=2 SV=1
+>sp|Q9UJ14|GGT7_HUMAN Gamma-glutamyltransferase 7 OS=Homo sapiens GN=GGT7 PE=1 SV=2
+>sp|Q9UJ70|NAGK_HUMAN N-acetyl-D-glucosamine kinase OS=Homo sapiens GN=NAGK PE=1 SV=4
+>sp|Q9UJJ9|GNPTG_HUMAN N-acetylglucosamine-1-phosphotransferase subunit gamma OS=Homo sapiens GN=GNPTG PE=1 SV=1
+>sp|Q9UNQ0|ABCG2_HUMAN ATP-binding cassette sub-family G member 2 OS=Homo sapiens GN=ABCG2 PE=1 SV=3
+>sp|Q9UQ80|PA2G4_HUMAN Proliferation-associated protein 2G4 OS=Homo sapiens GN=PA2G4 PE=1 SV=3
+>sp|Q9Y240|CLC11_HUMAN C-type lectin domain family 11 member A OS=Homo sapiens GN=CLEC11A PE=1 SV=1
+>sp|Q9Y2A9|B3GN3_HUMAN UDP-GlcNAc:betaGal beta-1,3-N-acetylglucosaminyltransferase 3 OS=Homo sapiens GN=B3GNT3 PE=1 SV=2
+>sp|Q9Y697|NFS1_HUMAN Cysteine desulfurase, mitochondrial OS=Homo sapiens GN=NFS1 PE=1 SV=3
+>sp|Q9Y6B6|SAR1B_HUMAN GTP-binding protein SAR1b OS=Homo sapiens GN=SAR1B PE=1 SV=1
+>sp|O62823|CASA1_BUBBU Alpha-S1-casein OS=Bubalus bubalis OX=89462 GN=CSN1S1 PE=2 SV=2
+>sp|O77698|TRFL_BUBBU Lactotransferrin OS=Bubalus bubalis OX=89462 GN=LTF PE=1 SV=1
+>sp|O97943|CASA1_CAMDR Alpha-S1-casein OS=Camelus dromedarius OX=9838 GN=CSN1S1 PE=1 SV=2
+>sp|P00710|LALBA_CAMDR Alpha-lactalbumin OS=Camelus dromedarius OX=9838 GN=LALBA PE=1 SV=1
+>sp|P00711|LALBA_BOVIN Alpha-lactalbumin OS=Bos taurus GN=LALBA PE=1 SV=2
+>sp|P01966|HBA_BOVIN Hemoglobin subunit alpha OS=Bos taurus GN=HBA PE=1 SV=2
+>sp|P02662|CASA1_BOVIN Alpha-S1-casein OS=Bos taurus GN=CSN1S1 PE=1 SV=2
+>sp|P02662|CASA1_BOVIN Alpha-S1-casein OS=Bos taurus GN=CSN1S1 PE=1 SV=2 GV=A
+>sp|P02662|CASA1_BOVIN Alpha-S1-casein OS=Bos taurus GN=CSN1S1 PE=1 SV=2 GV=B
+>sp|P02662|CASA1_BOVIN Alpha-S1-casein OS=Bos taurus GN=CSN1S1 PE=1 SV=2 GV=C
+>sp|P02662|CASA1_BOVIN Alpha-S1-casein OS=Bos taurus GN=CSN1S1 PE=1 SV=2 GV=D
+>sp|P02662|CASA1_BOVIN Alpha-S1-casein OS=Bos taurus GN=CSN1S1 PE=1 SV=2 GV=G
+>sp|P02662|CASA1_BOVIN Alpha-S1-casein OS=Bos taurus GN=CSN1S1 PE=1 SV=2 GV=I
+>sp|P02663|CASA2_BOVIN Alpha-S2-casein OS=Bos taurus GN=CSN1S2 PE=1 SV=2
+>sp|P02663|CASA2_BOVIN Alpha-S2-casein OS=Bos taurus GN=CSN1S2 PE=1 SV=2 GV=A
+>sp|P02663|CASA2_BOVIN Alpha-S2-casein OS=Bos taurus GN=CSN1S2 PE=1 SV=2 GV=B
+>sp|P02663|CASA2_BOVIN Alpha-S2-casein OS=Bos taurus GN=CSN1S2 PE=1 SV=2 GV=D
+>sp|P02666|CASB_BOVIN Beta-casein OS=Bos taurus GN=CSN2 PE=1 SV=2
+>sp|P02666|CASB_BOVIN Beta-casein OS=Bos taurus GN=CSN2 PE=1 SV=2 GV=A1
+>sp|P02666|CASB_BOVIN Beta-casein OS=Bos taurus GN=CSN2 PE=1 SV=2 GV=A2
+>sp|P02666|CASB_BOVIN Beta-casein OS=Bos taurus GN=CSN2 PE=1 SV=2 GV=A3
+>sp|P02666|CASB_BOVIN Beta-casein OS=Bos taurus GN=CSN2 PE=1 SV=2 GV=B
+>sp|P02666|CASB_BOVIN Beta-casein OS=Bos taurus GN=CSN2 PE=1 SV=2 GV=C
+>sp|P02666|CASB_BOVIN Beta-casein OS=Bos taurus GN=CSN2 PE=1 SV=2 GV=F
+>sp|P02666|CASB_BOVIN Beta-casein OS=Bos taurus GN=CSN2 PE=1 SV=2 GV=I
+>sp|P02668|CASK_BOVIN Kappa-casein OS=Bos taurus GN=CSN3 PE=1 SV=1
+>sp|P02668|CASK_BOVIN Kappa-casein OS=Bos taurus GN=CSN3 PE=1 SV=1 GV=B
+>sp|P02668|CASK_BOVIN Kappa-casein OS=Bos taurus GN=CSN3 PE=1 SV=1 GV=C
+>sp|P02668|CASK_BOVIN Kappa-casein OS=Bos taurus GN=CSN3 PE=1 SV=1 GV=E
+>sp|P02668|CASK_BOVIN Kappa-casein OS=Bos taurus GN=CSN3 PE=1 SV=1 GV=F1
+>sp|P02668|CASK_BOVIN Kappa-casein OS=Bos taurus GN=CSN3 PE=1 SV=1 GV=F2
+>sp|P02668|CASK_BOVIN Kappa-casein OS=Bos taurus GN=CSN3 PE=1 SV=1 GV=G1
+>sp|P02668|CASK_BOVIN Kappa-casein OS=Bos taurus GN=CSN3 PE=1 SV=1 GV=G2
+>sp|P02668|CASK_BOVIN Kappa-casein OS=Bos taurus GN=CSN3 PE=1 SV=1 GV=H
+>sp|P02668|CASK_BOVIN Kappa-casein OS=Bos taurus GN=CSN3 PE=1 SV=1 GV=I
+>sp|P02668|CASK_BOVIN Kappa-casein OS=Bos taurus GN=CSN3 PE=1 SV=1 GV=J
+>sp|P02669|CASK_SHEEP Kappa-casein OS=Ovis aries GN=CSN3 PE=1 SV=2
+>sp|P02670|CASK_CAPHI Kappa-casein OS=Capra hircus GN=CSN3 PE=1 SV=2
+>sp|P02754|LACB_BOVIN Beta-lactoglobulin OS=Bos taurus GN=LGB PE=1 SV=3
+>sp|P02755|LACB_BUBBU Beta-lactoglobulin OS=Bubalus bubalis GN=LGB PE=1 SV=2
+>sp|P02756|LACB_CAPHI Beta-lactoglobulin OS=Capra hircus GN=LGB PE=1 SV=2
+>sp|P02769|ALBU_BOVIN Serum albumin OS=Bos taurus GN=ALB PE=1 SV=4
+>sp|P02788|TRFL_HUMAN Lactotransferrin OS=Homo sapiens GN=LTF PE=1 SV=6
+>sp|P04653|CASA1_SHEEP Alpha-S1-casein OS=Ovis aries GN=CSN1S1 PE=1 SV=3
+>sp|P04654|CASA2_SHEEP Alpha-S2-casein OS=Ovis aries GN=CSN1S2 PE=2 SV=1
+>sp|P05814|CASB_HUMAN Beta-casein OS=Homo sapiens GN=CSN2 PE=1 SV=4
+>sp|P07498|CASK_HUMAN Kappa-casein OS=Homo sapiens GN=CSN3 PE=1 SV=3
+>sp|P09115|CASA1_RABIT Alpha-S1-casein OS=Oryctolagus cuniculus GN=CSN1S1 PE=2 SV=1
+>sp|P09116|CASB_RABIT Beta-casein OS=Oryctolagus cuniculus GN=CSN2 PE=2 SV=1
+>sp|P11839|CASB_SHEEP Beta-casein OS=Ovis aries GN=CSN2 PE=1 SV=3
+>sp|P14632|TRFL_PIG Lactotransferrin OS=Sus scrofa GN=LTF PE=1 SV=3
+>sp|P14639|ALBU_SHEEP Serum albumin OS=Ovis aries GN=ALB PE=2 SV=1
+>sp|P18626|CASA1_CAPHI Alpha-S1-casein OS=Capra hircus GN=CSN1S1 PE=1 SV=2
+>sp|P24627|TRFL_BOVIN Lactotransferrin OS=Bos taurus GN=LTF PE=1 SV=2
+>sp|P33048|CASB_CAPHI Beta-casein OS=Capra hircus GN=CSN2 PE=2 SV=1
+>sp|P33049|CASA2_CAPHI Alpha-S2-casein OS=Capra hircus GN=CSN1S2 PE=2 SV=1
+>sp|P47710|CASA1_HUMAN Alpha-S1-casein OS=Homo sapiens GN=CSN1S1 PE=1 SV=1
+>sp|P60712|ACTB_BOVIN Actin, cytoplasmic 1 OS=Bos taurus GN=ACTB PE=1 SV=1
+>sp|P67976|LACB_SHEEP Beta-lactoglobulin-1/B OS=Ovis aries PE=1 SV=1
+>sp|P80195|GLCM1_BOVIN Glycosylation-dependent cell adhesion molecule 1 OS=Bos taurus GN=GLYCAM1 PE=1 SV=2
+>sp|P86273|CASB_EQUAS Beta-casein OS=Equus asinus GN=CSN2 PE=1 SV=1
+>sp|Q29477|TRFL_CAPHI Lactotransferrin OS=Capra hircus GN=LTF PE=1 SV=1
+>sp|Q4GZT4|ABCG2_BOVIN ATP-binding cassette sub-family G member 2 OS=Bos taurus GN=ABCG2 PE=3 SV=2
+>sp|Q9TSI0|CASB_BUBBU Beta-casein OS=Bubalus bubalis GN=CSN2 PE=2 SV=1
+>sp|Q9TVD0|CASB_CAMDR Beta-casein OS=Camelus dromedarius GN=CSN2 PE=1 SV=1
+>tr|A0A1L6KYI1|A0A1L6KYI1_BUBBU Alpha-S2-casein OS=Bubalus bubalis bubalis OX=391902 GN=CSN1S2 PE=2 SV=2
+>tr|A0A344X7B9|A0A344X7B9_BOSMU Beta-casein OS=Bos mutus grunniens OX=30521 GN=CSN2 PE=2 SV=1
+>tr|E9NZN2|E9NZN2_BUBBU Alpha-S2-casein OS=Bubalus bubalis OX=89462 GN=CASA2 PE=2 SV=1
+>tr|I6UFY2|I6UFY2_BOSMU Kappa-casein OS=Bos mutus grunniens GN=CSN3 PE=2 SV=1
+>tr|L8I8G5|L8I8G5_9CETA Beta-casein (Fragment) OS=Bos mutus GN=M91_02162 PE=4 SV=1
+
