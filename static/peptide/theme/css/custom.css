@@ -1,0 +1,247 @@
+.menubar-nav li a {
+        color: #ffffff;
+        font-size: 21px; /* Adjust to your preference */
+}
+
+.menubar-nav {
+        color: #ffffff;
+}
+.help-block {
+    margin-bottom: 0;
+}
+/* Tooltip container */
+.mytooltip {
+    position: relative;
+    display: inline-block;
+    //z-index: 999;
+}
+
+/* Tooltip text */
+.mytooltip .mytooltiptext {
+    visibility: hidden;
+    background-color: #215278;
+    color: #fff;
+    text-align: left;
+    padding: 5px 5px 5px 5px;
+    border-radius: 6px;
+    display: inline-block;
+    /* Position the tooltip text - see examples below! */
+    position: absolute;
+}
+
+/* Show the tooltip text when you mouse over the tooltip container */
+.mytooltip:hover .mytooltiptext {
+    visibility: visible;
+    -webkit-animation: fadeIn 0.3s ease-in-out;
+    animation: fadeIn 0.3s ease-in-out;
+
+}
+
+/* CSS animation */
+
+@-webkit-keyframes fadeIn {
+	0% { 
+		opacity:0; 
+		transform: scale(0.6);
+	}
+
+	100% {
+		opacity:100%;
+		transform: scale(1);
+	}
+}
+
+@keyframes fadeIn {
+	0% { opacity:0; }
+	100% { opacity:100%; }
+}
+/* Toggle Styles */
+
+#wrapper {
+    padding-top: 0;
+    transition: all 0.5s ease;
+}
+
+#menubar-wrapper {
+    z-index: 1000;
+    position: fixed;
+    top: 0px;
+    width: 100%;
+    height: 50px;
+    //overflow-y: auto;
+    background: #000;
+    transition: all 0.5s ease;
+}
+
+#page-content-wrapper {
+    padding: 15px;
+    margin-top: 60px;  /* Adjust this value based on the height of your menu */
+}
+/* Menu Bar Styles */
+
+.menubar-nav {
+    width: 100%;
+    margin: 0;
+    padding: 5px;
+    list-style: none;
+}
+
+/* This ensures the ul doesn't have any default padding or bullets */
+.menubar-nav {
+    list-style-type: none;
+    padding: 0;
+    display: flex;
+    justify-content: space-between;
+}
+
+/* This will make each list item sit side by side */
+.menubar-nav li {
+    display: inline-block;
+    margin-right: 20px;  /* Adjust this value to increase or decrease spacing between items */
+}
+
+.menubar-nav li a:hover {
+    text-decoration: none;
+    color: #fff;
+    background: rgba(255,255,255,0.2);
+
+}
+
+.menubar-nav > .menubar-brand {
+    height: 65px;
+    font-size: 18px;
+    line-height: 60px;
+}
+
+
+
+.menubar-nav > .menubar-brand a {
+    color: #999999;
+}
+
+.menubar-nav > .menubar-brand a:hover {
+    color: #fff;
+    background: none;
+}
+
+@media(min-width:768px) {
+    #wrapper {
+        padding-top: 50px;
+    }enubar-wrapper {
+        height: 0;
+    }
+
+    #page-content-wrapper {
+        padding: 20px;
+    }
+
+    #wrapper.toggled {
+        padding-top: 0;
+    }
+
+    #menubar-wrapper {
+        height: 40px;
+    }
+
+    #wrapper.toggled #m
+}
+
+
+/* Dropdown Styles */
+
+.dropdown-menu {
+    display: none;  /* By default, the dropdown is not shown */
+    position: absolute;  /* Dropdown needs to be positioned relative to its parent */
+    background-color: #000;  /* Matches the background color of your menubar */
+    //width: 100%;  /* Full width to match the menubar */
+    left: 0;  /* Aligns the dropdown to the left side */
+    z-index: 1001;  /* Ensures the dropdown appears above other content */
+}
+
+.dropdown:hover .dropdown-menu {
+    display: block;  /* Show the dropdown when the parent is hovered */
+}
+
+.dropdown-menu li a {
+    color: #ffffff;  /* Font color for dropdown links */
+    padding: 5px 5px;  /* Some padding for the links */
+    text-decoration: none;  /* Removes underline */
+    font-size: 16px;
+}
+
+.dropdown-menu li a:hover {
+    background-color: rgba(255,255,255,0.2);  /* Background color change on hover */
+}
+
+
+footer {
+    width: 100%;
+    background-color: #000;
+    color: #FFF; /* Adjust the text color as needed */
+    font-size: 21px;
+    text-align: center;
+    padding: 10px 15px; /* Top and bottom padding of 10px, left and right padding of 15px */
+    position: fixed;
+    bottom: 0;
+}
+.footer-content {
+    margin: 0 auto;
+    padding: 0 15px;
+}
+#hiddenFileInput {
+    display: none;
+}
+textarea.tools-form-raw-text-input {
+    width: 50vw;
+}
+.textarea-container p {
+    width:50vw;
+    word-wrap: break-word;
+}
+.form-group label, .form-group .help-block {
+    text-align: left;
+}
+.full-width {
+    flex: 1;
+    width: 100%;
+}
+.warning {
+    //background-color: #FFF0F0;  /* Light red background */
+    width: 100%;
+    text-align: left;
+}
+.collapsible-content {
+    //width: 500px;
+    max-height: 0;
+    height: 420px;
+    overflow-y: auto;
+    overflow-x: auto;
+    transition: max-height 0.5s ease-in-out;
+}
+
+.toggle-content {
+    background-color: #ffffff;
+    border: none;
+    color: #0000FF; /* Hyperlink blue */
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 18px;
+    width: 100%;
+}
+.isolated-section {
+   overflow: auto;
+}
+.select2-container--open .select2-dropdown {
+    max-height: none !important;
+}
+
+.select2-container--open .select2-selection__rendered {
+    max-height: none !important;
+    overflow-y: auto;
+}
+.fixed-width-col {
+    width: 275px;
+    overflow-y: auto;
+    max-height: 300px;
+}

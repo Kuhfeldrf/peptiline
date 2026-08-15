@@ -1,0 +1,30 @@
+# PeptiLine standalone requirements.
+# Subset of the parent MBPDB application's requirements.txt, dropping
+# MBPDB-only pieces (gunicorn deployment extras, PEPEX/BLAST-library build
+# scripts) that don't apply to a standalone PeptiLine install. NCBI BLAST+
+# (blastp) is a system dependency, not a pip package, and is only needed for
+# the MBPDB-search code path (see README "MBPDB integration").
+Django>=4.2,<5.0
+whitenoise
+celery
+django-redis
+django-celery-progress
+
+numpy>=1.24.3
+pandas>=2.0.0
+scipy
+statsmodels
+plotly
+openpyxl
+biopython
+
+# kaleido — server-side static image export for Plotly figures (publication
+# PNG at 600 dpi + true-vector SVG) via utils/plotly_export.py.
+kaleido==0.2.1
+# Pillow — stamps DPI (pHYs) metadata into exported PNGs.
+Pillow>=10.0.0
+
+python-dotenv
+requests>=2.28.0,<3.0.0
+urllib3>=1.26.0,<3.0.0
+chardet>=4.0.0,<6.0.0

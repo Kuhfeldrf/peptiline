@@ -1,0 +1,388 @@
+{% extends 'peptide/base.html' %}
+{% load static %}
+
+{% block 'head' %}
+<!-- PeptiLine design system: scoped to the landing page only -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link href="{% static 'peptide/theme/css/design-system.css' %}" rel="stylesheet">
+{% endblock 'head' %}
+
+{% block 'nav' %}
+<header class="pl-nav">
+    <div class="pl-nav-inner">
+        <a class="pl-nav-brand" href="{% url 'peptiline_landing' %}">Pepti<span class="pl-brand-accent">Line</span></a>
+        <nav aria-label="Primary">
+            <ul class="pl-nav-links">
+                <li><a href="{% url 'peptiline_landing' %}">Home</a></li>
+                <li><a href="{% url 'peptide_search' %}">Search</a></li>
+                <li><a href="{% url 'about_us' %}">About</a></li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Tools <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{% url 'peptiline_landing' %}">PeptiLine</a></li>
+                        <li><a href="{% url 'data_transformation' %}">Data Transformation</a></li>
+                        <li><a href="{% url 'data_analysis:index' %}">Data Analysis</a></li>
+                        <li><a href="{% url 'heatmap_viz:index' %}">Heatmap Visualization</a></li>
+                        <li><a href="{% url 'pepex' %}">PepEx</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Contact<span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="mailto:Contact-MBPDB@oregonstate.edu">Contact-MBPDB@oregonstate.edu</a></li>
+                    </ul>
+                </li>
+                <li><a href="{% static 'peptide/MBPDB_Help.pdf' %}" target="_blank">Help</a></li>
+            </ul>
+        </nav>
+    </div>
+</header>
+{% endblock 'nav' %}
+
+{% block 'footer' %}
+<footer class="pl-footer">
+    <div class="pl-footer-content">
+        If you are referencing this database: <a href="{% url 'about_us' %}#Cite">please cite</a>
+        {% for pep in latest_peptides %}
+            &middot; Database updated: {{pep.time_approved}}
+        {% endfor %}
+    </div>
+</footer>
+{% endblock 'footer' %}
+
+{% block 'content' %}
+<div class="pl-page">
+
+    <!-- Hero -->
+    <section class="pl-hero">
+        <div class="pl-hero-media">
+            <img src="{% static 'peptide/hero.png' %}" alt="PeptiLine: an interactive platform for customizable functional peptidomic analysis">
+        </div>
+        <p class="pl-hero-tagline">Process raw peptidomic search results, or bring in data that is already annotated with functional information, then organize, analyze, and visualize your dataset to surface insight and generate publication-ready figures.</p>
+        <div class="pl-hero-actions">
+            <a href="{% url 'data_transformation' %}" class="pl-btn pl-btn-primary"><i class="fas fa-cogs"></i> Data Transformation</a>
+            <a href="{% url 'data_analysis:index' %}" class="pl-btn pl-btn-outline"><i class="fas fa-chart-line"></i> Data Analysis</a>
+            <a href="{% url 'heatmap_viz:index' %}" class="pl-btn pl-btn-outline"><i class="fas fa-fire"></i> Heatmap Visualization</a>
+        </div>
+    </section>
+
+    <!-- Platform statistics -->
+    <section class="pl-stats">
+        <div class="pl-stat">
+            <div class="pl-stat-value">3</div>
+            <div class="pl-stat-label">Integrated analysis modules</div>
+        </div>
+        <div class="pl-stat">
+            <div class="pl-stat-value">6</div>
+            <div class="pl-stat-label">Step end-to-end workflow</div>
+        </div>
+        <div class="pl-stat">
+            <div class="pl-stat-value">13</div>
+            <div class="pl-stat-label">Exportable data files</div>
+        </div>
+        <div class="pl-stat">
+            <div class="pl-stat-value">14</div>
+            <div class="pl-stat-label">Analysis &amp; visualization views</div>
+        </div>
+    </section>
+
+    <!-- Tool modules -->
+    <section class="pl-section">
+        <div class="pl-section-header">
+            <p class="pl-eyebrow">Tools</p>
+            <h2>Three integrated modules</h2>
+            <p>Each tool builds on the last: organize your data once, then analyze and visualize it as many ways as you need.</p>
+        </div>
+
+        <div class="pl-feature-row">
+            <div class="pl-feature-media">
+                <div class="pl-frame">
+                    <div class="pl-frame-bar">
+                        <span class="pl-frame-dot"></span><span class="pl-frame-dot"></span><span class="pl-frame-dot"></span>
+                    </div>
+                    <div class="pl-frame-body">
+                        <img src="{% static 'peptide/screenshots/data_transformation.png' %}" alt="Data Transformation upload screen">
+                    </div>
+                </div>
+            </div>
+            <div class="pl-feature-text">
+                <div class="pl-tool-icon"><i class="fas fa-cogs"></i></div>
+                <h3>Data Transformation</h3>
+                <p>Organize peptidomic data, whether raw search results or data already annotated with functional information, and prepare it for analysis.</p>
+                <ul>
+                    <li>Multi-dataset import and merge</li>
+                    <li>Functional annotation, including MBPDB and custom reference sets</li>
+                    <li>Study variable and group assignment</li>
+                    <li>Thirteen exportable file types, from merged data to correlations and protein maps</li>
+                </ul>
+                <a href="{% url 'data_transformation' %}" class="pl-link">Start Data Transformation <i class="fas fa-arrow-right"></i></a>
+            </div>
+        </div>
+
+        <div class="pl-feature-row pl-feature-reverse">
+            <div class="pl-feature-media">
+                <div class="pl-frame">
+                    <div class="pl-frame-bar">
+                        <span class="pl-frame-dot"></span><span class="pl-frame-dot"></span><span class="pl-frame-dot"></span>
+                    </div>
+                    <div class="pl-frame-body">
+                        <img src="{% static 'peptide/screenshots/data_analysis.png' %}" alt="Data Analysis dashboard">
+                    </div>
+                </div>
+            </div>
+            <div class="pl-feature-text">
+                <div class="pl-tool-icon"><i class="fas fa-chart-line"></i></div>
+                <h3>Data Analysis</h3>
+                <p>Descriptive and correlative analysis of your dataset, with statistical significance testing to compare sample groups.</p>
+                <ul>
+                    <li>Grouped, stacked, pie, and correlation scatter plots</li>
+                    <li>Replicate-based error bars and ANOVA/Tukey HSD or Welch/Games-Howell significance testing</li>
+                    <li>Adjustable scaling and orientation</li>
+                    <li>Customizable color palettes, titles, and axis and legend labels</li>
+                </ul>
+                <a href="{% url 'data_analysis:index' %}" class="pl-link">Explore Data Analysis <i class="fas fa-arrow-right"></i></a>
+            </div>
+        </div>
+
+        <div class="pl-feature-row">
+            <div class="pl-feature-media">
+                <div class="pl-frame">
+                    <div class="pl-frame-bar">
+                        <span class="pl-frame-dot"></span><span class="pl-frame-dot"></span><span class="pl-frame-dot"></span>
+                    </div>
+                    <div class="pl-frame-body">
+                        <img src="{% static 'peptide/screenshots/heatmap_viz.png' %}" alt="Sequence Heatmap dashboard">
+                    </div>
+                </div>
+            </div>
+            <div class="pl-feature-text">
+                <div class="pl-tool-icon"><i class="fas fa-fire"></i></div>
+                <h3>Heatmap Visualization</h3>
+                <p>Map peptide abundance and counts onto protein sequences to reveal site-specific and functional hotspots, with statistical comparison between groups.</p>
+                <ul>
+                    <li>Site-specific peptide abundance and count mapping</li>
+                    <li>Differential comparison (standardized mean difference or log2 fold-change) between groups or protein variants</li>
+                    <li>Landscape, portrait, and compact layouts</li>
+                </ul>
+                <a href="{% url 'heatmap_viz:index' %}" class="pl-link">Create Heatmaps <i class="fas fa-arrow-right"></i></a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Visualization gallery: plot types -->
+    <section class="pl-section">
+        <div class="pl-section-header">
+            <p class="pl-eyebrow">Visualizations</p>
+            <h2>Explore plot types</h2>
+            <p>Every plot is interactive and exportable. Click any example to view it full size.</p>
+        </div>
+        <div class="pl-viz-grid">
+            <div class="pl-frame">
+                <div class="pl-frame-body" data-plot="{% static 'peptide/plots/scaled_plot_1.html' %}" data-title="Stacked Bar Plots">
+                    <img src="{% static 'peptide/plots/scaled_plot_1.png' %}" alt="Stacked Bar Plot">
+                </div>
+                <div class="pl-frame-caption">
+                    <div class="pl-viz-title">Stacked Bar Plots</div>
+                    <div class="pl-viz-description">Absolute and relative abundance distributions within and across samples, proteins, or functional categories.</div>
+                </div>
+            </div>
+            <div class="pl-frame">
+                <div class="pl-frame-body" data-plot="{% static 'peptide/plots/sequence_heatmap_1.html' %}" data-title="Sequence Heatmaps">
+                    <img src="{% static 'peptide/plots/sequence_heatmap_1.png' %}" alt="Sequence Heatmap">
+                </div>
+                <div class="pl-frame-caption">
+                    <div class="pl-viz-title">Sequence Heatmaps</div>
+                    <div class="pl-viz-description">Site-specific peptide abundance and counts mapped across one or more protein sequences.</div>
+                </div>
+            </div>
+            <div class="pl-frame">
+                <div class="pl-frame-body" data-plot="{% static 'peptide/plots/pie_plot_1.html' %}" data-title="Pie Charts">
+                    <img src="{% static 'peptide/plots/pie_plot_1.png' %}" alt="Pie Plot">
+                </div>
+                <div class="pl-frame-caption">
+                    <div class="pl-viz-title">Pie Charts</div>
+                    <div class="pl-viz-description">Relative contribution by sample, functional category, or protein origin.</div>
+                </div>
+            </div>
+            <div class="pl-frame">
+                <div class="pl-frame-body" data-plot="{% static 'peptide/plots/protein_plot_1.html' %}" data-title="Grouped Bar Plots" data-wide="true">
+                    <img src="{% static 'peptide/plots/protein_plot_1.png' %}" alt="Protein Plot">
+                </div>
+                <div class="pl-frame-caption">
+                    <div class="pl-viz-title">Grouped Bar Plots</div>
+                    <div class="pl-viz-description">Peptide abundance by protein origin or function, compared across samples, with replicate-based error bars.</div>
+                </div>
+            </div>
+            <div class="pl-frame">
+                <div class="pl-frame-body" data-plot="{% static 'peptide/plots/Summary_barplot_1.html' %}" data-title="Summary Bar Plots">
+                    <img src="{% static 'peptide/plots/Summary_barplot_1.png' %}" alt="Summary Bar Plot">
+                </div>
+                <div class="pl-frame-caption">
+                    <div class="pl-viz-title">Summary Bar Plots</div>
+                    <div class="pl-viz-description">Total peptide counts and abundance summaries with statistical error bars.</div>
+                </div>
+            </div>
+            <div class="pl-frame">
+                <div class="pl-frame-body" data-plot="{% static 'peptide/plots/scatter_plot_1.html' %}" data-title="Correlation Scatter Plots">
+                    <img src="{% static 'peptide/plots/scatter_plot_1.png' %}" alt="Scatter Plot">
+                </div>
+                <div class="pl-frame-caption">
+                    <div class="pl-viz-title">Correlation Scatter Plots</div>
+                    <div class="pl-viz-description">Sample-to-sample correlation, including SPLOM plotting options.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Visualization gallery: statistical comparison -->
+    <section class="pl-section">
+        <div class="pl-section-header">
+            <p class="pl-eyebrow">Statistical comparison</p>
+            <h2>Compare groups with statistical rigor</h2>
+            <p>Significance testing and differential effect-size views for comparing sample groups.</p>
+        </div>
+        <div class="pl-viz-grid">
+            <div class="pl-frame">
+                <div class="pl-frame-body" data-plot="{% static 'peptide/plots/significance_bar_plot_1.png' %}" data-title="Compact-Letter Significance Bars" data-wide="true">
+                    <img src="{% static 'peptide/plots/significance_bar_plot_1.png' %}" alt="Bar plot with compact-letter significance groupings">
+                </div>
+                <div class="pl-frame-caption">
+                    <div class="pl-viz-title">Compact-Letter Significance Bars</div>
+                    <div class="pl-viz-description">Replicate-based error bars with ANOVA/Tukey HSD (or Welch/Games-Howell) results shown as compact-letter groupings across three or more sample groups.</div>
+                </div>
+            </div>
+            <div class="pl-frame">
+                <div class="pl-frame-body" data-plot="{% static 'peptide/plots/differential_heatmap_1.html' %}" data-title="Differential Comparison Heatmap">
+                    <img src="{% static 'peptide/plots/differential_heatmap_1.png' %}" alt="Differential comparison heatmap">
+                </div>
+                <div class="pl-frame-caption">
+                    <div class="pl-viz-title">Differential Comparison Heatmap</div>
+                    <div class="pl-viz-description">Standardized mean difference or log2 fold-change between two groups, overlaid on the sequence heatmap.</div>
+                </div>
+            </div>
+            <div class="pl-frame">
+                <div class="pl-frame-body" data-plot="{% static 'peptide/plots/inline_significance_bracket_1.html' %}" data-title="Two-Group Significance Brackets">
+                    <img src="{% static 'peptide/plots/inline_significance_bracket_1.png' %}" alt="Bar plot with two-group significance bracket">
+                </div>
+                <div class="pl-frame-caption">
+                    <div class="pl-viz-title">Two-Group Significance Brackets</div>
+                    <div class="pl-viz-description">Replicate-based error bars with an ANOVA/Tukey HSD (or Welch/Games-Howell) two-group comparison shown as an asterisk-style bracket between the compared bars.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Visualization gallery: scaling options -->
+    <section class="pl-section">
+        <div class="pl-section-header">
+            <p class="pl-eyebrow">Scaling &amp; orientation</p>
+            <h2>Adjust how abundance is represented</h2>
+            <p>The same dataset, viewed as absolute totals or relative contributions.</p>
+        </div>
+        <div class="pl-viz-grid">
+            <div class="pl-frame">
+                <div class="pl-frame-body" data-plot="{% static 'peptide/plots/absolute_summed_plot_1.html' %}" data-title="Absolute Summed Abundance">
+                    <img src="{% static 'peptide/plots/absolute_summed_plot_1.png' %}" alt="Absolute Summed Plot">
+                </div>
+                <div class="pl-frame-caption">
+                    <div class="pl-viz-title">Absolute Summed Abundance</div>
+                    <div class="pl-viz-description">Total peptide contribution by protein origin or function across groups.</div>
+                </div>
+            </div>
+            <div class="pl-frame">
+                <div class="pl-frame-body" data-plot="{% static 'peptide/plots/relative_protein_plot_1.html' %}" data-title="Relative Abundance by Protein">
+                    <img src="{% static 'peptide/plots/relative_protein_plot_1.png' %}" alt="Relative Protein Plot">
+                </div>
+                <div class="pl-frame-caption">
+                    <div class="pl-viz-title">Relative Abundance by Protein</div>
+                    <div class="pl-viz-description">Protein or function contribution percentages across samples.</div>
+                </div>
+            </div>
+            <div class="pl-frame">
+                <div class="pl-frame-body" data-plot="{% static 'peptide/plots/relative_sample_plot_1.html' %}" data-title="Relative Abundance by Sample">
+                    <img src="{% static 'peptide/plots/relative_sample_plot_1.png' %}" alt="Relative Sample Plot">
+                </div>
+                <div class="pl-frame-caption">
+                    <div class="pl-viz-title">Relative Abundance by Sample</div>
+                    <div class="pl-viz-description">Sample-specific protein or function contributions.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Closing CTA -->
+    <section class="pl-section" style="margin-bottom: 0;">
+        <div class="pl-section-header" style="max-width: 100%;">
+            <h2>Ready to analyze your data?</h2>
+            <p>Start with Data Transformation to organize and annotate your peptidomic dataset.</p>
+        </div>
+        <div class="pl-hero-actions">
+            <a href="{% url 'data_transformation' %}" class="pl-btn pl-btn-primary"><i class="fas fa-cogs"></i> Data Transformation</a>
+            <a href="{% url 'data_analysis:index' %}" class="pl-btn pl-btn-outline"><i class="fas fa-chart-line"></i> Data Analysis</a>
+            <a href="{% url 'heatmap_viz:index' %}" class="pl-btn pl-btn-outline"><i class="fas fa-fire"></i> Heatmap Visualization</a>
+        </div>
+    </section>
+
+</div>
+
+<!-- Plot preview modal -->
+<div class="pl-overlay" id="pl-overlay"></div>
+<div class="pl-modal" id="pl-modal">
+    <div class="pl-modal-bar">
+        <span class="pl-modal-title"></span>
+        <button type="button" class="pl-modal-close" aria-label="Close">&times;</button>
+    </div>
+    <div class="pl-modal-body"></div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var modal = document.getElementById('pl-modal');
+    var overlay = document.getElementById('pl-overlay');
+    var modalBody = modal.querySelector('.pl-modal-body');
+    var modalTitle = modal.querySelector('.pl-modal-title');
+    var closeBtn = modal.querySelector('.pl-modal-close');
+
+    function closeModal() {
+        modal.classList.remove('active');
+        overlay.classList.remove('active');
+        modalBody.innerHTML = '';
+        document.body.style.overflow = '';
+    }
+
+    document.querySelectorAll('.pl-frame-body[data-plot]').forEach(function (el) {
+        el.addEventListener('click', function () {
+            var url = el.getAttribute('data-plot');
+            var title = el.getAttribute('data-title') || '';
+            modalTitle.textContent = title;
+            modalBody.innerHTML = '';
+            modal.classList.toggle('pl-modal--wide', el.getAttribute('data-wide') === 'true');
+
+            if (/\.(png|jpe?g)$/i.test(url)) {
+                var img = document.createElement('img');
+                img.src = url;
+                img.alt = title;
+                modalBody.appendChild(img);
+            } else {
+                var iframe = document.createElement('iframe');
+                iframe.src = url;
+                modalBody.appendChild(iframe);
+            }
+
+            modal.classList.add('active');
+            overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        });
+    });
+
+    closeBtn.addEventListener('click', closeModal);
+    overlay.addEventListener('click', closeModal);
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') closeModal();
+    });
+});
+</script>
+{% endblock %}
