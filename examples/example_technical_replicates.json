@@ -1,0 +1,5 @@
+{
+    "Sample_A": ["Sample_A ( rep1)", "Sample_A ( rep2)"],
+    "Sample_B": ["Sample_B ( rep1)", "Sample_B ( rep2)"],
+    "Control": ["Control ( rep1)", "Control ( rep2)", "Control ( rep3)"]
+}

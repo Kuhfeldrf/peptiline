@@ -1,0 +1,170 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PeptiLine Supplemental Figures and Tables</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.js"></script>
+</head>
+<body class="p-8 bg-white">
+    <main class="max-w-6xl mx-auto">
+        <h1 class="text-3xl font-bold mb-2 text-gray-800">Supporting Information</h1>
+        <p class="text-gray-600 mb-6">PeptiLine: an interactive platform for customizable functional peptidomic visualization and analysis</p>
+
+        <nav class="mb-10 p-4 bg-gray-50 border border-gray-200 rounded">
+            <h2 class="text-sm font-semibold uppercase tracking-wide text-gray-500 mb-2">Contents</h2>
+            <div class="flex flex-wrap gap-x-6 gap-y-1 text-sm">
+                <a href="#figures" class="text-blue-600 hover:text-blue-800 underline">Figures S1&ndash;S6</a>
+                <a href="#tables" class="text-blue-600 hover:text-blue-800 underline">Tables S1&ndash;S13</a>
+            </div>
+        </nav>
+
+        <h2 id="figures" class="text-2xl font-bold mb-6 text-gray-800 border-b pb-2">Figures</h2>
+
+        <section id="fig-s1" class="mb-16">
+            <h3 class="text-xl font-semibold mb-3 text-gray-700">S1 Fig. Scatter plot matrix of peptide-abundance correlations between bitterness groups</h3>
+            <div class="mb-3">
+                <iframe src="{% static 'peptide/publications/zukaitis_2026/supplementals/Supplemental_Figure_1_SPLOMs.html' %}" width="100%" height="1050px" style="border: none;"></iframe>
+            </div>
+            <p class="text-gray-600 text-sm">Pairwise correlation analysis of peptide abundances across Threshold, Low, Moderate, and Extreme bitterness levels with Pearson correlation coefficients.</p>
+        </section>
+
+        <section id="fig-s2" class="mb-16">
+            <h3 class="text-xl font-semibold mb-3 text-gray-700">S2 Fig. Stacked bar plot of functional peptide distribution</h3>
+            <div class="mb-3">
+                <iframe src="{% static 'peptide/publications/zukaitis_2026/supplementals/Supplemental_Figure_2_Functional Bar Plot.html' %}" width="100%" height="850px" style="border: none;"></iframe>
+            </div>
+            <p class="text-gray-600 text-sm">Distribution of 21 functional categories across bitter and non-bitter samples with scaled bar heights representing total summed abundance.</p>
+        </section>
+
+        <section id="fig-s3" class="mb-16">
+            <h3 class="text-xl font-semibold mb-3 text-gray-700">S3 Fig. Stacked bar plot of protein-origin distribution by abundance</h3>
+            <div class="mb-3">
+                <iframe src="{% static 'peptide/publications/zukaitis_2026/supplementals/Supplemental_Figure_3_Protein Contrbution.html' %}" width="100%" height="850px" style="border: none;"></iframe>
+            </div>
+            <p class="text-gray-600 text-sm">Contribution of protein sources (Beta-casein, Alpha-S1-casein, Alpha-S2-casein, Kappa-casein, Other Proteins) to total peptide abundance in bitter and non-bitter samples.</p>
+        </section>
+
+        <section id="fig-s4" class="mb-16">
+            <h3 class="text-xl font-semibold mb-3 text-gray-700">S4 Fig. Total peptide count by bitterness group</h3>
+            <div class="mb-3">
+                <iframe src="{% static 'peptide/publications/zukaitis_2026/supplementals/Supplemental_Figure_4_Total Count.html' %}" width="100%" height="825px" style="border: none;"></iframe>
+            </div>
+            <p class="text-gray-600 text-sm">Total unique peptide counts across bitterness groups with error bars representing replicate variability.</p>
+        </section>
+
+        <section id="fig-s5" class="mb-16">
+            <h3 class="text-xl font-semibold mb-3 text-gray-700">S5 Fig. Total peptide abundance by bitterness group</h3>
+            <div class="mb-3">
+                <iframe src="{% static 'peptide/publications/zukaitis_2026/supplementals/Supplemental_Figure_5_Summed Abundance.html' %}" width="100%" height="825px" style="border: none;"></iframe>
+            </div>
+            <p class="text-gray-600 text-sm">Summed peptide abundances across bitterness groups with error bars representing replicate variability.</p>
+        </section>
+
+        <section id="fig-s6" class="mb-16">
+            <h3 class="text-xl font-semibold mb-3 text-gray-700">S6 Fig. Peptigram comparison heatmap of &beta;-casein bitter peptides</h3>
+            <div class="mb-3 flex justify-center">
+                <img src="{% static 'peptide/publications/zukaitis_2026/supplementals/Supplemental_Figure_6_Peptigram.png' %}" alt="&beta;-casein bitter peptides heatmap" style="max-width: 100%; height: auto; border: 1px solid #ddd; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            </div>
+            <p class="text-gray-600 text-sm">Comparison figure showing Peptigram's visualization of &beta;-casein variants A1 and A2 peptides, demonstrating mapping differences with PeptiLine's approach.</p>
+        </section>
+
+        <h2 id="tables" class="text-2xl font-bold mb-6 text-gray-800 border-b pb-2">Tables</h2>
+
+        <div class="overflow-x-auto mb-4">
+            <table class="min-w-full bg-white border border-gray-300">
+                <thead>
+                    <tr class="bg-gray-50">
+                        <th class="px-6 py-2 border-b text-left font-semibold underline">Table<br>(Download)</th>
+                        <th class="px-6 py-2 border-b text-left font-semibold underline">Title</th>
+                        <th class="px-6 py-2 border-b text-left font-semibold underline">File Name</th>
+                        <th class="px-6 py-2 border-b text-left font-semibold underline">Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr id="table-s1">
+                        <td class="px-6 py-2 border-b"><a href="{% static 'peptide/publications/zukaitis_2026/supplementals/Supplemental_Table_1_Merged_dataset.csv' %}" download class="text-blue-600 hover:text-blue-800 underline">S1</a></td>
+                        <td class="px-6 py-2 border-b">Merged dataset</td>
+                        <td class="px-6 py-2 border-b">merged_dataframe.csv</td>
+                        <td class="px-6 py-2 border-b">Complete dataset with peptide identifications, abundances, and functional annotations</td>
+                    </tr>
+                    <tr id="table-s2">
+                        <td class="px-6 py-2 border-b"><a href="{% static 'peptide/publications/zukaitis_2026/supplementals/Supplemental_Table_2_MBPDB_SEARCH.tsv' %}" download class="text-blue-600 hover:text-blue-800 underline">S2</a></td>
+                        <td class="px-6 py-2 border-b">MBPDB results</td>
+                        <td class="px-6 py-2 border-b">MBPDB_SEARCH.tsv</td>
+                        <td class="px-6 py-2 border-b">Bioactive peptide search results from MBPDB database or uploaded file</td>
+                    </tr>
+                    <tr id="table-s3">
+                        <td class="px-6 py-2 border-b"><a href="{% static 'peptide/publications/zukaitis_2026/supplementals/Supplemental_Table_3_Summed_functional_data.xlsx' %}" download class="text-blue-600 hover:text-blue-800 underline">S3</a></td>
+                        <td class="px-6 py-2 border-b">Summed functional data</td>
+                        <td class="px-6 py-2 border-b">functional_analysis.xlsx</td>
+                        <td class="px-6 py-2 border-b">Aggregated functional data with abundance and count summaries</td>
+                    </tr>
+                    <tr id="table-s4">
+                        <td class="px-6 py-2 border-b"><a href="{% static 'peptide/publications/zukaitis_2026/supplementals/Supplemental_Table_4_Categorical_variable_definitions.json' %}" download class="text-blue-600 hover:text-blue-800 underline">S4</a></td>
+                        <td class="px-6 py-2 border-b">Group definitions</td>
+                        <td class="px-6 py-2 border-b">categorical_variable_definitions.json</td>
+                        <td class="px-6 py-2 border-b">Sample grouping variables and experimental design definitions</td>
+                    </tr>
+                    <tr id="table-s5">
+                        <td class="px-6 py-2 border-b"><a href="{% static 'peptide/publications/zukaitis_2026/supplementals/Supplemental_Table_5_Group_correlations_pearson_log10.xlsx' %}" download class="text-blue-600 hover:text-blue-800 underline">S5</a></td>
+                        <td class="px-6 py-2 border-b">Sample-to-sample correlations</td>
+                        <td class="px-6 py-2 border-b">group_correlations_*.xlsx</td>
+                        <td class="px-6 py-2 border-b">Correlation coefficients <b>between</b> experimental groups</td>
+                    </tr>
+                    <tr id="table-s6">
+                        <td class="px-6 py-2 border-b"><a href="{% static 'peptide/publications/zukaitis_2026/supplementals/Supplemental_Table_6_Biological_replicate_correlations_pearson_log10.xlsx' %}" download class="text-blue-600 hover:text-blue-800 underline">S6</a></td>
+                        <td class="px-6 py-2 border-b">Biological-replicate correlations</td>
+                        <td class="px-6 py-2 border-b">replicate_correlations_*.xlsx</td>
+                        <td class="px-6 py-2 border-b">Correlation coefficients <b>within</b> experimental groups (biological replicates)</td>
+                    </tr>
+                    <tr id="table-s7">
+                        <td class="px-6 py-2 border-b"><a href="{% static 'peptide/publications/zukaitis_2026/supplementals/Supplemental_Table_7_Summed_peptide_results.xlsx' %}" download class="text-blue-600 hover:text-blue-800 underline">S7</a></td>
+                        <td class="px-6 py-2 border-b">Summed peptide results</td>
+                        <td class="px-6 py-2 border-b">summed_peptide_results.xlsx</td>
+                        <td class="px-6 py-2 border-b">Peptide abundance summaries (count and abundance) by experimental group</td>
+                    </tr>
+                    <tr id="table-s8">
+                        <td class="px-6 py-2 border-b"><a href="{% static 'peptide/publications/zukaitis_2026/supplementals/Supplemental_Table_8_Protein_analysis.csv' %}" download class="text-blue-600 hover:text-blue-800 underline">S8</a></td>
+                        <td class="px-6 py-2 border-b">Protein analysis results</td>
+                        <td class="px-6 py-2 border-b">protein_analysis.csv</td>
+                        <td class="px-6 py-2 border-b">Protein-level abundance and count distributions, absolute and relative, across groups</td>
+                    </tr>
+                    <tr id="table-s9">
+                        <td class="px-6 py-2 border-b"><a href="{% static 'peptide/publications/zukaitis_2026/supplementals/Supplemental_Table_9_List_of_Peptides_by_Sequences.csv' %}" download class="text-blue-600 hover:text-blue-800 underline">S9</a></td>
+                        <td class="px-6 py-2 border-b">List of sequences</td>
+                        <td class="px-6 py-2 border-b">list_of_peptides_by_sequences.csv</td>
+                        <td class="px-6 py-2 border-b">Extracted list of unique peptide sequences detected per experimental group</td>
+                    </tr>
+                    <tr id="table-s10">
+                        <td class="px-6 py-2 border-b"><a href="{% static 'peptide/publications/zukaitis_2026/supplementals/Supplemental_Table_10_Protein_mapping_key.json' %}" download class="text-blue-600 hover:text-blue-800 underline">S10</a></td>
+                        <td class="px-6 py-2 border-b">Protein-mapping key</td>
+                        <td class="px-6 py-2 border-b">protein_mapping_key.json</td>
+                        <td class="px-6 py-2 border-b">Reusable record of the peptide-to-protein mapping decisions (split, retain, merge, or rename) applied to ambiguous multi-protein assignments; re-uploadable to reproduce the same mapping</td>
+                    </tr>
+                    <tr id="table-s11">
+                        <td class="px-6 py-2 border-b"><a href="{% static 'peptide/publications/zukaitis_2026/supplementals/Supplemental_Table_11_Column_rename_key.json' %}" download class="text-blue-600 hover:text-blue-800 underline">S11</a></td>
+                        <td class="px-6 py-2 border-b">Column-rename key</td>
+                        <td class="px-6 py-2 border-b">column_rename_key.json</td>
+                        <td class="px-6 py-2 border-b">Reusable record mapping each renamed column to its original source column; re-uploadable to reproduce the same sample/column naming</td>
+                    </tr>
+                    <tr id="table-s12">
+                        <td class="px-6 py-2 border-b"><a href="{% static 'peptide/publications/zukaitis_2026/supplementals/Supplemental_Table_12_Hibernation_between_season_correlations.xlsx' %}" download class="text-blue-600 hover:text-blue-800 underline">S12</a></td>
+                        <td class="px-6 py-2 border-b">Hibernation between-season correlations, within tissue</td>
+                        <td class="px-6 py-2 border-b">Table_S12_hibernation_between_season_correlations.xlsx</td>
+                        <td class="px-6 py-2 border-b">Between-season Pearson correlation coefficients for the hibernation pituitary and hypothalamus datasets, restricted to same-tissue season pairs (Figs 8-9)</td>
+                    </tr>
+                    <tr id="table-s13">
+                        <td class="px-6 py-2 border-b"><a href="{% static 'peptide/publications/zukaitis_2026/supplementals/Supplemental_Table_13_Hibernation_within_season_replicate_correlations.xlsx' %}" download class="text-blue-600 hover:text-blue-800 underline">S13</a></td>
+                        <td class="px-6 py-2 border-b">Hibernation within-season biological-replicate correlations, within tissue</td>
+                        <td class="px-6 py-2 border-b">Table_S13_hibernation_within_season_replicate_correlations.xlsx</td>
+                        <td class="px-6 py-2 border-b">Pairwise Pearson correlation coefficients between biological replicates within each tissue-season group, with a per-group min/max/mean summary sheet (Figs 8-9)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <p class="text-sm text-gray-600 mt-2">*File names for S5/S6 include correlation method ('_spearman' or '_pearson') and data transformation ('_log10' or '_raw') based on user selection.</p>
+    </main>
+</body>
+</html>

@@ -1,0 +1,544 @@
+{% extends 'peptide/base.html' %}
+{% load static %}
+
+{% block 'head' %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+    .dt-wizard { max-width: 960px; margin: 0 auto; }
+    .dt-steps { display: flex; margin-bottom: 24px; }
+    .dt-step-indicator {
+        flex: 1; text-align: center; padding: 12px 8px;
+        border-bottom: 3px solid #dee2e6; color: #999; font-size: 0.95rem;
+    }
+    .dt-step-indicator.active { border-bottom-color: #1976d2; color: #1976d2; font-weight: 600; }
+    .dt-step-indicator.completed { border-bottom-color: #4caf50; color: #4caf50; }
+    .dt-step-content { display: none; }
+    .dt-step-content.active { display: block; }
+    .dt-card { background: #fff; border: 1px solid #dee2e6; border-radius: 6px; padding: 24px; margin-bottom: 16px; }
+    .dt-card h4 { margin-top: 0; }
+    .dt-btn { padding: 8px 24px; border: none; border-radius: 4px; cursor: pointer; font-size: 0.95rem; }
+    .dt-btn-primary { background: #1976d2; color: #fff; }
+    .dt-btn-primary:hover { background: #1565c0; }
+    .dt-btn-success { background: #4caf50; color: #fff; }
+    .dt-btn-success:hover { background: #388e3c; }
+    .dt-btn-secondary { background: #6c757d; color: #fff; }
+    .dt-btn-secondary:hover { background: #5a6268; }
+    .dt-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .dt-progress { width: 100%; height: 24px; border-radius: 4px; background: #e9ecef; margin: 12px 0; overflow: hidden; }
+    .dt-progress-bar { height: 100%; background: #1976d2; transition: width 0.3s; border-radius: 4px; }
+    .dt-alert { padding: 12px 16px; border-radius: 4px; margin-bottom: 12px; }
+    .dt-alert-danger { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+    .dt-alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+    .dt-alert-info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+    .dt-alert-warning { background: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
+    .dt-file-input { margin-bottom: 16px; }
+    .dt-file-input label { display: block; font-weight: 600; margin-bottom: 4px; }
+    .dt-file-input .help-text { font-size: 0.85rem; color: #666; margin-top: 2px; }
+    .dt-dropzone {
+        border: 2px dashed #ccc; border-radius: 6px; padding: 10px; text-align: center;
+        cursor: pointer; transition: border-color 0.2s, background 0.2s; position: relative;
+    }
+    .dt-dropzone:hover, .dt-dropzone.dragover { border-color: #1976d2; background: #f0f7ff; }
+    .dt-dropzone input[type="file"] {
+        position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+        opacity: 0; cursor: pointer;
+    }
+    .dt-dropzone .drop-text { color: #888; pointer-events: none; }
+    .dt-dropzone .drop-text i { font-size: 1rem; display: block; margin-bottom: 4px; color: #aaa; }
+    .dt-or-divider {
+        display: flex; align-items: center; justify-content: center;
+        padding: 0 12px; color: #aaa; font-weight: 700; font-size: 0.9rem;
+        flex-shrink: 0;
+    }
+    .dt-or-row { display: flex; align-items: stretch; gap: 0; margin-bottom: 16px; }
+    .dt-or-row .dt-file-input { flex: 1; margin-bottom: 0; }
+    .dt-blast-inline { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+    .dt-blast-inline.disabled-section { opacity: 0.45; pointer-events: none; }
+    .dt-dropzone .file-name { color: #1976d2; font-weight: 600; pointer-events: none; }
+    .dt-dropzone .merge-file-list { text-align: left; padding: 4px 8px; pointer-events: none; }
+    .dt-dropzone .merge-file-list .merge-file-item { color: #1976d2; font-weight: 600; font-size: 0.85rem; padding: 1px 0; }
+    .dt-columns-select { max-height: 250px; overflow-y: auto; border: 1px solid #dee2e6; border-radius: 4px; padding: 8px; }
+    .dt-columns-select label { display: block; padding: 2px 0; cursor: pointer; }
+    .dt-col-panel { display: flex; gap: 12px; margin-bottom: 12px; }
+    .dt-col-available, .dt-col-selected { flex: 1; border: 1px solid #dee2e6; border-radius: 4px; }
+    .dt-col-panel-header { padding: 6px 10px; background: #f8f9fa; border-bottom: 1px solid #dee2e6; font-weight: 600; font-size: 0.85rem; color: #555; border-radius: 4px 4px 0 0; }
+    .dt-col-list { max-height: 200px; overflow-y: auto; padding: 4px; }
+    .dt-col-item { padding: 5px 10px; cursor: pointer; border-radius: 3px; font-size: 0.88rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .dt-col-item:hover { background: #e8f0fe; color: #1976d2; }
+    .dt-col-item.selected-item { display: flex; justify-content: space-between; align-items: center; background: #f0f7ff; }
+    .dt-col-item.selected-item:hover { background: #dceeff; }
+    .dt-col-remove { color: #dc3545; font-weight: bold; margin-left: 8px; flex-shrink: 0; cursor: pointer; }
+    .dt-col-empty { padding: 8px 10px; color: #aaa; font-size: 0.85rem; font-style: italic; }
+    .dt-export-list { display: flex; flex-direction: column; gap: 6px; }
+    .dt-export-row { display: flex; justify-content: space-between; align-items: flex-start; padding: 10px 14px; background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 4px; }
+    .dt-export-row.disabled { opacity: 0.45; }
+    .dt-export-label { display: flex; flex-direction: column; gap: 2px; }
+    .dt-export-label-main { display: flex; align-items: center; gap: 8px; font-size: 0.92rem; color: #333; }
+    .dt-export-label-main i { color: #1976d2; width: 16px; text-align: center; }
+    .dt-export-desc { font-size: 0.78rem; color: #888; padding-left: 24px; }
+    .dt-export-actions { display: flex; gap: 6px; flex-shrink: 0; }
+    .dt-export-view-btn { padding: 5px 12px; font-size: 0.85rem; background: #fff; border: 1px solid #1976d2; color: #1976d2; border-radius: 4px; cursor: pointer; }
+    .dt-export-view-btn:hover { background: #e8f0fe; }
+    .dt-export-dl-btn { padding: 5px 12px; font-size: 0.85rem; background: #1976d2; border: none; color: #fff; border-radius: 4px; cursor: pointer; }
+    .dt-export-dl-btn:hover { background: #1565c0; }
+    /* Viewer */
+    .dt-viewer-tabs { display: flex; flex-wrap: wrap; gap: 2px; margin-bottom: -1px; }
+    .dt-viewer-tab { padding: 5px 14px; border: 1px solid #dee2e6; border-bottom: none; border-radius: 4px 4px 0 0; cursor: pointer; background: #f8f9fa; font-size: 0.88rem; }
+    .dt-viewer-tab.active { background: #fff; color: #1976d2; font-weight: 600; }
+    .dt-viewer-wrap { max-height: 420px; overflow: auto; border: 1px solid #dee2e6; border-radius: 0 4px 4px 4px; }
+    .dt-viewer-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; white-space: nowrap; }
+    .dt-viewer-table th { position: sticky; top: 0; z-index: 1; background: #f0f4fa; border: 1px solid #dee2e6; padding: 5px 10px; text-align: left; font-weight: 600; }
+    .dt-viewer-table td { border: 1px solid #dee2e6; padding: 3px 10px; max-width: 300px; overflow: hidden; text-overflow: ellipsis; }
+    .dt-viewer-table tbody tr:hover { background: #f0f7ff; }
+    .dt-combo-row { padding: 8px; border: 1px solid #dee2e6; border-radius: 4px; margin-bottom: 8px; }
+    .dt-spinner { display: inline-block; width: 18px; height: 18px; border: 2px solid #dee2e6; border-top-color: #1976d2; border-radius: 50%; animation: dt-spin 0.6s linear infinite; margin-right: 8px; vertical-align: middle; }
+    @keyframes dt-spin { to { transform: rotate(360deg); } }
+    .hidden { display: none !important; }
+    .dt-example-links { font-size: 0.82rem; color: #666; margin-top: 3px; }
+    .dt-example-links a { color: #1976d2; text-decoration: none; }
+    .dt-example-links a:hover { text-decoration: underline; }
+    .dt-load-example.loading { color: #999; pointer-events: none; }
+    .dt-load-example.loaded { color: #4caf50; pointer-events: none; }
+    .dt-group-item { padding: 8px 12px; background: #f0f7ff; border-radius: 4px; margin-bottom: 4px; display: flex; justify-content: space-between; align-items: center; gap: 8px; cursor: default; }
+    .dt-group-item .remove-group { cursor: pointer; color: #dc3545; flex-shrink: 0; }
+    .dt-group-drag-handle { cursor: grab; color: #bbb; flex-shrink: 0; }
+    .dt-group-drag-handle:active { cursor: grabbing; }
+    .dt-group-item.dt-group-dragging { opacity: 0.4; }
+    .dt-group-item.dt-group-drag-over { outline: 2px dashed #1976d2; background: #e8f0fe; }
+    #correlation-options { margin-top: 12px; padding: 12px; background: #f8f9fa; border-radius: 4px; }
+    #correlation-options label { margin-right: 16px; }
+    .dt-resume-btn { padding: 5px 12px; font-size: 0.82rem; background: #fff; border: 1px solid #1976d2; color: #1976d2; border-radius: 4px; cursor: pointer; white-space: nowrap; }
+    .dt-resume-btn:hover { background: #e8f0fe; }
+    .dt-resume-btn-reset { border-color: #dc3545; color: #dc3545; }
+    .dt-resume-btn-reset:hover { background: #fdecea; }
+</style>
+{% endblock 'head' %}
+
+{% block 'content' %}
+<div class="dt-wizard">
+    <h2 style="margin-bottom: 4px;"><i class="fas fa-chart-line" style="color: #1976d2; margin-right: 8px;"></i>Data Transformation</h2>
+    <p style="color: #666; margin-bottom: 16px;">Process peptidomic data, search for bioactive peptides, and export results.</p>
+
+    <!-- Step indicators -->
+    <div class="dt-steps">
+        <div class="dt-step-indicator active" data-step="1"><strong>1.</strong> Upload Data</div>
+        <div class="dt-step-indicator" data-step="2"><strong>2.</strong> Study Variables</div>
+        <div class="dt-step-indicator" data-step="3"><strong>3.</strong> Protein Mapping</div>
+        <div class="dt-step-indicator" data-step="4"><strong>4.</strong> Process & Export</div>
+    </div>
+
+    <div id="dt-resume-banner" class="dt-alert dt-alert-info hidden" style="margin-bottom:12px;">
+        <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
+            <span><i class="fas fa-history"></i> <strong>Previous session found.</strong> Jump back to a step:</span>
+            <div id="dt-resume-btns" style="display:flex; gap:6px; flex-wrap:wrap;"></div>
+        </div>
+    </div>
+
+    <div id="dt-error" class="dt-alert dt-alert-danger hidden"></div>
+
+    <!-- Step 1: Upload -->
+    <div class="dt-step-content active" data-step="1">
+        <div class="dt-card">
+            <h4>Upload Peptidomic Data</h4>
+            <form id="upload-form" enctype="multipart/form-data">
+                {% csrf_token %}
+                <span style="display:block; font-weight:600; margin-bottom:4px;">Peptidomic Data File <span style="color: #dc3545;">*</span></span>
+                <div class="dt-or-row">
+                    <div class="dt-file-input" style="flex:none; width:33%;">
+                        <label for="peptidomic_file" style="font-size:0.9rem; color:#555;">Single Dataset</label>
+                        <div class="dt-dropzone" data-input="peptidomic_file" style="width:100%;">
+                            <input type="file" name="peptidomic_file" id="peptidomic_file" accept=".csv,.tsv,.txt,.xlsx,.xls">
+                            <div class="drop-text"><i class="fas fa-cloud-upload-alt"></i>Drag & drop or click to select</div>
+                            <div class="file-name hidden"></div>
+                        </div>
+                        <div class="help-text">CSV, TSV, or XLSX peptidomic results. Column names are auto-detected for Proteome Discoverer, MaxQuant, PEAKS, Spectronaut, and Skyline exports.</div>
+                        <div class="dt-example-links"><i class="fas fa-download" style="font-size:0.75rem;"></i> <a href="{% static 'peptide/examples/example_peptidomic_data.csv' %}" download>Download example file</a> &middot; <a href="#" class="dt-load-example" data-input-id="peptidomic_file" data-url="{% static 'peptide/examples/example_peptidomic_data.csv' %}"><i class="fas fa-upload" style="font-size:0.75rem;"></i> Load example</a></div>
+                    </div>
+                    <div class="dt-or-divider">OR</div>
+                    <div class="dt-file-input" style="flex:none; width:33%;">
+                        <label for="merge_files" style="font-size:0.9rem; color:#555;">Multiple Datasets</label>
+                        <div class="dt-dropzone" data-input="merge_files" style="width:100%;">
+                            <input type="file" name="merge_files" id="merge_files" accept=".csv,.tsv,.txt,.xlsx,.xls" multiple>
+                            <div class="drop-text"><i class="fas fa-cloud-upload-alt"></i>Drag & drop or click to select multiple files</div>
+                            <div class="file-name hidden"></div>
+                            <div class="merge-file-list hidden"></div>
+                        </div>
+                        <div class="help-text">Upload multiple Proteome Discoverer files to merge into a single dataset</div>
+                    </div>
+                </div>
+                <!-- Functional data OR BLAST threshold (same row) -->
+                <div class="dt-or-row">
+                    <div class="dt-file-input" style="flex:none; width:33%;">
+                        <label>MBPDB Functional Data <span style="color:#6c757d; font-weight:400;">(Optional)</span></label>
+                        <div class="dt-dropzone" data-input="functional_file" style="width:100%;">
+                            <input type="file" name="functional_file" id="functional_file" accept=".csv,.tsv,.txt,.xlsx,.xls">
+                            <div class="drop-text"><i class="fas fa-cloud-upload-alt"></i>Drag & drop or click to select</div>
+                            <div class="file-name hidden"></div>
+                        </div>
+                        <div class="help-text">Pre-computed MBPDB results (columns: search_peptide, peptide, function) — skips BLAST search</div>
+                        <div class="dt-example-links"><i class="fas fa-download" style="font-size:0.75rem;"></i> <a href="{% static 'peptide/examples/example_mbpdb_functional_data.csv' %}" download>Download example file</a> &middot; <a href="#" class="dt-load-example" data-input-id="functional_file" data-url="{% static 'peptide/examples/example_mbpdb_functional_data.csv' %}"><i class="fas fa-upload" style="font-size:0.75rem;"></i> Load example</a></div>
+                    </div>
+                    <div class="dt-or-divider">OR</div>
+                    <div class="dt-blast-inline" id="blast-threshold-section">
+                        <label style="font-weight:600; margin-bottom:4px; display:block;">BLAST Similarity Threshold</label>
+                        <select name="similarity_threshold" id="similarity_threshold" class="form-control" style="width: 100%; max-width: 220px;">
+                            <option value="100">100% (Exact match)</option>
+                            <option value="90">90%</option>
+                            <option value="80" selected>80%</option>
+                            <option value="70">70%</option>
+                            <option value="60">60%</option>
+                            <option value="50">50%</option>
+                            <option value="40">40%</option>
+                            <option value="30">30%</option>
+                            <option value="20">20%</option>
+                            <option value="10">10%</option>
+                            <option value="0">0%</option>
+                        </select>
+                        <div class="help-text" style="margin-top:4px;">Minimum sequence similarity for MBPDB matching</div>
+                    </div>
+                </div>
+
+                <div class="dt-file-input">
+                    <label>FASTA Protein Sequences <span style="color:#6c757d; font-weight:400;">(Optional)</span></label>
+                    <div class="dt-dropzone" data-input="fasta_file" style="width:33%;">
+                        <input type="file" name="fasta_file" id="fasta_file" accept=".fasta,.fa,.faa,.txt">
+                        <div class="drop-text"><i class="fas fa-cloud-upload-alt"></i>Drag & drop or click to select</div>
+                        <div class="file-name hidden"></div>
+                    </div>
+                    <div class="help-text">Additional FASTA protein sequences to supplement the default bovine/human milk protein database</div>
+                    <div class="dt-example-links"><i class="fas fa-download" style="font-size:0.75rem;"></i> <a href="{% static 'peptide/examples/example_protein_sequences.fasta' %}" download>Download example file</a> &middot; <a href="#" class="dt-load-example" data-input-id="fasta_file" data-url="{% static 'peptide/examples/example_protein_sequences.fasta' %}"><i class="fas fa-upload" style="font-size:0.75rem;"></i> Load example</a></div>
+                </div>
+                <button type="submit" class="dt-btn dt-btn-primary" id="upload-btn">
+                    <i class="fas fa-upload"></i> Upload & Validate
+                </button>
+            </form>
+        </div>
+
+        <!-- Upload results -->
+        <div id="upload-results" class="dt-card hidden">
+            <h4>Upload Summary</h4>
+            <div id="upload-summary"></div>
+            <div style="margin-top: 12px;">
+                <button class="dt-btn dt-btn-primary" id="start-blast-btn" style="margin-right: 8px;">
+                    <i class="fas fa-search"></i> Search MBPDB
+                </button>
+                <button class="dt-btn dt-btn-secondary" id="skip-blast-btn">
+                    Skip Search <i class="fas fa-forward"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- BLAST progress -->
+        <div id="blast-progress" class="dt-card hidden">
+            <h4><span class="dt-spinner"></span>Searching MBPDB Database...</h4>
+        </div>
+
+        <!-- BLAST results -->
+        <div id="blast-results" class="dt-card hidden">
+            <h4 id="blast-results-heading">MBPDB Search Results</h4>
+            <div id="blast-summary"></div>
+            <div style="margin-top: 12px;">
+                <button class="dt-btn dt-btn-primary" id="goto-step2-btn">Continue to Study Variables <i class="fas fa-arrow-right"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Step 2: Study Variables -->
+    <div class="dt-step-content" data-step="2">
+        <div class="dt-card">
+            <h4>Define Study Variable Groups</h4>
+            <p style="color:#666;">Group your abundance columns into experimental conditions. If any columns are technical replicates, define them below first — they will be averaged into a single biological replicate and become available in the group selector.</p>
+            <div id="dt-error-step2" class="dt-alert dt-alert-danger hidden" style="margin-bottom:12px;"></div>
+
+            <!-- Rename Abundance Columns (optional sub-section) -->
+            <div style="margin-bottom:20px; padding-bottom:20px; border-bottom:2px solid #dee2e6;">
+                <h5 style="margin-top:0;"><i class="fas fa-pen-to-square" style="color:#1976d2; margin-right:6px;"></i>Rename Abundance Columns <span style="font-weight:400; font-size:0.85rem; color:#6c757d;">(Optional)</span></h5>
+                <p style="color:#666; margin:4px 0 12px;">Instrument exports often use long sample names (e.g. <em>Abundance F1 Sample Threshold</em>). Map them to shorter labels here first — the simplified names are used throughout the technical-replicate and grouping steps below.</p>
+
+                <div class="dt-file-input" style="margin-bottom:14px;">
+                    <label>Upload Rename Definition <span style="color:#6c757d; font-weight:400;">(Optional)</span></label>
+                    <div class="dt-dropzone" data-input="rename_file" style="width:25%;">
+                        <input type="file" name="rename_file" id="rename-json-input" accept=".json">
+                        <div class="drop-text"><i class="fas fa-cloud-upload-alt"></i>Drag &amp; drop or click to select</div>
+                        <div class="file-name hidden"></div>
+                    </div>
+                    <div class="help-text">JSON file mapping new names to original column names, e.g. <code>{"T_0.2a": "Abundance F1 Sample Threshold"}</code></div>
+                    <div class="dt-example-links"><i class="fas fa-download" style="font-size:0.75rem;"></i> <a href="{% static 'peptide/examples/example_column_renames.json' %}" download>Example JSON</a> &middot; <a href="#" class="dt-load-example" data-input-id="rename-json-input" data-url="{% static 'peptide/examples/example_column_renames.json' %}"><i class="fas fa-upload" style="font-size:0.75rem;"></i> Load example</a></div>
+                </div>
+
+                <div style="margin-bottom:8px;">
+                    <label><strong>Original Column:</strong></label>
+                    <select id="rn-original-select" class="form-control" style="width:340px; display:inline-block; margin-left:8px;"></select>
+                </div>
+                <div style="margin-bottom:8px;">
+                    <label><strong>New Name:</strong></label>
+                    <input type="text" id="rn-new-name-input" class="form-control" style="width:260px; display:inline-block; margin-left:8px;" placeholder="e.g., T_0.2a">
+                </div>
+                <button class="dt-btn dt-btn-primary" id="rn-add-btn" style="margin-bottom:10px;">
+                    <i class="fas fa-plus"></i> Add Rename
+                </button>
+
+                <div id="rn-defined-list-wrap" class="hidden">
+                    <strong>Renamed Columns:</strong>
+                    <div id="rn-list" style="margin-top:6px;"></div>
+                </div>
+            </div>
+
+            <!-- Technical Replicate Assignment (optional sub-section) -->
+            <div style="margin-bottom:20px; padding-bottom:20px; border-bottom:2px solid #dee2e6;">
+                <h5 style="margin-top:0;"><i class="fas fa-vials" style="color:#1976d2; margin-right:6px;"></i>Technical Replicate Assignment <span style="font-weight:400; font-size:0.85rem; color:#6c757d;">(Optional)</span></h5>
+
+                <div class="dt-file-input" style="margin-bottom:14px;">
+                    <label>Upload Technical Replicate Definition <span style="color:#6c757d; font-weight:400;">(Optional)</span></label>
+                    <div class="dt-dropzone" data-input="tech_rep_file" style="width:25%;">
+                        <input type="file" name="tech_rep_file" id="tech-rep-json-input" accept=".json">
+                        <div class="drop-text"><i class="fas fa-cloud-upload-alt"></i>Drag &amp; drop or click to select</div>
+                        <div class="file-name hidden"></div>
+                    </div>
+                    <div class="help-text">JSON file mapping bio replicate names to lists of technical replicate columns, e.g. <code>{"Sample_A": ["Sample_A ( rep1)", "Sample_A ( rep2)"]}</code></div>
+                    <div class="dt-example-links"><i class="fas fa-download" style="font-size:0.75rem;"></i> <a href="{% static 'peptide/examples/example_technical_replicates.json' %}" download>Example JSON</a></div>
+                </div>
+
+                <div style="margin-bottom:8px;">
+                    <label><strong>Bio Replicate Name:</strong></label>
+                    <input type="text" id="tr-bio-rep-name-input" class="form-control" style="width:260px; display:inline-block; margin-left:8px;" placeholder="e.g., Sample_A">
+                </div>
+                <div style="margin-bottom:8px;">
+                    <input type="text" id="tr-column-search" class="form-control" style="width:300px; margin-bottom:6px;" placeholder="Search columns...">
+                    <div class="dt-col-panel">
+                        <div class="dt-col-available">
+                            <div class="dt-col-panel-header">Available <span id="tr-avail-count"></span></div>
+                            <div class="dt-col-list" id="tr-column-available-list"></div>
+                        </div>
+                        <div class="dt-col-selected">
+                            <div class="dt-col-panel-header">Selected <span id="tr-selected-count"></span></div>
+                            <div class="dt-col-list" id="tr-column-selected-list"></div>
+                        </div>
+                    </div>
+                </div>
+                <button class="dt-btn dt-btn-primary" id="tr-add-group-btn" style="margin-bottom:10px;">
+                    <i class="fas fa-plus"></i> Add Technical Replicate Group
+                </button>
+
+                <div id="tr-defined-groups" class="hidden">
+                    <strong>Technical Replicate Groups:</strong>
+                    <div id="tr-groups-list" style="margin-top:6px;"></div>
+                </div>
+            </div>
+
+            <!-- Categorical Group Assignment -->
+            <div class="dt-file-input" style="margin-bottom:16px;">
+                <label>Upload Group Definition <span style="color:#6c757d; font-weight:400;">(Optional)</span></label>
+                <div class="dt-dropzone" data-input="group_file" style="width:25%;">
+                    <input type="file" name="group_file" id="group-json-input" accept=".json">
+                    <div class="drop-text"><i class="fas fa-cloud-upload-alt"></i>Drag &amp; drop or click to select</div>
+                    <div class="file-name hidden"></div>
+                </div>
+                <div class="help-text">JSON file mapping group names to abundance columns, e.g. <code>{"Control": ["T_0_2a", "T_0_2b"]}</code></div>
+                <div class="dt-example-links"><i class="fas fa-download" style="font-size:0.75rem;"></i> <a href="{% static 'peptide/examples/example_study_variables.json' %}" download>Example JSON</a> &middot; <a href="#" class="dt-load-example" data-input-id="group-json-input" data-url="{% static 'peptide/examples/example_study_variables.json' %}"><i class="fas fa-upload" style="font-size:0.75rem;"></i> Load example</a></div>
+            </div>
+
+            <div id="manual-grouping">
+                <div style="margin-bottom:12px;">
+                    <label><strong>Group Name:</strong></label>
+                    <input type="text" id="group-name-input" class="form-control" style="width:300px; display:inline-block;" placeholder="e.g., Control">
+                </div>
+                <div style="margin-bottom:12px;">
+                    <label><strong>Select Abundance Columns:</strong></label>
+                    <input type="text" id="column-search" class="form-control" style="width:300px; margin-bottom:8px;" placeholder="Search columns...">
+                    <div class="dt-col-panel">
+                        <div class="dt-col-available">
+                            <div class="dt-col-panel-header">Available <span id="avail-count"></span></div>
+                            <div class="dt-col-list" id="column-available-list"></div>
+                        </div>
+                        <div class="dt-col-selected">
+                            <div class="dt-col-panel-header">Selected <span id="selected-count"></span></div>
+                            <div class="dt-col-list" id="column-selected-list"></div>
+                        </div>
+                    </div>
+                </div>
+                <button class="dt-btn dt-btn-primary" id="add-group-btn" style="margin-bottom:12px;">
+                    <i class="fas fa-plus"></i> Add Group
+                </button>
+            </div>
+
+            <div id="defined-groups" class="hidden" style="margin-bottom:12px;">
+                <div style="display:flex; align-items:baseline; gap:10px; margin-bottom:6px;">
+                    <h5 style="margin:0;">Defined Groups:</h5>
+                    <span style="font-size:0.8rem; color:#6c757d;"><i class="fas fa-grip-vertical" style="font-size:0.72rem;"></i> Drag rows to reorder — group order is preserved in the output.</span>
+                </div>
+                <div id="groups-list"></div>
+            </div>
+
+            <div style="margin-top:16px; border-top:1px solid #dee2e6; padding-top:16px;">
+                <button class="dt-btn dt-btn-secondary" id="back-to-step1-btn" style="margin-right:8px;">
+                    <i class="fas fa-arrow-left"></i> Back
+                </button>
+                <button class="dt-btn dt-btn-success" id="submit-groups-btn" disabled>
+                    <i class="fas fa-save"></i> Save and Continue <i class="fas fa-arrow-right"></i>
+                </button>
+                <button class="dt-btn dt-btn-secondary" id="skip-groups-btn" style="margin-left:8px;">
+                    Skip Grouping <i class="fas fa-forward"></i>
+                </button>
+                <button class="dt-btn dt-btn-secondary" id="reset-groups-btn" style="margin-left:8px;">
+                    <i class="fas fa-trash"></i> Reset Groups
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Step 3: Protein Mapping -->
+    <div class="dt-step-content" data-step="3">
+        <div class="dt-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <h4 style="margin: 0;">Protein Mapping</h4>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    <button class="dt-btn dt-btn-primary" id="fetch-uniprot-btn">
+                        <i class="fas fa-download"></i> Fetch from UniProt
+                    </button>
+                </div>
+            </div>
+
+            <!-- Mapping key upload -->
+            <div class="dt-file-input" style="margin-bottom: 16px;">
+                <label>Upload Mapping Key <span style="color:#6c757d; font-weight:400;">(Optional — re-apply a previously saved mapping)</span></label>
+                <div class="dt-dropzone" data-input="map_file" style="width: 25%;">
+                    <input type="file" name="map_file" id="protein-map-input" accept=".json">
+                    <div class="drop-text"><i class="fas fa-cloud-upload-alt"></i>Drag & drop or click to select</div>
+                    <div class="file-name hidden"></div>
+                </div>
+                <div class="dt-example-links"><i class="fas fa-download" style="font-size:0.75rem;"></i> <a href="{% static 'peptide/examples/example_protein_mapping_key.json' %}" download>Download example file</a> &middot; <a href="#" class="dt-load-example" data-input-id="protein-map-input" data-url="{% static 'peptide/examples/example_protein_mapping_key.json' %}"><i class="fas fa-upload" style="font-size:0.75rem;"></i> Load example</a></div>
+                <div id="protein-map-upload-status"></div>
+            </div>
+
+            <div id="protein-info"></div>
+
+            <!-- UniProt fetch progress -->
+            <div id="uniprot-progress" class="hidden" style="margin: 12px 0;">
+                <h5><span class="dt-spinner"></span>Fetching from UniProt...</h5>
+                <div class="dt-progress"><div class="dt-progress-bar" id="uniprot-progress-bar" style="width: 0%;"></div></div>
+                <div id="uniprot-progress-text" style="color: #666; font-size: 0.9rem;"></div>
+            </div>
+
+            <!-- Combined (multi-protein) peptides -->
+            <div id="protein-combinations" class="hidden" style="margin: 12px 0;">
+                <h5>Combined Proteins <span style="color:#6c757d; font-weight:400;">(multi-protein peptides)</span></h5>
+                <p style="color: #666;">Select which protein ID to use for rows where a peptide maps to more than one protein.</p>
+                <div id="combinations-list"></div>
+            </div>
+
+            <!-- Merge / rename protein sources -->
+            <div id="source-renames" class="hidden" style="margin: 16px 0; padding-top: 12px; border-top: 1px solid #e0e0e0;">
+                <h5>Merge / Rename Protein Sources</h5>
+                <p style="color: #666;">
+                    Fold several protein accessions (including single-protein ones the section above can't reach,
+                    e.g. &beta;-casein variants <code>P02666A1</code> and <code>P02666A2</code>) into one canonical protein,
+                    or simply rename one. Resolve any combined (multi-protein) peptides above first: merges here are
+                    applied last and take precedence.
+                </p>
+                <div id="source-rename-groups"></div>
+                <button class="dt-btn dt-btn-secondary" id="add-merge-group-btn" style="margin-top: 8px;">
+                    <i class="fas fa-plus"></i> Add merge group
+                </button>
+            </div>
+
+            <div style="margin-top: 16px;">
+                <button class="dt-btn dt-btn-secondary" id="back-to-step2-btn" style="margin-right: 8px;">
+                    <i class="fas fa-arrow-left"></i> Back
+                </button>
+                <button class="dt-btn dt-btn-success" id="submit-proteins-btn">
+                    <i class="fas fa-save"></i> Save and Continue <i class="fas fa-arrow-right"></i>
+                </button>
+                <button class="dt-btn dt-btn-secondary" id="skip-proteins-btn" style="margin-left: 8px;">
+                    Skip <i class="fas fa-forward"></i>
+                </button>
+                <button class="dt-btn dt-btn-secondary" id="reset-proteins-btn" style="margin-left: 8px;">
+                    <i class="fas fa-trash"></i> Reset Mapping
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Step 4: Process & Export -->
+    <div class="dt-step-content" data-step="4">
+        <div class="dt-card">
+            <h4>Process Data</h4>
+            <p style="color: #666;">Merge all data, calculate group averages, and extract bioactive peptides.</p>
+            <button class="dt-btn dt-btn-primary" id="process-btn">
+                <i class="fas fa-cogs"></i> Process Data
+            </button>
+            <div id="process-progress" class="hidden" style="margin-top: 12px;">
+                <span class="dt-spinner"></span> Processing...
+            </div>
+        </div>
+
+        <div id="export-section" class="dt-card hidden">
+            <h4>Results</h4>
+            <div id="process-summary" style="margin-bottom: 16px;"></div>
+
+            <div id="correlation-options">
+                <label><strong>Correlation Method:</strong></label>
+                <select id="correlation-type" class="form-control" style="width: 200px; display: inline-block;">
+                    <option value="Pearson">Pearson</option>
+                    <option value="Spearman">Spearman</option>
+                </select>
+                <label style="margin-left: 16px;">
+                    <input type="checkbox" id="log-transform" checked> Log10 Transform
+                </label>
+            </div>
+
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-top:16px; margin-bottom:4px;">
+                <strong style="font-size:0.95rem; color:#555;">Individual Downloads</strong>
+                <button class="dt-btn dt-btn-success" id="download-all-btn" style="font-size:0.88rem; padding:6px 16px;">
+                    <i class="fas fa-file-archive"></i> Download All (.zip)
+                </button>
+            </div>
+            <div class="dt-export-list" id="export-buttons"></div>
+
+            <div id="viz-links-section" class="hidden" style="margin-top: 20px; padding-top: 16px; border-top: 1px solid #e0e0e0;">
+                <h5 style="margin-bottom: 8px; color: #333;">Proceed to Visualization</h5>
+                <p style="color: #666; font-size: 0.9rem; margin-bottom: 12px;">
+                    Send your processed data directly to a visualization dashboard — no download or re-upload needed.
+                </p>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button id="open-in-da-btn" class="dt-btn dt-btn-primary">
+                        <i class="fas fa-chart-bar"></i> Open in Data Analysis
+                    </button>
+                    <button id="open-in-hm-btn" class="dt-btn dt-btn-primary">
+                        <i class="fas fa-th"></i> Open in Heatmap Visualization
+                    </button>
+                </div>
+                <div id="viz-transfer-status" style="margin-top: 10px;"></div>
+            </div>
+        </div>
+
+        <!-- In-app data viewer -->
+        <div id="dt-viewer-panel" class="dt-card hidden" style="margin-top: 0; border-top: none; border-radius: 0 0 6px 6px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <h5 id="dt-viewer-title" style="margin: 0; color: #1976d2;"></h5>
+                <button id="dt-viewer-close-btn" class="dt-btn dt-btn-secondary" style="padding: 3px 10px; font-size: 0.85rem;">
+                    <i class="fas fa-times"></i> Close
+                </button>
+            </div>
+            <div class="dt-viewer-tabs" id="dt-viewer-tabs"></div>
+            <div class="dt-viewer-wrap" id="dt-viewer-wrap">
+                <div id="dt-viewer-content"></div>
+            </div>
+            <div id="dt-viewer-info" style="font-size: 0.8rem; color: #888; margin-top: 6px;"></div>
+        </div>
+
+        <div style="margin-top: 16px;">
+            <button class="dt-btn dt-btn-secondary" id="back-to-step3-btn" style="margin-right: 8px;">
+                <i class="fas fa-arrow-left"></i> Back
+            </button>
+            <button class="dt-btn dt-btn-secondary" id="start-over-btn">
+                <i class="fas fa-redo"></i> Start Over
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block 'scripts' %}
+<script src="{% static 'peptide/js/data_transformation.js' %}?v=32"></script>
+{% endblock %}

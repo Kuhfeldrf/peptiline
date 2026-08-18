@@ -1,0 +1,208 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<link rel="shortcut icon" href="{% static 'peptide/favicon.ico' %}"/>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Bootstrap Core CSS -->
+    <link href="{% static 'peptide/theme/css/bootstrap.min.css' %}" rel="stylesheet">
+
+    <!-- Nik's + Rusty's custom CSS -->
+    <link href="{% static 'peptide/theme/css/custom.css' %}" rel="stylesheet">
+
+    <!--<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+     select2 -->
+    <link href="{% static 'peptide/theme/css/select2.min.css' %}" rel="stylesheet">
+
+    <!-- select2-bootstrap4-theme -->
+    <link href="https://raw.githack.com/ttskch/select2-bootstrap4-theme/master/dist/select2-bootstrap4.css" rel="stylesheet"> <!-- for live demo page -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+
+    <![endif]-->
+    <script src="{% static 'peptide/vendor/angular-file-upload/angular-file-upload-shim.min.js' %}"></script>
+    <script src="{% static 'peptide/vendor/angular.min.js' %}"></script>
+	<script src="{% static 'peptide/vendor/angular-file-upload/angular-file-upload.min.js' %}"></script>
+	<script>
+	main = angular.module('main', ['ui.bootstrap','angularFileUpload']);
+	main.config(function($interpolateProvider) {
+		  $interpolateProvider.startSymbol('{[');
+		  $interpolateProvider.endSymbol(']}');
+		});
+	main.config(['$httpProvider', function($httpProvider) {
+	    $httpProvider.defaults.headers.common['X-CSRFToken'] = '{{ csrf_token|escapejs }}';
+	}]);
+	</script>
+	{% block 'head' %}
+	{% endblock 'head' %}
+	
+	<style>
+	    /* Fixed header and footer styling */
+	    #menubar-wrapper {
+	        position: fixed;
+	        top: 0;
+	        left: 0;
+	        right: 0;
+	        z-index: 9999;
+	        background: black;
+	        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+	        height: 60px;
+	        display: flex;
+	        align-items: center;
+	    }
+
+	    footer {
+	        position: fixed;
+	        bottom: 0;
+	        left: 0;
+	        right: 0;
+	        z-index: 1000;
+	        background: black;
+	        box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+	        padding: 10px 0;
+	        text-align: center;
+	    }
+
+	    /* Add padding to body to account for fixed header and footer */
+	    body {
+	        padding-top: 60px;
+	        padding-bottom: 60px;
+	    }
+	    
+	    /* Menubar navigation styling */
+	    .menubar-nav {
+	        list-style: none;
+	        margin: 0;
+	        padding: 0;
+	        display: flex;
+	        height: 100%;
+	        align-items: center;
+	    }
+	    
+	    .menubar-nav li {
+	        margin: 0;
+	        padding: 0;
+	    }
+	    
+	    .menubar-nav li a {
+	        display: block;
+	        padding: 15px 20px;
+	        color: white;
+	        text-decoration: none;
+	        transition: background-color 0.3s;
+	    }
+	    
+	    .menubar-nav li a:hover {
+	        background-color: rgba(255, 255, 255, 0.1);
+	        color: white;
+	        text-decoration: none;
+	    }
+	    
+	    /* Dropdown styling */
+	    .menubar-nav .dropdown-menu {
+	        background-color: #333;
+	        border: none;
+	        border-radius: 0;
+	    }
+	    
+	    .menubar-nav .dropdown-menu li a {
+	        color: white;
+	        padding: 10px 20px;
+	    }
+	    
+	    .menubar-nav .dropdown-menu li a:hover {
+	        background-color: rgba(255, 255, 255, 0.1);
+	    }
+
+	    /* Shared dim style for a control disabled by another selection.
+	       Applied via setControlEnabled() in peptide/js/form_controls.js. */
+	    .control-disabled { opacity: .55; cursor: not-allowed; }
+	    .control-disabled input,
+	    .control-disabled select { cursor: not-allowed; }
+	</style>
+</head>
+
+<body>
+
+{% block 'nav' %}
+<div id="menubar-wrapper">
+    <ul class="menubar-nav">
+        <li><a href="{% url 'peptide_search' %}">Search</a></li>
+        <li><a href="{% url 'peptiline_landing' %}">PeptiLine</a></li>
+        <li><a href="{% url 'about_us' %}">About</a></li>
+        <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Contact<span class="caret"></span></a>
+            <ul class="dropdown-menu">
+            <li><a href="mailto:Contact-MBPDB@oregonstate.edu">Contact-MBPDB@oregonstate.edu</a></li>
+                <!-- Add more dropdown items here if necessary -->
+            </ul>
+        </li>
+        <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Tools <span class="caret"></span></a>
+            <ul class="dropdown-menu">
+                <li><a href="{% url 'peptiline_landing' %}">PeptiLine</a></li>
+                <li><a href="{% url 'data_transformation' %}">Data Transformation</a></li>
+                <li><a href="{% url 'data_analysis:index' %}">Data Analysis</a></li>
+                <li><a href="{% url 'heatmap_viz:index' %}">Heatmap Visualization</a></li>
+                <li><a href="{% url 'pepex' %}">PepEx</a></li>
+            </ul>
+        </li>
+        <li><a href="{% static 'peptide/MBPDB_Help.pdf' %}" target="_blank">Help</a></li>
+    </ul>
+</div>
+{% endblock 'nav' %}
+        <!-- /#menubar-wrapper -->
+
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-lg-12">
+
+{% block 'content' %}
+{% endblock 'content' %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /#page-content-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+</body>
+{% block 'footer' %}
+   <footer>
+    <div class="footer-content">
+        If you are referencing this database: <a href="{% url 'about_us' %}#Cite"><b>please cite</b></a><br>
+        {% for pep in latest_peptides %}
+            Database updated: {{pep.time_approved}}
+        {% endfor %}
+    </div>
+    </footer>
+{% endblock 'footer' %}
+    <!-- jQuery -->
+    <!--<script src="{% static 'peptide/theme/js/jquery.js' %}"></script>-->
+
+    <!-- Bootstrap Core JavaScript -->
+    <!--<script src="{% static 'peptide/theme/js/bootstrap.min.js' %}"></script>-->
+
+    </script>
+{% block 'scripts' %}
+{% endblock 'scripts' %}
+
+<!--</html>-->

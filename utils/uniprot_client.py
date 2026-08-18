@@ -10,20 +10,33 @@ import time
 from xml.etree import ElementTree
 
 
+def _extract_signal_end(data):
+    """Return the UniProt signal-peptide end residue (1-indexed) if annotated, else None."""
+    for feature in data.get('features') or []:
+        if feature.get('type') == 'Signal':
+            end = feature.get('location', {}).get('end', {}).get('value')
+            if isinstance(end, int):
+                return end
+    return None
+
+
 def fetch_uniprot_info(protein_id, fetch_sequence=False):
     """
     Fetch protein information from UniProt, prioritizing common names.
-    
+
     Args:
         protein_id (str): UniProt accession ID.
         fetch_sequence (bool): Whether to fetch protein sequence. Defaults to False.
-        
+
     Returns:
-        tuple: (protein_common_name, species_common_name, sequence) or (None, None, None) if not found.
-              If fetch_sequence is False, sequence will be None.
+        tuple: (protein_common_name, species_common_name, sequence, signal_end) or
+               (None, None, None, None) if not found. If fetch_sequence is False,
+               sequence will be None. signal_end is the 1-indexed last residue of
+               the annotated signal peptide (None if UniProt has no such feature).
     """
     try:
         sequence = None
+        signal_end = None
         # Try REST API first
         rest_url = f'https://rest.uniprot.org/uniprotkb/{protein_id}.json'
         response = requests.get(rest_url)
@@ -68,19 +81,21 @@ def fetch_uniprot_info(protein_id, fetch_sequence=False):
                 # Get sequence if requested
                 if fetch_sequence and 'sequence' in data:
                     sequence = data['sequence'].get('value')
-                
-                return protein_name, species, sequence
-                
+
+                signal_end = _extract_signal_end(data)
+
+                return protein_name, species, sequence, signal_end
+
             except KeyError:
                 pass  # Fall through to XML approach
-        
+
         # Fall back to XML API
         xml_url = f'https://www.uniprot.org/uniprot/{protein_id}.xml'
         response = requests.get(xml_url)
-        
+
         if response.status_code != 200:
-            return None, None, None
-            
+            return None, None, None, None
+
         root = ElementTree.fromstring(response.content)
         ns = {'up': 'http://uniprot.org/uniprot'}
         
@@ -117,18 +132,24 @@ def fetch_uniprot_info(protein_id, fetch_sequence=False):
             seq_element = root.find('.//up:sequence', ns)
             if seq_element is not None:
                 sequence = seq_element.text
-        
+
+        signal_feature = root.find('.//up:feature[@type="signal peptide"]/up:location/up:end', ns)
+        if signal_feature is not None:
+            end_pos = signal_feature.get('position')
+            if end_pos and end_pos.isdigit():
+                signal_end = int(end_pos)
+
         if protein_name:
             # Clean up protein name - remove any "precursor" or similar suffixes
             protein_name = protein_name.split(' precursor')[0].split(' (')[0]
         else:
-            return None, None, None
-            
-        return protein_name, species, sequence
-        
+            return None, None, None, None
+
+        return protein_name, species, sequence, signal_end
+
     except Exception as e:
         print(f"Error fetching UniProt data for {protein_id}: {str(e)}")
-        return None, None, None
+        return None, None, None, None
 
 def fetch_uniprot_info_batch(protein_ids, max_retries=3, timeout=30):
     """
@@ -140,17 +161,19 @@ def fetch_uniprot_info_batch(protein_ids, max_retries=3, timeout=30):
         timeout (int, optional): Request timeout in seconds. Defaults to 30.
         
     Returns:
-        dict: Dictionary mapping protein IDs to (name, species) tuples.
+        dict: Dictionary mapping protein IDs to (name, species, signal_end) tuples.
+              signal_end is the 1-indexed last residue of the annotated signal
+              peptide, or None if UniProt has no such feature for that protein.
     """
     if not protein_ids:
         return {}
-    
+
     results = {}
-    
+
     try:
         # Use the batch REST API endpoint
         batch_url = 'https://rest.uniprot.org/uniprotkb/search'
-        
+
         # Create a query with OR conditions for each protein ID
         query = ' OR '.join([f'accession:{pid}' for pid in protein_ids])
 
@@ -158,7 +181,7 @@ def fetch_uniprot_info_batch(protein_ids, max_retries=3, timeout=30):
         params = {
             'query': query,
             'format': 'json',
-            'fields': 'accession,protein_name,organism_name',
+            'fields': 'accession,protein_name,organism_name,ft_signal',
             'size': len(protein_ids)  # Request all results in one response
         }
         
@@ -216,20 +239,20 @@ def fetch_uniprot_info_batch(protein_ids, max_retries=3, timeout=30):
                         protein_name = protein_data['alternativeNames'][0].get('fullName', {}).get('value')
                 # Extract species name
                 species = None
-                organism_data = entry.get('organism')
-                #{'scientificName': 'Bos taurus', 'commonName': 'Bovine', 'taxonId': 9913, 'lineage': ['Eukaryota', 'Metazoa', 'Chordata', 'Craniata', 'Vertebrata', 'Euteleostomi', 'Mammalia', 'Eutheria', 'Laurasiatheria', 'Artiodactyla', 'Ruminantia', 'Pecora', 'Bovidae', 'Bovinae', 'Bos']}
-                if 'commonName' in str(organism_data):
-                    protein_species = organism_data.get('commonName') 
-                else:
-                    protein_species = organism_data.get('scientificName') 
+                organism_data = entry.get('organism') or {}
+                #{'scientificName': 'Bos taurus', 'commonName': 'Bovine', 'taxonId': 9913, 'lineage': [...]}
+                protein_species = organism_data.get('commonName') or organism_data.get('scientificName')
 
                 # Clean up protein name if found
                 if protein_name:
                     protein_name = protein_name.split(' precursor')[0].split(' (')[0]
-                
-                # Store the results
-                if accession and protein_name and protein_species:
-                    results[accession] = (protein_name, protein_species)# or "Unknown")
+
+                signal_end = _extract_signal_end(entry)
+
+                # Store the results — species is optional; don't drop entries that
+                # have a name but no commonName/scientificName in UniProt.
+                if accession and protein_name:
+                    results[accession] = (protein_name, protein_species or '', signal_end)
         
         return results
     
@@ -254,46 +277,48 @@ class UniProtClient:
     def fetch_protein_info_with_sequence(self, protein_id):
         """
         Fetch information for a single protein including sequence, using cache if available.
-        
+
         Args:
             protein_id (str): UniProt accession ID.
-            
+
         Returns:
-            tuple: (protein_name, species, sequence)
+            tuple: (protein_name, species, sequence, signal_end)
         """
         # Check sequence cache first
         if protein_id in self.sequence_cache:
             return self.sequence_cache[protein_id]
-        
+
         # Check if we have basic info but not sequence
         if protein_id in self.cache:
-            name, species = self.cache[protein_id]
+            name, species, signal_end = self.cache[protein_id]
             # Need to fetch sequence separately
-            _, _, sequence = fetch_uniprot_info(protein_id, fetch_sequence=True)
-            result = (name, species, sequence)
+            _, _, sequence, seq_signal_end = fetch_uniprot_info(protein_id, fetch_sequence=True)
+            if signal_end is None:
+                signal_end = seq_signal_end
+            result = (name, species, sequence, signal_end)
             self.sequence_cache[protein_id] = result
             return result
-        
+
         # Fetch everything from UniProt
-        name, species, sequence = fetch_uniprot_info(protein_id, fetch_sequence=True)
-        
+        name, species, sequence, signal_end = fetch_uniprot_info(protein_id, fetch_sequence=True)
+
         # Cache the results
-        self.cache[protein_id] = (name, species)
-        self.sequence_cache[protein_id] = (name, species, sequence)
-        
-        return name, species, sequence
-    
+        self.cache[protein_id] = (name, species, signal_end)
+        self.sequence_cache[protein_id] = (name, species, sequence, signal_end)
+
+        return name, species, sequence, signal_end
+
     def fetch_proteins_batch(self, protein_ids, max_retries=3, timeout=30):
         """
         Fetch information for multiple proteins in batch, using cache when possible.
-        
+
         Args:
             protein_ids (list): List of UniProt accession IDs.
             max_retries (int, optional): Maximum number of retry attempts. Defaults to 3.
             timeout (int, optional): Request timeout in seconds. Defaults to 30.
-            
+
         Returns:
-            dict: Dictionary mapping protein IDs to (name, species) tuples.
+            dict: Dictionary mapping protein IDs to (name, species, signal_end) tuples.
         """
         # Filter out proteins that are already in the cache
         uncached_proteins = [pid for pid in protein_ids if pid not in self.cache]

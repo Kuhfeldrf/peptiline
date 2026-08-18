@@ -1,0 +1,1798 @@
+{% extends 'peptide/base.html' %}
+{% load static %}
+
+{% block 'head' %}
+<title>Sequence Heatmap Dashboard – MBPDb</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js" charset="utf-8"></script>
+<style>
+.hm-page { padding: 10px 20px 80px; }
+.hm-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.hm-header h1 { font-size: 1.8rem; margin: 0; font-weight: 500; }
+.hm-header .icon { font-size: 1.6rem; color: #1976d2; }
+.btn-back-dt { margin-left: auto; padding: 6px 14px; font-size: .95rem; color: #6c757d; border: 1px solid #dee2e6; border-radius: 4px; text-decoration: none; background: #f8f9fa; white-space: nowrap; }
+.btn-back-dt:hover { background: #e9ecef; color: #495057; text-decoration: none; }
+
+.step-card {
+    background: #fff; border: 1px solid #dee2e6; border-radius: 8px;
+    padding: 16px 20px; margin-bottom: 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.08);
+}
+.step-card .step-title {
+    font-size: 1.05rem; font-weight: 600; margin-bottom: 12px;
+    display: flex; align-items: center; gap: 8px;
+}
+.step-badge {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 26px; height: 26px; border-radius: 50%; background: #1976d2;
+    color: #fff; font-size: .95rem; font-weight: 700; flex-shrink: 0;
+}
+
+.upload-zone {
+    border: 2px dashed #ccc; border-radius: 6px; padding: 10px; text-align: center;
+    cursor: pointer; transition: border-color .2s, background .2s; position: relative;
+}
+.upload-zone:hover, .upload-zone.drag-over { border-color: #1976d2; background: #f0f7ff; }
+.upload-zone input[type=file] { opacity: 0; position: absolute; inset: 0; cursor: pointer; }
+.upload-zone .drop-text { color: #888; pointer-events: none; }
+.upload-zone .drop-text i { font-size: 1rem; display: block; margin-bottom: 4px; color: #aaa; }
+.upload-zone .file-name { color: #1976d2; font-weight: 600; pointer-events: none; font-size: .95rem; }
+
+.selector-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media(max-width:768px){ .selector-grid { grid-template-columns: 1fr; } }
+.selector-block label { font-weight: 600; font-size: .95rem; margin-bottom: 4px; display: block; }
+select.multi-select {
+    width: 100%; height: 130px; border: 1px solid #ced4da; border-radius: 4px;
+    padding: 4px; font-size: .92rem;
+}
+select.multi-select:disabled { background: #f8f9fa; color: #aaa; }
+
+.btn-generate {
+    background: #1976d2; color: #fff; border: none; border-radius: 5px;
+    padding: 9px 22px; font-size: 0.95rem; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+}
+.btn-generate:hover { background: #1565c0; }
+.btn-generate:disabled { background: #90caf9; cursor: not-allowed; }
+.btn-dl {
+    background: #0288d1; color: #fff; border: none; border-radius: 5px;
+    padding: 7px 18px; font-size: .95rem; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+}
+.btn-dl:hover { background: #0277bd; }
+.btn-dl:disabled { background: #b3e5fc; cursor: not-allowed; }
+
+.status-box { padding: 10px 14px; border-radius: 5px; margin-bottom: 10px; font-size: .95rem; }
+.status-info    { background: #e3f2fd; border-left: 4px solid #1976d2; }
+.status-success { background: #e8f5e9; border-left: 4px solid #388e3c; }
+.status-warning { background: #fff8e1; border-left: 4px solid #f9a825; }
+.status-error   { background: #ffebee; border-left: 4px solid #c62828; }
+
+.spin { animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.heatmap-img-container { margin-bottom: 20px; }
+.heatmap-img-container h4 { font-size: 1rem; font-weight: 600; margin-bottom: 8px; }
+.heatmap-img-container img { max-width: 100%; border: 1px solid #dee2e6; border-radius: 4px; }
+.compact-plot-container { margin-bottom: 20px; }
+.compact-plot-container h4 { font-size: 1rem; font-weight: 600; margin-bottom: 8px; }
+#compact-plotly-div { border: 1px solid #dee2e6; border-radius: 4px; background: #fff; min-height: 200px; }
+
+.interactive-plot-container { margin-top: 12px; margin-bottom: 20px; width: 100%; }
+.interactive-plot-container h5 {
+    font-size: 0.9rem; font-weight: 600; margin-bottom: 6px; color: #01579b;
+    display: flex; align-items: center; gap: 6px;
+}
+.interactive-plotly-div { border: 1px solid #90caf9; border-radius: 4px; background: #fff; min-height: 500px; width: 100%; }
+#landscape-interactive-div { min-height: 600px; }
+
+.hidden { display: none !important; }
+.page-box { width: 100%; max-width: min(96vw, 1600px); margin: 0 auto; }
+.color-swatch {
+    width: 72px; min-width: 0; height: 22px; border-radius: 3px; border: 1px solid #ccc;
+    flex-shrink: 1; display: inline-block; overflow: hidden;
+}
+.checkbox-row { display: flex; align-items: center; gap: 6px; font-size: .95rem; }
+.step-disabled { opacity: .55; pointer-events: none; }
+.placeholder-box {
+    padding: 30px; text-align: center; color: #999; border: 2px dashed #dee2e6;
+    border-radius: 6px; font-size: .9rem;
+}
+
+/* ── Radio button groups (plain visible style, matches data analysis) ── */
+.radio-group {
+    display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-start;
+}
+.radio-group label {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: .92rem; font-weight: 400; cursor: pointer; white-space: nowrap;
+}
+.radio-group input[type=radio] {
+    width: 14px; height: 14px; cursor: pointer; accent-color: #1976d2; flex-shrink: 0;
+}
+.radio-group.rg-disabled label { opacity: .55; cursor: not-allowed; }
+.radio-group.rg-disabled input[type=radio] { cursor: not-allowed; }
+.rg-field { margin-bottom: 8px; }
+.rg-field > .rg-label {
+    font-weight: 600; font-size: .92rem; margin-bottom: 4px; display: block; color: #333;
+}
+/* Unified items-selector inactive/greyed state */
+.items-inactive { opacity: .48; pointer-events: none; }
+
+/* Segmented overlay / data-source control */
+.seg-control {
+    display: flex; border: 1px solid #ced4da; border-radius: 6px;
+    overflow: hidden; width: 100%;
+}
+.seg-btn {
+    flex: 1; border: none; border-right: 1px solid #ced4da;
+    background: #f8f9fa; padding: 5px 6px;
+    font-size: .92rem; font-weight: 400; font-family: inherit; color: #555;
+    cursor: pointer; text-align: center; line-height: 1.25;
+    transition: background .12s, color .12s;
+}
+.seg-btn:last-child { border-right: none; }
+.seg-btn:hover:not([disabled]) { background: #e2ecf9; color: #1565c0; }
+.seg-btn.seg-active { background: #1976d2; color: #fff; font-weight: 600; }
+.seg-btn[disabled]  { opacity: .42; cursor: not-allowed; }
+.seg-ctl-disabled .seg-btn { opacity: .42; cursor: not-allowed; pointer-events: none; }
+</style>
+{% endblock %}
+
+{% block 'content' %}
+<div class="hm-page">
+<div class="page-box">
+
+    <div class="hm-header">
+        <i class="fas fa-th icon"></i>
+        <h1>Sequence Heatmap Dashboard</h1>
+        <div style="margin-left:auto; display:flex; gap:8px; flex-shrink:0;">
+            <a href="/data_transformation/" class="btn-back-dt"><i class="fas fa-arrow-left"></i> Data Transformation</a>
+        </div>
+    </div>
+
+    <!-- ── Step 1: Upload ───────────────────────────────────────── -->
+    <div class="step-card" id="step1-card">
+        <div class="step-title">
+            <span class="step-badge">1</span>
+            Upload Data Files
+        </div>
+
+        <div class="status-box status-info" style="margin-bottom:12px;">
+            <strong>Instructions:</strong>
+            Upload a merged data file from the
+            <a href="/data_transformation/">Data Transformation</a> module
+            (must contain <code>Protein</code>, <code>start</code>, <code>end</code>,
+            <code>Avg_*</code>, and per-replicate
+            <code>"&lt;sample&gt; 'Grouped: (Group)'"</code> columns).
+            Optionally upload a FASTA file for protein sequences.
+        </div>
+
+        <div style="display:flex; gap:16px; align-items:flex-start; flex-wrap:wrap;">
+            <!-- Merged file -->
+            <div style="flex:1; min-width:200px; max-width:320px;">
+                <label style="font-weight:600; font-size:.95rem; margin-bottom:4px; display:block;">
+                    Merged Data File <span style="color:#c00;">*</span>
+                </label>
+                <div class="upload-zone" id="merged-upload-zone">
+                    <input type="file" id="merged-file-input" accept=".csv,.xlsx">
+                    <div class="drop-text">
+                        <i class="fas fa-upload"></i>
+                        Click or drag CSV / XLSX
+                    </div>
+                </div>
+                <div id="merged-file-name" style="font-size:.88rem; color:#555; margin-top:3px;"></div>
+                <div style="margin-top:6px; font-size:.92rem; color:#666;">
+                    <a href="/static/peptide/examples/example_merged_dataframe.csv" download>
+                        <i class="fas fa-download"></i> Download example CSV</a>
+                    &middot;
+                    <a href="#" id="hm-load-example-csv" style="color:#1976d2; text-decoration:none;">
+                        <i class="fas fa-upload" style="font-size:.85rem;"></i> Load example</a>
+                </div>
+            </div>
+
+            <!-- FASTA file -->
+            <div style="flex:1; min-width:200px; max-width:320px;">
+                <label style="font-weight:600; font-size:.95rem; margin-bottom:4px; display:block;">
+                    FASTA File <small class="text-muted">(optional)</small>
+                </label>
+                <div class="upload-zone" id="fasta-upload-zone">
+                    <input type="file" id="fasta-file-input" accept=".fasta,.fa,.faa">
+                    <div class="drop-text">
+                        <i class="fas fa-file-code"></i>
+                        Click or drag .fasta / .fa
+                    </div>
+                </div>
+                <div id="fasta-file-name" style="font-size:.88rem; color:#555; margin-top:3px;"></div>
+                <div style="margin-top:6px; font-size:.92rem; color:#666;">
+                    <a href="/static/peptide/examples/example_protein_sequences.fasta" download>
+                        <i class="fas fa-download"></i> Download example FASTA</a>
+                    &middot;
+                    <a href="#" id="hm-load-example-fasta" style="color:#1976d2; text-decoration:none;">
+                        <i class="fas fa-upload" style="font-size:.85rem;"></i> Load example</a>
+                </div>
+            </div>
+
+            <!-- Upload status -->
+            <div style="flex:2; min-width:220px;">
+                <label style="font-weight:600; font-size:.95rem; margin-bottom:4px; display:block;">&nbsp;</label>
+                <span id="upload-spinner" class="hidden" style="font-size:.95rem; display:block; margin-bottom:6px;">
+                    <i class="fas fa-circle-notch spin" style="color:#1976d2;"></i> Processing…
+                </span>
+                <div id="upload-status"></div>
+                <div id="autofetch-msgs"></div>
+            </div>
+        </div>
+
+        <div id="hm-replicate-banner" class="status-box" style="margin-top:12px; display:none;"></div>
+    </div>
+
+    <!-- ── Step 2: Select + Settings ────────────────────────────── -->
+    <div class="step-card step-disabled" id="step2-card">
+        <div class="step-title">
+            <span class="step-badge">2</span>
+            Select Proteins &amp; Variables
+        </div>
+
+        <!-- Selectors -->
+        <div class="selector-grid" style="margin-bottom:14px;">
+            <div class="selector-block">
+                <label><i class="fas fa-dna"></i> Proteins</label>
+                <select id="protein-selector" class="multi-select" multiple size="6" disabled></select>
+                <small class="text-muted">Hold Ctrl/Cmd to select multiple</small>
+            </div>
+            <div class="selector-block">
+                <label><i class="fas fa-layer-group"></i> Sample Variables</label>
+                <select id="varkey-selector" class="multi-select" multiple size="6" disabled></select>
+                <small class="text-muted">Hold Ctrl/Cmd to select multiple</small>
+            </div>
+        </div>
+
+        <!-- ── Differential comparison (SMD / log2FC) — R2-2d ─────────────── -->
+        <div id="comparison-block" style="margin-bottom:14px; padding:10px 12px; border:1px solid #e0e0e0; border-radius:6px; background:#fafafa;">
+            <label class="checkbox-row" style="font-weight:600; font-size:.92rem;"
+                   title="Overlay a signed effect-size line (Series A vs Series B) on the density heatmap instead of the abundance line. Requires replicate-level (Grouped) data.">
+                <input type="checkbox" id="comparison-mode" disabled>
+                <i class="fas fa-code-compare"></i> Plot Differential Comparison (SMD / log2FC)
+            </label>
+            <small id="comparison-banner" class="text-muted" style="display:block; margin-top:4px;">
+                Requires replicate-level <code>'Grouped:'</code> columns (per-replicate abundances) alongside each <code>Avg_</code> column. Upload such a file to enable a between-group effect-size track.
+            </small>
+
+            <div id="comparison-controls" class="hidden" style="margin-top:10px; display:grid; grid-template-columns:1fr 1fr; gap:10px 16px; align-items:end;">
+                <div class="selector-block" style="margin:0;">
+                    <label style="font-size:.9rem; font-weight:600;">Series A <span class="text-muted" style="font-weight:400;">(+ = higher in A)</span></label>
+                    <select id="series-a" style="width:100%; border:1px solid #ced4da; border-radius:4px; padding:5px 8px; font-size:.9rem;"></select>
+                </div>
+                <div class="selector-block" style="margin:0;">
+                    <label style="font-size:.9rem; font-weight:600;">Series B</label>
+                    <select id="series-b" style="width:100%; border:1px solid #ced4da; border-radius:4px; padding:5px 8px; font-size:.9rem;"></select>
+                </div>
+                <div class="rg-field" style="grid-column:1 / -1;">
+                    <span class="rg-label">Metric</span>
+                    <div class="radio-group" id="rg-comparison-metric" style="flex-direction:row; gap:16px;">
+                        <label><input type="radio" name="comparison-metric" value="smd" checked> Standardized Mean Difference (SMD, Cohen&rsquo;s <i>d</i>)</label>
+                        <label><input type="radio" name="comparison-metric" value="log2fc"> log&#x2082; fold change</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <hr style="margin:14px 0;">
+
+        <!-- 2-column settings layout -->
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px;">
+
+            <!-- Left: Visualization Settings -->
+            <div>
+                <div style="font-weight:700; font-size:.95rem; margin-bottom:12px;">
+                    <u>Visualization Settings:</u>
+                </div>
+
+                <!-- Data Source & Overlay — segmented control -->
+                <div style="margin-bottom:12px;">
+                    <span class="rg-label" style="margin-bottom:5px; font-weight:600; font-size:.92rem;">Data Source &amp; Overlay</span>
+                    <div class="seg-control seg-ctl-disabled" id="overlay-seg-control">
+                        <button class="seg-btn seg-active" data-value="all-peptides" disabled>
+                            All Peptides from Dataset
+                        </button>
+                        <button class="seg-btn" data-value="pep-intervals" disabled>
+                            Peptide Intervals
+                        </button>
+                        <button class="seg-btn" data-value="bio-functions" id="seg-bio-functions" disabled>
+                            Bioactive Functions
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Unified items selector — greyed when All Peptides is selected -->
+                <div id="items-selector-block" class="items-inactive" style="margin-bottom:12px;">
+                    <label style="font-weight:600; font-size:.92rem; margin-bottom:4px; display:flex; align-items:center; gap:6px;">
+                        <span id="items-selector-label-text">Select Items</span>
+                        <span id="items-selector-spinner" class="hidden">
+                            <i class="fas fa-circle-notch spin" style="color:#1976d2;"></i>
+                        </span>
+                    </label>
+                    <select id="items-selector" class="multi-select" multiple size="5" disabled
+                            style="height:110px; font-size:.90rem; font-family:monospace;"></select>
+                    <small id="items-selector-hint" class="text-muted" style="display:block; margin-top:2px;">
+                        Select Peptide Intervals or Bioactive Functions above to enable
+                    </small>
+                </div>
+
+                <!-- 2-col radio grid: Display Lines + Plot Orientation -->
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px 18px;">
+
+                    <div class="rg-field">
+                        <span class="rg-label">Display Lines</span>
+                        <div class="radio-group rg-disabled" id="rg-lines" style="flex-direction:column; gap:4px; align-items:flex-start;">
+                            <label><input type="radio" name="ms-average" value="no" disabled> Individual Only</label>
+                            <label><input type="radio" name="ms-average" value="yes" checked disabled> Individual + Averaged</label>
+                            <label><input type="radio" name="ms-average" value="only" disabled> Averaged Only</label>
+                        </div>
+                    </div>
+
+                    <div class="rg-field">
+                        <span class="rg-label">Plot Orientation</span>
+                        <div class="radio-group rg-disabled" id="rg-orientation" style="flex-direction:column; gap:4px; align-items:flex-start;">
+                            <label><input type="radio" name="hm-orientation" value="Landscape" checked disabled> Landscape</label>
+                            <label><input type="radio" name="hm-orientation" value="Portrait" disabled> Portrait</label>
+                            <label class="checkbox-row" id="orientation-compact-row" style="margin:0;"><input type="radio" name="hm-orientation" value="Compact" disabled> Compact</label>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Checkboxes -->
+                <div style="margin-top:12px; display:flex; flex-direction:column; gap:6px;">
+                    <label class="checkbox-row">
+                        <input type="checkbox" id="log-transform" disabled> Log&#x2081;&#x2080; Transform
+                    </label>
+                    <label class="checkbox-row">
+                        <input type="checkbox" id="manual-y-axis" disabled> Manual Y-Axis
+                    </label>
+                    <label class="checkbox-row" title="Print the amino-acid letter on each sample's tiles (instead of the shared strip) — useful for comparing proteins or variants.">
+                        <input type="checkbox" id="aa-on-tiles" disabled> Show amino acid sequence on tiles
+                    </label>
+                    <label class="checkbox-row" title="Trim the protein's N-terminal signal peptide off the front of the sequence before rendering, so the map shows the mature protein and dataset position 1 lines up with residue 1 of that reduced sequence. Uses UniProt's annotated signal-peptide length per protein by default; enter a residue count below to override it (works for custom protein lists with no UniProt record too — just not automatically cross-checkable in that case).">
+                        <input type="checkbox" id="strip-start-sequence" disabled> Strip start sequence
+                    </label>
+                </div>
+
+                <!-- Strip start sequence — manual residue-count override (conditional) -->
+                <div id="strip-start-manual-row" style="display:flex; align-items:center; gap:8px; margin-top:6px;">
+                    <label style="font-size:.88rem; color:#666;" for="strip-start-manual">Residues to strip</label>
+                    <input type="number" id="strip-start-manual" min="0" step="1" disabled
+                           placeholder="Auto (UniProt signal peptide)"
+                           style="width:210px; border:1px solid #ced4da; border-radius:4px; padding:3px 6px; font-size:.88rem;">
+                </div>
+                <!-- UniProt signal-peptide suggestion for the currently selected protein(s) -->
+                <div id="strip-start-suggestion" style="font-size:.82rem; color:#666; margin-top:4px; margin-left:2px;"></div>
+
+                <!-- Manual Y-axis inputs (conditional) -->
+                <div id="manual-y-inputs" class="hidden" style="margin-top:6px;">
+                    <div class="seg-control" id="y-scale-seg" style="display:inline-flex; margin-bottom:8px; max-width:100px;">
+                        <button class="seg-btn seg-active" data-value="linear" style="font-size:.78rem; padding:2px 4px; flex:1;">Linear</button>
+                        <button class="seg-btn" data-value="power10" style="font-size:.78rem; padding:2px 4px; flex:1;">10<sup>n</sup></button>
+                    </div>
+                    <div style="display:flex; align-items:flex-start; gap:10px; flex-wrap:wrap;">
+                        <div>
+                            <label style="font-weight:600; font-size:.92rem;">Y Min</label>
+                            <input type="number" id="y-min" value="0" step="0.01"
+                                   style="width:90px; border:1px solid #ced4da; border-radius:4px; padding:4px 6px; font-size:.92rem; display:block;">
+                            <small id="y-min-preview" style="display:block; font-size:.90rem; color:#1976d2; margin-top:2px; min-height:1em;"></small>
+                        </div>
+                        <div>
+                            <label style="font-weight:600; font-size:.92rem;">Y Max</label>
+                            <input type="number" id="y-max" value="1" step="0.01"
+                                   style="width:90px; border:1px solid #ced4da; border-radius:4px; padding:4px 6px; font-size:.92rem; display:block;">
+                            <small id="y-max-preview" style="display:block; font-size:.90rem; color:#1976d2; margin-top:2px; min-height:1em;"></small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Appearance Settings -->
+            <div style="min-width:0; max-width:380px;">
+                <div style="font-weight:700; font-size:.95rem; margin-bottom:8px;">
+                    <u>Appearance Settings:</u>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:6px;">
+
+                    <div style="display:flex; align-items:center; gap:8px; min-width:0;">
+                        <label style="font-weight:600; font-size:.92rem; white-space:nowrap; flex-shrink:0; width:130px;">Heatmap Color</label>
+                        <select id="hm-color" title="Colormap for the peptide-count heatmap bars" disabled style="flex:1; min-width:0; border:1px solid #ced4da; border-radius:4px; padding:4px 8px; font-size:.92rem;">
+                            <option value="RdYlGn_r">RdYlGn_r (default)</option>
+                            <option value="RdYlBu_r">RdYlBu_r</option>
+                            <option value="coolwarm">coolwarm</option>
+                            <option value="viridis">viridis</option>
+                            <option value="plasma">plasma</option>
+                            <option value="Blues">Blues</option>
+                            <option value="Greens">Greens</option>
+                            <option value="YlOrRd">YlOrRd</option>
+                            <option value="jet">jet</option>
+                            <option value="ocean">ocean</option>
+                            <option value="rainbow">rainbow</option>
+                        </select>
+                        <div class="color-swatch" id="hm-color-swatch"></div>
+                    </div>
+
+                    <div style="display:flex; align-items:center; gap:8px; min-width:0;">
+                        <label style="font-weight:600; font-size:.92rem; white-space:nowrap; flex-shrink:0; width:130px;">Line Plot Color</label>
+                        <select id="lp-color" title="Colormap for the individual-peptide line traces" disabled style="flex:1; min-width:0; border:1px solid #ced4da; border-radius:4px; padding:4px 8px; font-size:.92rem;">
+                            <option value="Set3">Set3 (default)</option>
+                            <option value="Set1">Set1</option>
+                            <option value="Set2">Set2</option>
+                            <option value="tab10">tab10</option>
+                            <option value="Paired">Paired</option>
+                            <option value="Pastel1">Pastel1</option>
+                        </select>
+                        <div class="color-swatch" id="lp-color-swatch"></div>
+                    </div>
+
+                    <div style="display:flex; align-items:center; gap:8px; min-width:0;">
+                        <label style="font-weight:600; font-size:.92rem; white-space:nowrap; flex-shrink:0; width:130px;">Avg Line Color</label>
+                        <select id="avglp-color" title="Colormap for the averaged-abundance line traces" disabled style="flex:1; min-width:0; border:1px solid #ced4da; border-radius:4px; padding:4px 8px; font-size:.92rem;">
+                            <option value="Dark2">Dark2 (default)</option>
+                            <option value="Set1">Set1</option>
+                            <option value="tab10">tab10</option>
+                            <option value="Accent">Accent</option>
+                        </select>
+                        <div class="color-swatch" id="avglp-color-swatch"></div>
+                    </div>
+
+                    <div style="display:flex; align-items:center; gap:8px; min-width:0;">
+                        <label style="font-weight:600; font-size:.92rem; white-space:nowrap; flex-shrink:0; width:130px;">Plot Title</label>
+                        <input type="text" id="plot-title" placeholder="None (optional)" title="Plot title text (blank = none)" disabled
+                               style="flex:1; min-width:0; border:1px solid #ced4da; border-radius:4px; padding:4px 8px; font-size:.92rem;">
+                        <input type="number" id="font-size-plot-title" value="16" min="6" max="48" step="1" title="Plot title font size" disabled
+                               style="width:44px; flex-shrink:0; min-width:0; border:1px solid #ced4da; border-radius:4px; padding:4px 4px; font-size:.92rem;">
+                    </div>
+
+                    <div style="display:flex; align-items:center; gap:8px; min-width:0;">
+                        <label style="font-weight:600; font-size:.92rem; white-space:nowrap; flex-shrink:0; width:130px;">X-Axis Label</label>
+                        <input type="text" id="xaxis-label" placeholder="Auto" title="X-axis label text (blank = auto)" disabled
+                               style="flex:1; min-width:0; border:1px solid #ced4da; border-radius:4px; padding:4px 8px; font-size:.92rem;">
+                        <input type="number" id="font-size-xaxis-label" value="14" min="6" max="48" step="1" title="X-axis label font size" disabled
+                               style="width:44px; flex-shrink:0; min-width:0; border:1px solid #ced4da; border-radius:4px; padding:4px 4px; font-size:.92rem;">
+                    </div>
+
+                    <div style="display:flex; align-items:center; gap:8px; min-width:0;">
+                        <label style="font-weight:600; font-size:.92rem; white-space:nowrap; flex-shrink:0; width:130px;">X-Axis Ticks</label>
+                        <input type="number" id="font-size-xaxis-tick" value="14" min="6" max="48" step="1" title="Position-tick font size along the shared x-axis (protein position numbers)" disabled
+                               style="width:44px; flex-shrink:0; min-width:0; border:1px solid #ced4da; border-radius:4px; padding:4px 4px; font-size:.92rem;">
+                    </div>
+
+                    <div style="display:flex; align-items:center; gap:8px; min-width:0;">
+                        <label style="font-weight:600; font-size:.92rem; white-space:nowrap; flex-shrink:0; width:130px;">Y-Axis Label</label>
+                        <input type="text" id="yaxis-label" placeholder="Averaged Peptide Abundance" title="Y-axis label text" disabled
+                               style="flex:1; min-width:0; border:1px solid #ced4da; border-radius:4px; padding:4px 8px; font-size:.92rem;">
+                        <input type="number" id="font-size-yaxis-label" value="14" min="6" max="48" step="1" title="Y-axis label font size" disabled
+                               style="width:44px; flex-shrink:0; min-width:0; border:1px solid #ced4da; border-radius:4px; padding:4px 4px; font-size:.92rem;">
+                    </div>
+
+                    <div style="display:flex; align-items:center; gap:8px; min-width:0;">
+                        <label style="font-weight:600; font-size:.92rem; white-space:nowrap; flex-shrink:0; width:130px;">Y-Axis Ticks</label>
+                        <input type="number" id="font-size-yaxis-tick" value="14" min="6" max="48" step="1" title="Numeric y-axis tick font size on the abundance line plot (Landscape only; Portrait/Compact show these values in the legend instead)" disabled
+                               style="width:44px; flex-shrink:0; min-width:0; border:1px solid #ced4da; border-radius:4px; padding:4px 4px; font-size:.92rem;">
+                    </div>
+
+                    <div style="display:flex; align-items:center; gap:8px; min-width:0;">
+                        <label style="font-weight:600; font-size:.92rem; white-space:nowrap; flex-shrink:0; width:130px;">Peptide Count Label</label>
+                        <input type="number" id="font-size-var-label" value="14" min="6" max="48" step="1" title="Font size of each row's variable/sample label on the peptide-count heatmap (e.g. 'High NE'). Portrait/Landscape only." disabled
+                               style="width:44px; flex-shrink:0; min-width:0; border:1px solid #ced4da; border-radius:4px; padding:4px 4px; font-size:.92rem;">
+                    </div>
+
+                    <div style="display:flex; align-items:center; gap:8px; min-width:0;">
+                        <label style="font-weight:600; font-size:.92rem; white-space:nowrap; flex-shrink:0; width:195px;">Legend Title (Sample Type)</label>
+                        <input type="text" id="legend-title-1" placeholder="Sample Type:" title="Sample Type legend header text" disabled
+                               style="flex:1; min-width:0; border:1px solid #ced4da; border-radius:4px; padding:4px 8px; font-size:.92rem;">
+                    </div>
+
+                    <div style="display:flex; align-items:center; gap:8px; min-width:0;">
+                        <label style="font-weight:600; font-size:.92rem; white-space:nowrap; flex-shrink:0; width:195px;">Legend Title (Peptide Counts)</label>
+                        <input type="text" id="legend-title-2" placeholder="Peptide Counts:" title="Peptide Counts legend header text" disabled
+                               style="flex:1; min-width:0; border:1px solid #ced4da; border-radius:4px; padding:4px 8px; font-size:.92rem;">
+                    </div>
+
+                    <div style="display:flex; align-items:center; gap:8px; min-width:0;">
+                        <label style="font-weight:600; font-size:.92rem; white-space:nowrap; flex-shrink:0; width:195px;">Legend Title (Average Abundance)</label>
+                        <input type="text" id="legend-title-3" placeholder="Average Abundance:" title="Average Abundance legend header text" disabled
+                               style="flex:1; min-width:0; border:1px solid #ced4da; border-radius:4px; padding:4px 8px; font-size:.92rem;">
+                    </div>
+
+                    <div style="display:flex; align-items:center; gap:8px; min-width:0;">
+                        <label style="font-weight:600; font-size:.92rem; white-space:nowrap; flex-shrink:0; width:195px;">Legend Position</label>
+                        <select id="legend-position" title="Right: one combined legend beside the plot, groups stacked with the text going down. Below (side by side): each legend group becomes its own unit under the protein-sequence x-axis, centred side by side and wrapped onto another row when they don't fit — frees the full figure width for the heatmap. Below (stacked): the same units one above the other, one per row, so no figure width can crowd them." disabled
+                                style="flex:1; min-width:0; border:1px solid #ced4da; border-radius:4px; padding:4px 8px; font-size:.92rem;">
+                            <option value="right" selected>Right of plot (combined)</option>
+                            <option value="below">Below x-axis (side by side)</option>
+                            <option value="below-stacked">Below x-axis (stacked)</option>
+                        </select>
+                    </div>
+
+                    <div style="display:flex; align-items:center; gap:8px; min-width:0;">
+                        <label style="font-weight:600; font-size:.92rem; white-space:nowrap; flex-shrink:0; width:195px;">Legend</label>
+                        <input type="number" id="font-size-legend" value="14" min="6" max="48" step="1" title="Font size applied to all legend headers and items above (Sample Type, Peptide Counts, Average Abundance) — one shared size, whether they render as one combined legend or as separate units below the x-axis" disabled
+                               style="width:44px; flex-shrink:0; min-width:0; border:1px solid #ced4da; border-radius:4px; padding:4px 4px; font-size:.92rem;">
+                    </div>
+
+                    <label class="checkbox-row" style="margin-top:2px;" title="Drop trailing UniProt descriptors (e.g. ' OS=Bos taurus GN=CSN2 …') from the protein name used in the axis label and title, leaving the short name. Uncheck to show the full protein name.">
+                        <input type="checkbox" id="strip-protein-name" checked disabled> Strip protein name
+                    </label>
+
+                </div>
+            </div>
+
+        </div>
+
+        <div style="margin-top:16px; display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+            <button class="btn-generate" id="generate-btn" disabled>
+                <i class="fas fa-image"></i> Generate Heatmap
+            </button>
+            <span id="generate-spinner" class="hidden">
+                <i class="fas fa-circle-notch spin" style="color:#1976d2;"></i>
+                <span id="generate-spinner-text" style="font-size:.95rem;">Generating…</span>
+            </span>
+        </div>
+    </div>
+
+</div><!-- end .page-box -->
+
+    <!-- ── Step 3: Output ────────────────────────────────────────── -->
+    <div class="step-card" id="step3-card">
+        <div class="step-title">
+            <span class="step-badge">3</span>
+            Heatmap Output
+        </div>
+
+        <div style="margin-bottom:12px; display:flex; gap:10px; flex-wrap:wrap;">
+            <button class="btn-dl" id="dl-html-btn" disabled>
+                <i class="fas fa-download"></i> Download Interactive (HTML)
+            </button>
+            <button class="btn-dl" id="dl-png-btn" disabled>
+                <i class="fas fa-image"></i> Download PNG
+            </button>
+            <button class="btn-dl" id="dl-svg-btn" disabled>
+                <i class="fas fa-bezier-curve"></i> Download SVG
+            </button>
+        </div>
+
+        <div id="plot-messages"></div>
+
+        <div id="heatmap-placeholder" class="placeholder-box">
+            <i class="fas fa-th" style="font-size:2rem; margin-bottom:8px; display:block; color:#ccc;"></i>
+            Upload a data file and select proteins &amp; variables to generate a heatmap.
+        </div>
+
+        <div id="portrait-container" class="heatmap-img-container hidden">
+            <h4><i class="fas fa-mouse-pointer"></i> Portrait Layout (hover for details)</h4>
+            <img id="portrait-img" src="" alt="Portrait Heatmap" style="display:none;">
+            <div id="portrait-interactive-container" class="interactive-plot-container hidden">
+                <div id="portrait-interactive-div" class="interactive-plotly-div"></div>
+            </div>
+        </div>
+        <div id="landscape-container" class="heatmap-img-container hidden">
+            <h4><i class="fas fa-mouse-pointer"></i> Landscape Layout (hover for details)</h4>
+            <img id="landscape-img" src="" alt="Landscape Heatmap" style="display:none;">
+            <div id="landscape-interactive-container" class="interactive-plot-container hidden">
+                <div id="landscape-interactive-div" class="interactive-plotly-div"></div>
+            </div>
+        </div>
+        <div id="compact-container" class="compact-plot-container hidden">
+            <h4><i class="fas fa-chart-bar"></i> Compact Layout</h4>
+            <div id="compact-plotly-div"></div>
+        </div>
+    </div>
+
+</div>
+
+<script src="{% static 'peptide/js/form_controls.js' %}?v=1"></script>
+<script>
+(function() {
+'use strict';
+
+const CSRF = '{{ csrf_token }}';
+let currentLandscapeB64             = null;
+let currentCompactJson              = null;
+let currentLandscapeInteractiveJson = null;
+let currentPortraitInteractiveJson  = null;
+let currentOrientation              = 'Landscape';
+let hasFunctions = false;
+// Differential-comparison availability (R2-2d). varReplicates maps each grouping
+// variable → whether it carries replicate-level ('Grouped:') columns; the SMD /
+// log2FC track needs replicate-backed series on both sides.
+let varReplicates = {};
+let hasReplicates = false;
+
+function getCsrf() { return CSRF; }
+
+function showStatus(container, message, type='info') {
+    container.innerHTML = `<div class="status-box status-${type}">${message}</div>`;
+}
+function appendStatus(container, message, type='info') {
+    container.insertAdjacentHTML('beforeend',
+        `<div class="status-box status-${type}">${message}</div>`);
+}
+function getMultiSelectValues(sel) {
+    return Array.from(sel.selectedOptions).map(o => o.value);
+}
+function getRadioValue(name) {
+    const checked = document.querySelector(`input[name="${name}"]:checked`);
+    return checked ? checked.value : '';
+}
+function getSegValue() {
+    const active = document.querySelector('#overlay-seg-control .seg-btn.seg-active');
+    return active ? active.dataset.value : 'all-peptides';
+}
+
+// ── Enable step 2 controls after upload ───────────────────────────
+function enableStep2() {
+    const step2 = document.getElementById('step2-card');
+    step2.classList.remove('step-disabled');
+    step2.querySelectorAll('select, input, button').forEach(el => { el.disabled = false; });
+    step2.querySelectorAll('.radio-group').forEach(rg => {
+        rg.classList.remove('rg-disabled');
+        rg.querySelectorAll('input[type=radio]').forEach(r => r.disabled = false);
+    });
+    document.getElementById('manual-y-inputs').classList.add('hidden');
+    // Enable segmented control; bio-functions button only when file has function data
+    const segCtl = document.getElementById('overlay-seg-control');
+    if (segCtl) segCtl.classList.remove('seg-ctl-disabled');
+    const bioFuncBtn = document.getElementById('seg-bio-functions');
+    if (bioFuncBtn) bioFuncBtn.disabled = !hasFunctions;
+    applyItemsSelectorState(false);
+    _updateAaTilesState();
+    _updateStripStartState();
+    applyComparisonAvailability();
+}
+
+// Announce whether the uploaded file carries replicate-level ('Grouped:')
+// columns — mirrors the Data Analysis dashboard's banner. Replicate data is what
+// enables the group-comparison track (differential SMD / log2FC); single-average
+// files still render, without it.
+function applyHmReplicateBanner() {
+    const banner = document.getElementById('hm-replicate-banner');
+    if (!banner) return;
+    banner.style.display = 'block';
+    if (hasReplicates) {
+        banner.className = 'status-box status-success';
+        banner.innerHTML =
+            "Replicate-level <code>'Grouped:'</code> columns detected — group-comparison statistics (differential SMD / log2FC effect-size track) available.";
+    } else {
+        banner.className = 'status-box status-info';
+        banner.innerHTML =
+            "No replicate columns found — showing <code>Avg_</code> averages only; the differential comparison track is unavailable. Re-export from Data Transformation with grouped replicates to enable it.";
+    }
+}
+
+// ── Differential comparison (SMD / log2FC) ────────────────────────
+// Gate the comparison controls on the uploaded file carrying replicate-level
+// data. enableStep2() blanket-enables every step-2 input, so this runs last to
+// re-disable the comparison toggle when no replicate columns are present.
+function applyComparisonAvailability() {
+    const cb     = document.getElementById('comparison-mode');
+    const banner = document.getElementById('comparison-banner');
+    if (!cb) return;
+    if (hasReplicates) {
+        cb.disabled = false;
+        banner.textContent =
+            'Pick two series and a metric to overlay an effect-size track.';
+    } else {
+        cb.checked  = false;
+        cb.disabled = true;
+        banner.innerHTML =
+            "Comparison disabled: this file has only <code>Avg_</code> columns (single-average). " +
+            "It needs the per-replicate <code>'Grouped:'</code> columns — re-export from Data Transformation with grouped replicates.";
+    }
+    toggleComparisonControls();
+}
+
+// Show/hide the Series A/B + metric block based on the toggle, and (re)populate
+// the series pickers from the current protein × replicate-backed-variable choices.
+function toggleComparisonControls() {
+    const cb   = document.getElementById('comparison-mode');
+    const ctrl = document.getElementById('comparison-controls');
+    const on   = cb && cb.checked && !cb.disabled;
+    ctrl.classList.toggle('hidden', !on);
+    if (on) refreshComparisonSeries();
+    syncManualYAxisDefaults();
+
+    // The differential track is only drawn on the Landscape / Portrait line
+    // panel, so grey out + deactivate the Compact orientation while comparison
+    // is on. If Compact was selected, fall back to Landscape.
+    const compactRadio = document.querySelector('input[name="hm-orientation"][value="Compact"]');
+    if (compactRadio) {
+        if (on && compactRadio.checked) {
+            const landscape = document.querySelector('input[name="hm-orientation"][value="Landscape"]');
+            if (landscape) { landscape.checked = true; _updateAaTilesState(); }
+        }
+        setControlEnabled(compactRadio, !on, {
+            row: document.getElementById('orientation-compact-row'),
+        });
+    }
+}
+
+// Build the (protein × variable) combos that are replicate-backed and offer them
+// as Series A / Series B. Combo value matches the renderer's combo_key
+// (`${protein_id}_${var_key}`). Preserves the current pick when still valid.
+function refreshComparisonSeries() {
+    const selA = document.getElementById('series-a');
+    const selB = document.getElementById('series-b');
+    if (!selA || !selB) return;
+
+    const proteins = getMultiSelectValues(document.getElementById('protein-selector'));
+    const varKeys  = getMultiSelectValues(document.getElementById('varkey-selector'));
+    const protLabel = pid => {
+        const opt = document.querySelector(`#protein-selector option[value="${CSS.escape(pid)}"]`);
+        return opt ? opt.textContent : pid;
+    };
+
+    const combos = [];
+    proteins.forEach(pid => {
+        varKeys.forEach(vk => {
+            if (varReplicates[vk]) {
+                const label = proteins.length > 1 ? `${protLabel(pid)} · ${vk}` : vk;
+                combos.push({ value: `${pid}_${vk}`, label });
+            }
+        });
+    });
+
+    const prevA = selA.value, prevB = selB.value;
+    const fill = (sel) => {
+        sel.innerHTML = '';
+        combos.forEach(c => sel.add(new Option(c.label, c.value)));
+    };
+    fill(selA); fill(selB);
+
+    const values = combos.map(c => c.value);
+    selA.value = values.includes(prevA) ? prevA : (values[0] || '');
+    // default Series B to a series distinct from A when possible
+    if (values.includes(prevB) && prevB !== selA.value) {
+        selB.value = prevB;
+    } else {
+        selB.value = values.find(v => v !== selA.value) || (values[0] || '');
+    }
+
+    const banner = document.getElementById('comparison-banner');
+    if (combos.length < 2 && !document.getElementById('comparison-mode').disabled) {
+        banner.textContent =
+            'Select at least two replicate-backed protein × variable series (above) to compare.';
+    }
+}
+
+// "Show amino acid sequence on tiles" only applies to the wrapped-band renderers
+// (Portrait / Landscape). Compact has no per-sample tile rows, so gray it out there.
+function _updateAaTilesState() {
+    const cb = document.getElementById('aa-on-tiles');
+    const enabled = getRadioValue('hm-orientation') !== 'Compact';
+    setControlEnabled(cb, enabled, { row: cb ? cb.closest('.checkbox-row') : null,
+                                     clearOnDisable: true });
+}
+
+// The manual residue-count override only makes sense while "Strip start
+// sequence" is on; grey it out otherwise (mirrors manual-y-inputs / aa-on-tiles).
+function _updateStripStartState() {
+    const cb = document.getElementById('strip-start-sequence');
+    const input = document.getElementById('strip-start-manual');
+    setControlEnabled(input, !!(cb && cb.checked), {
+        row: document.getElementById('strip-start-manual-row'),
+    });
+    updateStripStartSuggestion();
+}
+
+// Show what "Strip start sequence" would auto-detect for the currently
+// selected protein(s) — UniProt's signal-peptide POSITION plus the actual
+// amino-acid letters at that position (UniProt's API only returns the
+// position; the letters are recovered by slicing the full sequence with it
+// server-side). Lets the user confirm the manual override — or the auto
+// value — actually corresponds to a real signal peptide before trusting the
+// plotted positions; a per-protein mismatch is also flagged as a plot error
+// by the backend if a manual value is set (see the "Strip Start Sequence"
+// messages returned from /heatmap/plot/).
+async function updateStripStartSuggestion() {
+    const box = document.getElementById('strip-start-suggestion');
+    const cb  = document.getElementById('strip-start-sequence');
+    if (!box) return;
+    if (!cb || !cb.checked) { box.innerHTML = ''; return; }
+
+    const selectedProteins = getMultiSelectValues(document.getElementById('protein-selector'));
+    if (!selectedProteins.length) { box.innerHTML = ''; return; }
+
+    let data;
+    try {
+        const resp = await fetch('/heatmap/signal-peptide-info/', {
+            method: 'POST',
+            headers: { 'X-CSRFToken': getCsrf(), 'Content-Type': 'application/json' },
+            body: JSON.stringify({ selected_proteins: selectedProteins }),
+        });
+        data = await resp.json();
+    } catch (e) {
+        box.innerHTML = '';
+        return;
+    }
+    const suggestions = (data && data.suggestions) || [];
+    if (!suggestions.length) { box.innerHTML = ''; return; }
+
+    const lines = suggestions.map(s => {
+        if (s.has_signal) {
+            const seq = s.signal_sequence || '';
+            const shown = seq.length > 25 ? seq.slice(0, 25) + '…' : seq;
+            return `<b>${s.protein_id}</b> (${s.name}): UniProt signal peptide — `
+                 + `${s.signal_end} aa (${shown})`;
+        }
+        return `<b>${s.protein_id}</b> (${s.name}): no UniProt signal peptide annotated`;
+    });
+    box.innerHTML = lines.join('<br>');
+}
+
+// ── Upload ────────────────────────────────────────────────────────
+let selectedMergedFile = null;
+let selectedFastaFile  = null;
+// True once merged data is loaded into the session by ANY path (direct upload,
+// example, or Transfer from Data Transformation). Lets a FASTA picked after a
+// transfer — where there is no client-side merged File to re-POST — be applied
+// to the saved session data instead of being silently dropped.
+let hmDataLoaded = false;
+
+function setupDropZone(zoneId, inputId, fileNameId, onFile) {
+    const zone  = document.getElementById(zoneId);
+    const input = document.getElementById(inputId);
+    const label = document.getElementById(fileNameId);
+    zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+    zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+    zone.addEventListener('drop', e => {
+        e.preventDefault(); zone.classList.remove('drag-over');
+        if (e.dataTransfer.files.length) {
+            const f = e.dataTransfer.files[0];
+            onFile(f);
+            label.textContent = f.name;
+            zone.querySelector('.drop-text').style.display = 'none';
+            const fn = zone.querySelector('.file-name') || document.createElement('div');
+            fn.className = 'file-name'; fn.textContent = f.name; zone.appendChild(fn);
+        }
+    });
+    input.addEventListener('change', () => {
+        if (input.files.length) { onFile(input.files[0]); label.textContent = input.files[0].name; }
+    });
+}
+
+setupDropZone('merged-upload-zone', 'merged-file-input', 'merged-file-name', f => {
+    selectedMergedFile = f;
+    doUpload();
+});
+setupDropZone('fasta-upload-zone', 'fasta-file-input', 'fasta-file-name', f => {
+    selectedFastaFile = f;
+    if (selectedMergedFile) {
+        // Merged file is a client File — re-upload both together (attaches FASTA).
+        doUpload();
+    } else if (hmDataLoaded) {
+        // Merged data already in the session with no client File to re-POST
+        // (e.g. transferred from Data Transformation) — apply the FASTA to it.
+        applyFasta(f);
+    }
+});
+
+// Reflect (or clear) the FASTA dropzone display for a server-side FASTA that was
+// carried over rather than picked from the file input — e.g. auto-loaded from
+// Data Transformation. Passing null resets the dropzone to its empty state.
+function setHmFastaDisplay(name) {
+    const zone  = document.getElementById('fasta-upload-zone');
+    const label = document.getElementById('fasta-file-name');
+    const dropText = zone.querySelector('.drop-text');
+    const existing = zone.querySelector('.file-name');
+    if (name) {
+        label.textContent = name;
+        if (dropText) dropText.style.display = 'none';
+        const fn = existing || document.createElement('div');
+        fn.className = 'file-name'; fn.textContent = name;
+        if (!existing) zone.appendChild(fn);
+    } else {
+        label.textContent = '';
+        if (dropText) dropText.style.display = '';
+        if (existing) existing.remove();
+    }
+}
+
+async function doUpload() {
+    if (!selectedMergedFile) return;
+    const spinner = document.getElementById('upload-spinner');
+    const status  = document.getElementById('upload-status');
+    spinner.classList.remove('hidden');
+    showStatus(status, '<i class="fas fa-circle-notch spin"></i> Processing file…', 'info');
+    document.getElementById('autofetch-msgs').innerHTML = '';
+
+    const fd = new FormData();
+    fd.append('merged_file', selectedMergedFile);
+    if (selectedFastaFile) fd.append('fasta_file', selectedFastaFile);
+
+    let resp;
+    try {
+        resp = await fetch('/heatmap/upload/', {
+            method: 'POST',
+            headers: { 'X-CSRFToken': getCsrf() },
+            body: fd,
+        });
+    } catch(e) {
+        showStatus(status, `Network error: ${e.message}`, 'error');
+        spinner.classList.add('hidden');
+        return;
+    }
+
+    const data = await resp.json();
+    spinner.classList.add('hidden');
+
+    if (!resp.ok || data.error) {
+        showStatus(status, `<strong>Error:</strong> ${data.error}`, 'error');
+        return;
+    }
+
+    showStatus(status,
+        `✅ <strong>${data.filename}</strong> loaded — ${data.rows.toLocaleString()} rows, ` +
+        `${data.proteins.length} protein(s), ${data.var_keys.length} variable(s)` +
+        (data.has_functions ? ', function data available' : ''), 'success');
+
+    if (data.warnings && data.warnings.length)
+        data.warnings.forEach(w => appendStatus(status, w, 'warning'));
+
+    hasFunctions = !!data.has_functions;
+    varReplicates = data.var_replicates || {};
+    hasReplicates = !!data.has_replicates;
+    applyHmReplicateBanner();
+    populateSelectors(data);
+    enableStep2();
+}
+
+// Apply a FASTA to merged data already loaded in the session (used when there
+// is no client-side merged File to re-POST, e.g. after Transfer from Data
+// Transformation). Refreshes the protein selector's has_sequence flags in place
+// so the generate step uses the uploaded sequences instead of a UniProt lookup.
+async function applyFasta(file) {
+    const status  = document.getElementById('upload-status');
+    const spinner = document.getElementById('upload-spinner');
+    spinner.classList.remove('hidden');
+    const fd = new FormData();
+    fd.append('fasta_file', file);
+    let resp;
+    try {
+        resp = await fetch('/heatmap/apply-fasta/', {
+            method: 'POST', headers: { 'X-CSRFToken': getCsrf() }, body: fd,
+        });
+    } catch(e) {
+        showStatus(status, `Network error: ${e.message}`, 'error');
+        spinner.classList.add('hidden');
+        return;
+    }
+    const data = await resp.json();
+    spinner.classList.add('hidden');
+    if (!resp.ok || data.error) {
+        appendStatus(status, `<strong>FASTA error:</strong> ${data.error}`, 'error');
+        return;
+    }
+    // Update has_sequence flags on the existing options (preserve selections).
+    const sel = document.getElementById('protein-selector');
+    const seqMap = {};
+    (data.proteins || []).forEach(p => { seqMap[p.id] = p.has_sequence; });
+    Array.from(sel.options).forEach(opt => {
+        if (seqMap[opt.value] === true) delete opt.dataset.hasSequence;
+        else if (seqMap[opt.value] === false) opt.dataset.hasSequence = 'false';
+    });
+    setHmFastaDisplay(file.name);
+    appendStatus(status,
+        `✅ FASTA <strong>${data.filename}</strong> applied — ` +
+        `${data.sequences_applied} sequence(s) matched to your proteins.`,
+        data.sequences_applied ? 'success' : 'warning');
+}
+
+function populateSelectors(data) {
+    hmDataLoaded = true;
+    const protSel = document.getElementById('protein-selector');
+    protSel.innerHTML = '';
+    data.proteins.forEach(p => {
+        const opt = new Option(p.label, p.id);
+        if (!p.has_sequence) opt.dataset.hasSequence = 'false';
+        protSel.add(opt);
+    });
+    const varSel = document.getElementById('varkey-selector');
+    varSel.innerHTML = '';
+    data.var_keys.forEach(v => varSel.add(new Option(v, v, true, true)));
+}
+
+// ── Auto-fetch sequences for a list of protein IDs ────────────────
+async function autoFetchSequences(pids, spinnerTextEl) {
+    const fetched = [], failed = [];
+    for (let i = 0; i < pids.length; i++) {
+        const pid = pids[i];
+        spinnerTextEl.textContent =
+            `Fetching sequence from UniProt: ${pid} (${i + 1}/${pids.length})…`;
+        try {
+            const resp = await fetch('/heatmap/fetch-sequence/', {
+                method: 'POST',
+                headers: { 'X-CSRFToken': getCsrf(), 'Content-Type': 'application/json' },
+                body: JSON.stringify({ protein_id: pid }),
+            });
+            const d = await resp.json();
+            if (d.success) {
+                fetched.push(pid);
+                const opt = document.querySelector(`#protein-selector option[value="${CSS.escape(pid)}"]`);
+                if (opt) delete opt.dataset.hasSequence;
+            } else {
+                failed.push(pid);
+            }
+        } catch(e) {
+            failed.push(pid);
+        }
+    }
+    return { fetched, failed };
+}
+
+// Display auto-fetch result. overwrite=true replaces the container; false appends.
+function _showAutoFetchResult(fetched, failed, container, overwrite) {
+    if (!fetched.length && !failed.length) return;
+    let msg = '';
+    if (fetched.length)
+        msg += `<i class="fas fa-check-circle"></i> Auto-fetched sequences from UniProt: <strong>${fetched.join(', ')}</strong>`;
+    if (fetched.length && failed.length) msg += '<br>';
+    if (failed.length)
+        msg += `⚠ Could not fetch sequence for <strong>${failed.join(', ')}</strong>. Please upload a FASTA file.`;
+    const type = failed.length ? 'warning' : 'success';
+    if (overwrite) showStatus(container, msg, type);
+    else appendStatus(container, msg, type);
+}
+
+function getMissingSeqPids(proteinIds) {
+    const sel = document.getElementById('protein-selector');
+    return proteinIds.filter(pid => {
+        const opt = sel.querySelector(`option[value="${CSS.escape(pid)}"]`);
+        return opt && opt.dataset.hasSequence === 'false';
+    });
+}
+
+// ── Unified items-selector state tracking ────────────────────────
+let itemsSelectorMode = 'none'; // 'none' | 'bio' | 'pep'
+
+// Load options into the unified items-selector
+async function loadItemsSelector(mode, includeAllOption) {
+    const sel  = document.getElementById('items-selector');
+    const spin = document.getElementById('items-selector-spinner');
+    const prevSelected = new Set(getMultiSelectValues(sel));
+
+    sel.innerHTML = '';
+    spin.classList.remove('hidden');
+
+    const selectedProteins = getMultiSelectValues(document.getElementById('protein-selector'));
+    const selectedVarKeys  = getMultiSelectValues(document.getElementById('varkey-selector'));
+    const bioOrPep         = mode === 'pep' ? '1' : '2';
+
+    try {
+        const resp = await fetch('/heatmap/get-specific-options/', {
+            method: 'POST',
+            headers: { 'X-CSRFToken': getCsrf(), 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                bio_or_pep: bioOrPep,
+                selected_proteins: selectedProteins,
+                selected_var_keys: selectedVarKeys,
+            }),
+        });
+        const data = await resp.json();
+        spin.classList.add('hidden');
+        if (data.options && data.options.length) {
+            if (includeAllOption) {
+                const allOpt = new Option('All Available Functions', '__all_functional__');
+                if (prevSelected.has('__all_functional__')) allOpt.selected = true;
+                sel.add(allOpt);
+            }
+            data.options.forEach(opt => {
+                const o = new Option(opt.label, opt.value);
+                if (prevSelected.has(opt.value)) o.selected = true;
+                sel.add(o);
+            });
+        } else {
+            sel.add(new Option('(no options found)', '', false, false));
+        }
+    } catch(e) {
+        spin.classList.add('hidden');
+        sel.add(new Option('Error loading options', '', false, false));
+    }
+}
+
+// Determine what the unified items-selector should show and update it.
+// Also greys "Individual Only" when All Peptides is active (no lines without a selection).
+async function applyItemsSelectorState(reload) {
+    const segVal  = getSegValue();
+    const block   = document.getElementById('items-selector-block');
+    const sel     = document.getElementById('items-selector');
+    const labelEl = document.getElementById('items-selector-label-text');
+    const hintEl  = document.getElementById('items-selector-hint');
+
+    // Restrict Display Lines options based on seg selection.
+    // "All Peptides" has no individual lines to show — only "Averaged Only" is valid.
+    const msNoInput   = document.querySelector('input[name="ms-average"][value="no"]');
+    const msYesInput  = document.querySelector('input[name="ms-average"][value="yes"]');
+    const msOnlyInput = document.querySelector('input[name="ms-average"][value="only"]');
+    const msNoLabel   = msNoInput  ? msNoInput.closest('label')  : null;
+    const msYesLabel  = msYesInput ? msYesInput.closest('label') : null;
+    if (segVal === 'all-peptides') {
+        if (msNoLabel)   msNoLabel.style.opacity  = '.38';
+        if (msYesLabel)  msYesLabel.style.opacity = '.38';
+        if (msNoInput)   msNoInput.disabled  = true;
+        if (msYesInput)  msYesInput.disabled = true;
+        if (msOnlyInput) msOnlyInput.checked = true;
+    } else {
+        if (msNoLabel)  msNoLabel.style.opacity  = '';
+        if (msYesLabel) msYesLabel.style.opacity = '';
+        if (msNoInput)  msNoInput.disabled  = false;
+        if (msYesInput) msYesInput.disabled = false;
+    }
+
+    if (segVal === 'all-peptides') {
+        block.classList.add('items-inactive');
+        sel.disabled = true;
+        Array.from(sel.options).forEach(o => { o.selected = false; });
+        labelEl.textContent = 'Select Items';
+        hintEl.textContent  = 'Select Peptide Intervals or Bioactive Functions above to enable';
+        itemsSelectorMode   = 'none';
+        return;
+    }
+
+    block.classList.remove('items-inactive');
+    sel.disabled = false;
+
+    if (segVal === 'pep-intervals') {
+        const modeChanged  = (itemsSelectorMode !== 'pep');
+        itemsSelectorMode  = 'pep';
+        labelEl.textContent = 'Select Peptide Interval(s)';
+        hintEl.textContent  = 'Hold Ctrl/Cmd to select multiple';
+        if (reload || modeChanged) await loadItemsSelector('pep', false);
+    } else {
+        // bio-functions
+        const modeChanged  = (itemsSelectorMode !== 'bio');
+        itemsSelectorMode  = 'bio';
+        labelEl.textContent = 'Select Bioactive Function(s)';
+        hintEl.textContent  = 'Hold Ctrl/Cmd to select · All Available Functions = all bioactive peptides';
+        if (reload || modeChanged) await loadItemsSelector('bio', true);
+    }
+}
+
+// ── Segmented overlay / data-source control ───────────────────────
+document.querySelectorAll('#overlay-seg-control .seg-btn').forEach(function(btn) {
+    btn.addEventListener('click', async function() {
+        if (this.disabled) return;
+        document.querySelectorAll('#overlay-seg-control .seg-btn')
+            .forEach(b => b.classList.remove('seg-active'));
+        this.classList.add('seg-active');
+        await applyItemsSelectorState(true);
+    });
+});
+
+// Re-fetch items when protein or variable selection changes
+document.getElementById('protein-selector').addEventListener('change', async function() {
+    const missingSelected = getMissingSeqPids(
+        Array.from(this.selectedOptions).map(o => o.value)
+    );
+    if (missingSelected.length) {
+        const dummySpan = document.createElement('span');
+        const { fetched, failed } = await autoFetchSequences(missingSelected, dummySpan);
+        _showAutoFetchResult(fetched, failed, document.getElementById('autofetch-msgs'), true);
+    }
+    await applyItemsSelectorState(true);
+    refreshComparisonSeries();
+    updateStripStartSuggestion();
+});
+
+document.getElementById('varkey-selector').addEventListener('change', async function() {
+    await applyItemsSelectorState(true);
+    refreshComparisonSeries();
+});
+
+// Comparison-mode toggle: show/hide the Series A/B + metric block.
+document.getElementById('comparison-mode').addEventListener('change', toggleComparisonControls);
+// Keep Series B distinct from Series A when the user changes A.
+document.getElementById('series-a').addEventListener('change', function() {
+    const selB = document.getElementById('series-b');
+    if (selB.value === this.value) {
+        const alt = Array.from(selB.options).find(o => o.value !== this.value);
+        if (alt) selB.value = alt.value;
+    }
+});
+
+// ── Manual Y-axis toggle & scale mode ────────────────────────────
+function getYScaleMode() {
+    const active = document.querySelector('#y-scale-seg .seg-btn.seg-active');
+    return active ? active.dataset.value : 'linear';
+}
+
+function fmtSuperscript(n) {
+    // Convert digits/sign to unicode superscript for display
+    const map = {'0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹','-':'⁻','.':'·'};
+    return String(n).split('').map(c => map[c] !== undefined ? map[c] : c).join('');
+}
+
+function updateYPreviews() {
+    const mode = getYScaleMode();
+    const minP = document.getElementById('y-min-preview');
+    const maxP = document.getElementById('y-max-preview');
+    const minV = parseFloat(document.getElementById('y-min').value);
+    const maxV = parseFloat(document.getElementById('y-max').value);
+
+    if (mode === 'power10') {
+        minP.textContent = isNaN(minV) ? '' : '= 10' + fmtSuperscript(minV);
+        maxP.textContent = isNaN(maxV) ? '' : '= 10' + fmtSuperscript(maxV);
+    } else {
+        minP.textContent = '';
+        maxP.textContent = '';
+    }
+}
+
+function resolveYValue(raw) {
+    const v = parseFloat(raw) || 0;
+    return getYScaleMode() === 'power10' ? Math.pow(10, v) : v;
+}
+
+document.getElementById('manual-y-axis').addEventListener('change', function() {
+    const inputs = document.getElementById('manual-y-inputs');
+    if (this.checked) { inputs.classList.remove('hidden'); inputs.style.display = 'block'; }
+    else              { inputs.classList.add('hidden'); inputs.style.display = ''; }
+});
+
+// Manual Y-axis defaults depend on what's being plotted: plain abundance is
+// non-negative, but the SMD / log2FC comparison track is signed and centered
+// on 0, so the 0/1 abundance default would clip it. Re-sync the Y Min/Max
+// fields whenever comparison mode or its metric changes, unless the user has
+// already edited them away from the previous default (don't clobber a manual entry).
+const Y_AXIS_DEFAULTS = { abundance: [0, 1], smd: [-2, 2], log2fc: [-1, 1] };
+let _lastYAxisDefaultMode = 'abundance';
+
+function syncManualYAxisDefaults() {
+    const cb = document.getElementById('comparison-mode');
+    const mode = (cb && cb.checked && !cb.disabled) ? (getRadioValue('comparison-metric') || 'smd') : 'abundance';
+    if (mode === _lastYAxisDefaultMode) return;
+
+    const yMin = document.getElementById('y-min');
+    const yMax = document.getElementById('y-max');
+    const [prevMin, prevMax] = Y_AXIS_DEFAULTS[_lastYAxisDefaultMode];
+    const untouched = parseFloat(yMin.value) === prevMin && parseFloat(yMax.value) === prevMax;
+    if (untouched) {
+        const [newMin, newMax] = Y_AXIS_DEFAULTS[mode];
+        yMin.value = newMin;
+        yMax.value = newMax;
+        updateYPreviews();
+    }
+    _lastYAxisDefaultMode = mode;
+}
+
+document.querySelectorAll('input[name="comparison-metric"]').forEach(function(r) {
+    r.addEventListener('change', syncManualYAxisDefaults);
+});
+
+document.getElementById('strip-start-sequence').addEventListener('change', _updateStripStartState);
+
+document.querySelectorAll('#y-scale-seg .seg-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+        document.querySelectorAll('#y-scale-seg .seg-btn').forEach(b => b.classList.remove('seg-active'));
+        this.classList.add('seg-active');
+        updateYPreviews();
+    });
+});
+
+['y-min', 'y-max'].forEach(function(id) {
+    document.getElementById(id).addEventListener('input', updateYPreviews);
+});
+
+// ── Generate heatmap ──────────────────────────────────────────────
+document.getElementById('generate-btn').addEventListener('click', generateHeatmap);
+
+// Re-pack the "below x-axis" legend units for the width the figure actually
+// rendered at. The server can only position them against a reference width
+// (LEGEND_REF_WIDTH_PX), and legend boxes draw at a fixed pixel size while
+// Plotly positions them in paper fractions — so on a narrower figure the
+// units would overlap. This mirrors _below_legend_geometry() in
+// heatmap_renderer.py; keep the two in step.
+function repackBelowLegends(gd) {
+    const plan = gd && gd.layout && gd.layout.meta && gd.layout.meta.below_legend;
+    if (!plan) return;                       // right-legend figure: nothing to do
+    const fl = gd._fullLayout || {};
+    const margin = fl.margin || {};
+    const avail = (fl.width || 0) - (margin.l || 0) - (margin.r || 0);
+    if (!(avail > 0)) return;
+
+    const rows = [];
+    let row = [], rowPx = 0;
+    plan.units.forEach(function(u) {
+        const tooWide = rowPx + plan.gap_px + u.width > avail;
+        if (row.length && (plan.stacked || tooWide)) { rows.push(row); row = []; rowPx = 0; }
+        rowPx += u.width + (row.length ? plan.gap_px : 0);
+        row.push(u);
+    });
+    if (row.length) rows.push(row);
+
+    const strip  = plan.row_px * Math.max(rows.length, 1);
+    const height = plan.base_height_px + strip;
+    const bottom = plan.base_bottom_px + strip;
+    const plotH  = Math.max(height - plan.top_px - bottom, 1);
+
+    const update = { height: height, 'margin.b': bottom };
+    rows.forEach(function(r, ri) {
+        const span = r.reduce(function(s, u) { return s + u.width; }, 0)
+                     + plan.gap_px * (r.length - 1);
+        let cursor = -span / 2;
+        const y = -((plan.axis_zone_px + ri * plan.row_px) / plotH);
+        r.forEach(function(u) {
+            update[u.ref + '.x'] = 0.5 + (cursor + u.width / 2) / avail;
+            update[u.ref + '.y'] = y;
+            cursor += u.width + plan.gap_px;
+        });
+    });
+    Plotly.relayout(gd, update);
+}
+
+// Re-flow the below-axis legend strip when the window (and so the figure) is
+// resized — units may now fit on one row, or need to wrap onto another.
+window.addEventListener('resize', (function() {
+    let timer = null;
+    return function() {
+        clearTimeout(timer);
+        timer = setTimeout(function() {
+            ['landscape-interactive-div', 'portrait-interactive-div', 'compact-plotly-div']
+                .forEach(function(id) {
+                    const gd = document.getElementById(id);
+                    if (gd && gd._fullLayout) repackBelowLegends(gd);
+                });
+        }, 200);
+    };
+})());
+
+async function generateHeatmap() {
+    const btn         = document.getElementById('generate-btn');
+    const spinner     = document.getElementById('generate-spinner');
+    const spinnerText = document.getElementById('generate-spinner-text');
+    const msgs        = document.getElementById('plot-messages');
+
+    btn.disabled = true;
+    spinner.classList.remove('hidden');
+    msgs.innerHTML = '';
+
+    const selectedProteins = getMultiSelectValues(document.getElementById('protein-selector'));
+    const selectedVarKeys  = getMultiSelectValues(document.getElementById('varkey-selector'));
+
+    if (!selectedProteins.length || !selectedVarKeys.length) {
+        appendStatus(msgs, 'Please select at least one protein and one variable.', 'error');
+        btn.disabled = false; spinner.classList.add('hidden');
+        return;
+    }
+
+    // Validate the differential-comparison selection when the mode is on.
+    const comparisonOn = document.getElementById('comparison-mode').checked
+                         && !document.getElementById('comparison-mode').disabled;
+    const seriesA = document.getElementById('series-a').value;
+    const seriesB = document.getElementById('series-b').value;
+    if (comparisonOn) {
+        if (!seriesA || !seriesB) {
+            appendStatus(msgs, 'Differential comparison needs both Series A and Series B. Select two replicate-backed series or turn comparison off.', 'error');
+            btn.disabled = false; spinner.classList.add('hidden');
+            return;
+        }
+        if (seriesA === seriesB) {
+            appendStatus(msgs, 'Differential comparison needs two distinct series for Series A and Series B.', 'error');
+            btn.disabled = false; spinner.classList.add('hidden');
+            return;
+        }
+    }
+
+    // Auto-fetch missing sequences before generating
+    const missingPids = getMissingSeqPids(selectedProteins);
+    if (missingPids.length) {
+        const { fetched, failed } = await autoFetchSequences(missingPids, spinnerText);
+        _showAutoFetchResult(fetched, failed, document.getElementById('autofetch-msgs'), true);
+        const stillMissing = getMissingSeqPids(selectedProteins);
+        if (stillMissing.length === selectedProteins.length) {
+            appendStatus(msgs,
+                'Unable to proceed: no sequences available for the selected protein(s). ' +
+                'Please upload a FASTA file or select proteins with known sequences.', 'error');
+            btn.disabled = false; spinner.classList.add('hidden');
+            return;
+        }
+    }
+    spinnerText.textContent = 'Generating… (this may take 10–15 s)';
+
+    const segVal      = getSegValue();
+    const orientation = getRadioValue('hm-orientation');
+
+    // Map segmented control + items-selector to backend params
+    const itemsValues     = getMultiSelectValues(document.getElementById('items-selector'));
+    let filterType        = 'all-peptides';
+    let bioOrPep          = 'no';
+    let selectedFunctions = [];
+    let selectedPeptides  = [];
+
+    if (segVal === 'pep-intervals') {
+        filterType       = 'all-peptides';
+        bioOrPep         = '1';
+        selectedPeptides = itemsValues;
+    } else if (segVal === 'bio-functions') {
+        const realFuncs = itemsValues.filter(v => v !== '__all_functional__');
+        if (itemsValues.includes('__all_functional__') || realFuncs.length === 0) {
+            // "All Available Functions" → filter to all bioactive peptides, no specific overlay
+            filterType = 'bioactive-only';
+            bioOrPep   = 'no';
+        } else {
+            // Specific functions → filter dataset AND show overlay bands for those functions
+            filterType        = 'functional-only';
+            bioOrPep          = '2';
+            selectedFunctions = realFuncs;
+        }
+    }
+
+    const plotParams = {
+        ms_average_choice:    getRadioValue('ms-average'),
+        bio_or_pep:           bioOrPep,
+        selected_peptides:    selectedPeptides,
+        selected_functions:   selectedFunctions,
+        hm_selected_color:    document.getElementById('hm-color').value,
+        lp_selected_color:    document.getElementById('lp-color').value,
+        avglp_selected_color: document.getElementById('avglp-color').value,
+        plot_title:           document.getElementById('plot-title').value,
+        xaxis_label:          document.getElementById('xaxis-label').value,
+        yaxis_label:          document.getElementById('yaxis-label').value,
+        legend_title_1:       document.getElementById('legend-title-1').value || 'Sample Type:',
+        legend_title_2:       document.getElementById('legend-title-2').value || 'Peptide Counts:',
+        legend_title_3:       document.getElementById('legend-title-3').value || 'Average Abundance:',
+        font_size_plot_title:      document.getElementById('font-size-plot-title').value,
+        font_size_xaxis_label:     document.getElementById('font-size-xaxis-label').value,
+        font_size_yaxis_label:     document.getElementById('font-size-yaxis-label').value,
+        font_size_legend:          document.getElementById('font-size-legend').value,
+        font_size_xaxis_tick:      document.getElementById('font-size-xaxis-tick').value,
+        font_size_yaxis_tick:      document.getElementById('font-size-yaxis-tick').value,
+        font_size_var_label:       document.getElementById('font-size-var-label').value,
+        legend_position:      document.getElementById('legend-position').value,
+        strip_protein_name:   document.getElementById('strip-protein-name').checked,
+        strip_start_sequence: document.getElementById('strip-start-sequence').checked,
+        strip_start_manual:   (function() {
+            var v = document.getElementById('strip-start-manual').value;
+            return v.trim() !== '' ? parseInt(v, 10) : null;
+        })(),
+        // Both orientations are now served solely by the interactive Plotly
+        // renderer (one code path, wrap-width switch); the matplotlib landscape
+        // and portrait have been retired from the UI (Phase 1 + 2 consolidation).
+        plot_portrait:                false,
+        plot_landscape:               false,
+        plot_compact:                 orientation === 'Compact',
+        plot_landscape_interactive:   orientation === 'Landscape',
+        plot_portrait_interactive:    orientation === 'Portrait',
+        filter_type:          filterType,
+        log_transform:        document.getElementById('log-transform').checked,
+        manual_y_axis:        document.getElementById('manual-y-axis').checked,
+        y_min:                resolveYValue(document.getElementById('y-min').value),
+        y_max:                resolveYValue(document.getElementById('y-max').value) || 1,
+        aa_on_tiles:          document.getElementById('aa-on-tiles').checked,
+        // Differential-comparison track (R2-2d). When comparison_mode is off the
+        // backend ignores the series/metric and renders the normal abundance line.
+        comparison_mode:      comparisonOn,
+        series_a:             seriesA,
+        series_b:             seriesB,
+        comparison_metric:    getRadioValue('comparison-metric') || 'smd',
+    };
+
+    let resp;
+    try {
+        resp = await fetch('/heatmap/plot/', {
+            method: 'POST',
+            headers: { 'X-CSRFToken': getCsrf(), 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                selected_proteins: selectedProteins,
+                selected_var_keys: selectedVarKeys,
+                plot_params: plotParams,
+            }),
+        });
+    } catch(e) {
+        appendStatus(msgs, `Network error: ${e.message}`, 'error');
+        btn.disabled = false; spinner.classList.add('hidden');
+        return;
+    }
+
+    const data = await resp.json();
+    btn.disabled = false; spinner.classList.add('hidden');
+
+    document.getElementById('heatmap-placeholder').classList.add('hidden');
+
+    if (!resp.ok || data.error) {
+        appendStatus(msgs, `<strong>Error:</strong> ${data.error || 'Failed to generate heatmap'}`, 'error');
+        if (data.message) appendStatus(msgs, data.message, 'warning');
+        if (data.messages) data.messages.forEach(m => appendStatus(msgs, m, 'warning'));
+        return;
+    }
+
+    if (data.messages && data.messages.length)
+        data.messages.forEach(m => appendStatus(msgs, m, /^Error:/.test(m) ? 'error' : 'info'));
+
+    currentLandscapeB64             = data.landscape;
+    currentCompactJson              = data.compact || null;
+    currentLandscapeInteractiveJson = data.landscape_interactive || null;
+    currentPortraitInteractiveJson  = data.portrait_interactive || null;
+
+    // ── helper: render a Plotly interactive panel ─────────────────────────────
+    function renderInteractive(jsonStr, divId, containerId) {
+        const cont = document.getElementById(containerId);
+        const div  = document.getElementById(divId);
+        if (!jsonStr) { cont.classList.add('hidden'); return; }
+        try {
+            const spec = JSON.parse(jsonStr);
+            // Override width in layout so Plotly fills the container, not a fixed server-side width
+            const layout = Object.assign({}, spec.layout, { autosize: true, width: undefined });
+            Plotly.react(div, spec.data, layout, {
+                responsive: true,
+                scrollZoom: true,
+                displayModeBar: true,
+                useResizeObserver: true,
+            });
+            cont.classList.remove('hidden');
+            // Force a resize after the container becomes visible, then place any
+            // below-axis legend units against the width we actually got.
+            requestAnimationFrame(() => {
+                Plotly.Plots.resize(div).then(() => repackBelowLegends(div));
+            });
+        } catch(e) {
+            cont.classList.add('hidden');
+            appendStatus(msgs, `Warning: could not render interactive plot (${containerId}).`, 'warning');
+        }
+    }
+
+    // Portrait is now Plotly-only (wrapped bands off the same renderer as
+    // landscape); the static <img> stays hidden. Key container visibility off
+    // portrait_interactive, mirroring landscape below.
+    const portCont = document.getElementById('portrait-container');
+    if (data.portrait_interactive) {
+        portCont.classList.remove('hidden');
+    } else {
+        portCont.classList.add('hidden');
+    }
+    renderInteractive(
+        data.portrait_interactive || null,
+        'portrait-interactive-div',
+        'portrait-interactive-container'
+    );
+
+    // Landscape is now Plotly-only; the static <img> stays hidden. The container
+    // must show whenever the interactive figure is present (it wraps the interactive
+    // div), so key visibility off landscape_interactive, not the retired PNG.
+    const landCont = document.getElementById('landscape-container');
+    const landImg  = document.getElementById('landscape-img');
+    landImg.style.display = 'none';
+    if (data.landscape_interactive) {
+        landCont.classList.remove('hidden');
+    } else {
+        landCont.classList.add('hidden');
+    }
+    renderInteractive(
+        data.landscape_interactive || null,
+        'landscape-interactive-div',
+        'landscape-interactive-container'
+    );
+
+    // ── Compact interactive Plotly chart ──────────────────────────────────────
+    const compactCont = document.getElementById('compact-container');
+    const compactDiv  = document.getElementById('compact-plotly-div');
+    if (data.compact) {
+        try {
+            const figSpec = JSON.parse(data.compact);
+            Plotly.react(compactDiv, figSpec.data, figSpec.layout, {
+                responsive: true,
+                scrollZoom: true,
+                displayModeBar: true,
+                modeBarButtonsToAdd: ['zoom2d', 'pan2d', 'resetScale2d'],
+            }).then(() => repackBelowLegends(compactDiv));
+            compactCont.classList.remove('hidden');
+        } catch(e) {
+            appendStatus(msgs, 'Warning: could not render compact interactive plot.', 'warning');
+            compactCont.classList.add('hidden');
+        }
+    } else {
+        compactCont.classList.add('hidden');
+    }
+
+    // ── Enable download buttons based on what was generated ───────────────────
+    currentOrientation = orientation;
+    _updateDownloadButtons();
+
+    document.getElementById('step3-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ── Download helpers ──────────────────────────────────────────────
+// Normalised with the Data Analysis dashboard: three buttons in the same place —
+// Interactive (HTML), PNG (3×), SVG (vector) — driven by the currently shown
+// Plotly figure. PNG/SVG use client-side Plotly.downloadImage; all heatmap traces
+// are SVG-backed (Bar/Scatter, no WebGL) so SVG export is exact.
+
+// Resolve the Plotly figure for the current orientation, or null. Every
+// orientation is now Plotly-backed (Portrait migrated in Phase 2).
+function _activePlotly() {
+    const o = currentOrientation;
+    if (o === 'Landscape' && currentLandscapeInteractiveJson)
+        return { json: currentLandscapeInteractiveJson, div: 'landscape-interactive-div', filename: 'heatmap_landscape' };
+    if (o === 'Portrait' && currentPortraitInteractiveJson)
+        return { json: currentPortraitInteractiveJson, div: 'portrait-interactive-div', filename: 'heatmap_portrait' };
+    if (o === 'Compact' && currentCompactJson)
+        return { json: currentCompactJson, div: 'compact-plotly-div', filename: 'heatmap_compact' };
+    return null;
+}
+
+// Self-contained interactive HTML (opens standalone; Plotly loaded from CDN).
+function downloadInteractiveHtml() {
+    const p = _activePlotly();
+    if (!p) return;
+    const figSpec = JSON.parse(p.json);
+    const htmlStr = `<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>${p.filename}</title>
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"><\/script>
+<style>body{margin:0;padding:10px;} #plot{width:100%;}<\/style>
+</head><body>
+<div id="plot"></div>
+<script>
+Plotly.newPlot('plot', ${JSON.stringify(figSpec.data)}, Object.assign({}, ${JSON.stringify(figSpec.layout)}, {autosize:true}), {responsive:true,scrollZoom:true,displayModeBar:true});
+window.addEventListener('resize', function(){ Plotly.Plots.resize(document.getElementById('plot')); });
+<\/script>
+</body></html>`;
+    const blob = new Blob([htmlStr], { type: 'text/html' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href = url; a.download = p.filename + '.html'; a.click();
+    URL.revokeObjectURL(url);
+}
+
+// Static image export. Rendered SERVER-SIDE via Kaleido so the file is
+// resolution-deterministic: PNG at publication DPI (600, metadata-stamped), SVG
+// as true vector. We send the canonical figure JSON plus the on-screen pixel
+// dimensions so the export matches what the user sees. All orientations
+// (including the migrated Portrait) go through this one path.
+async function downloadHeatmapImage(format) {
+    const p = _activePlotly();
+    if (!p) return;
+    const gd = document.getElementById(p.div);
+    const fl = (gd && gd._fullLayout) || {};
+    await postStaticDownload('/heatmap/download-static/', {
+        figure_json: p.json,
+        format,
+        filename: p.filename,
+        width:  Math.round(fl.width)  || undefined,
+        height: Math.round(fl.height) || undefined,
+    }, p.filename, format);
+}
+
+// POST a figure to a server-side static-export endpoint and save the returned file.
+async function postStaticDownload(url, payload, filename, format) {
+    const resp = await fetch(url, {
+        method: 'POST',
+        headers: { 'X-CSRFToken': getCsrf(), 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+    });
+    if (!resp.ok) { alert('Download failed'); return; }
+    const blob = await resp.blob();
+    const u = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = u; a.download = `${filename}.${format}`; a.click();
+    URL.revokeObjectURL(u);
+}
+
+// ── Enable/disable the three buttons for the current orientation ──
+function _updateDownloadButtons() {
+    const htmlBtn = document.getElementById('dl-html-btn');
+    const pngBtn  = document.getElementById('dl-png-btn');
+    const svgBtn  = document.getElementById('dl-svg-btn');
+    const plotly  = _activePlotly();
+
+    if (plotly) {
+        htmlBtn.disabled = pngBtn.disabled = svgBtn.disabled = false;
+        htmlBtn.title = pngBtn.title = svgBtn.title = '';
+    } else {
+        htmlBtn.disabled = pngBtn.disabled = svgBtn.disabled = true;
+    }
+}
+
+document.getElementById('dl-html-btn').addEventListener('click', downloadInteractiveHtml);
+document.getElementById('dl-png-btn').addEventListener('click', () => downloadHeatmapImage('png'));
+document.getElementById('dl-svg-btn').addEventListener('click', () => downloadHeatmapImage('svg'));
+
+// Refresh button + AA-tiles state whenever the orientation radio changes.
+document.querySelectorAll('input[name="hm-orientation"]').forEach(r =>
+    r.addEventListener('change', () => { _updateDownloadButtons(); _updateAaTilesState(); })
+);
+
+// ── Color swatch previews ─────────────────────────────────────────
+const COLOR_GRADIENTS = {
+    'RdYlGn_r': 'linear-gradient(to right,#1a9850,#91cf60,#d9ef8b,#fee08b,#fc8d59,#d73027)',
+    'RdYlBu_r': 'linear-gradient(to right,#4575b4,#91bfdb,#e0f3f8,#fee090,#fc8d59,#d73027)',
+    'coolwarm':  'linear-gradient(to right,#3b4cc0,#7b97e8,#c7d7f8,#f7cbb8,#e36b51,#b40426)',
+    'viridis':   'linear-gradient(to right,#440154,#31688e,#35b779,#fde725)',
+    'plasma':    'linear-gradient(to right,#0d0887,#7e03a8,#cc4778,#f89540,#f0f921)',
+    'Blues':     'linear-gradient(to right,#f7fbff,#9ecae1,#3182bd)',
+    'Greens':    'linear-gradient(to right,#f7fcf5,#a1d99b,#238b45)',
+    'YlOrRd':   'linear-gradient(to right,#ffffb2,#fecc5c,#fd8d3c,#f03b20,#bd0026)',
+    'jet':       'linear-gradient(to right,#00007f,#0000ff,#00ffff,#ffff00,#ff0000,#7f0000)',
+    'ocean':     'linear-gradient(to right,#008060,#005080,#00a0b0,#80d8ff)',
+    'rainbow':   'linear-gradient(to right,#7f00ff,#0000ff,#00ffff,#00ff00,#ffff00,#ff7f00,#ff0000)',
+    'Set3':      'linear-gradient(to right,#8dd3c7,#ffffb3,#bebada,#fb8072,#80b1d3,#fdb462,#b3de69,#fccde5)',
+    'Set1':      'linear-gradient(to right,#e41a1c,#377eb8,#4daf4a,#984ea3,#ff7f00,#a65628,#f781bf,#999999)',
+    'Set2':      'linear-gradient(to right,#66c2a5,#fc8d62,#8da0cb,#e78ac3,#a6d854,#ffd92f,#e5c494)',
+    'tab10':     'linear-gradient(to right,#1f77b4,#ff7f0e,#2ca02c,#d62728,#9467bd,#8c564b,#e377c2,#bcbd22)',
+    'Paired':    'linear-gradient(to right,#a6cee3,#1f78b4,#b2df8a,#33a02c,#fb9a99,#e31a1c,#fdbf6f,#ff7f00)',
+    'Pastel1':   'linear-gradient(to right,#fbb4ae,#b3cde3,#ccebc5,#decbe4,#fed9a6,#ffffcc,#e5d8bd,#fddaec)',
+    'Dark2':     'linear-gradient(to right,#1b9e77,#d95f02,#7570b3,#e7298a,#66a61e,#e6ab02,#a6761d)',
+    'Accent':    'linear-gradient(to right,#7fc97f,#beaed4,#fdc086,#ffff99,#386cb0,#f0027f,#bf5b17)',
+};
+function updateSwatch(selectId, swatchId) {
+    const val = document.getElementById(selectId).value;
+    const swatch = document.getElementById(swatchId);
+    swatch.style.background = COLOR_GRADIENTS[val] || '#dee2e6';
+}
+['hm-color','lp-color','avglp-color'].forEach(id => {
+    const swatchId = id + '-swatch';
+    updateSwatch(id, swatchId);
+    document.getElementById(id).addEventListener('change', () => updateSwatch(id, swatchId));
+});
+
+// ── Auto-load when arriving from Data Transformation ─────────────
+if (new URLSearchParams(window.location.search).get('from_dt') === '1') {
+    const stored = sessionStorage.getItem('hm_from_dt');
+    if (stored) {
+        sessionStorage.removeItem('hm_from_dt');
+        const data = JSON.parse(stored);
+        const status = document.getElementById('upload-status');
+        showStatus(status,
+            `✅ <strong>${data.filename}</strong> loaded — ${data.rows.toLocaleString()} rows, ` +
+            `${data.proteins.length} protein(s), ${data.var_keys.length} variable(s)` +
+            (data.has_functions ? ', function data available' : ''), 'success');
+        // Reflect an auto-carried FASTA from Data Transformation (or clear the
+        // FASTA dropzone display when the transfer did not include one).
+        setHmFastaDisplay(data.fasta_filename || null);
+        if (data.fasta_filename)
+            appendStatus(status,
+                `FASTA <strong>${data.fasta_filename}</strong> auto-loaded from Data Transformation.`,
+                'success');
+        if (data.warnings && data.warnings.length)
+            data.warnings.forEach(w => appendStatus(status, w, 'warning'));
+        hasFunctions = !!data.has_functions;
+        varReplicates = data.var_replicates || {};
+        hasReplicates = !!data.has_replicates;
+        applyHmReplicateBanner();
+        populateSelectors(data);
+        enableStep2();
+    }
+}
+
+})();
+
+// Load example helpers for heatmap page
+function hmLoadExample(url, inputId, linkId) {
+    var link = document.getElementById(linkId);
+    var origHtml = link.innerHTML;
+    link.innerHTML = '<i class="fas fa-spinner fa-spin" style="font-size:.85rem;"></i> Loading...';
+    fetch(url)
+        .then(function(r) {
+            if (!r.ok) throw new Error('HTTP ' + r.status);
+            return r.blob();
+        })
+        .then(function(blob) {
+            var fname = url.split('/').pop();
+            var file = new File([blob], fname, {type: blob.type || 'application/octet-stream'});
+            var dt = new DataTransfer();
+            dt.items.add(file);
+            var input = document.getElementById(inputId);
+            input.files = dt.files;
+            input.dispatchEvent(new Event('change'));
+            link.innerHTML = '<i class="fas fa-check" style="font-size:.85rem;"></i> Loaded';
+            setTimeout(function() { link.innerHTML = origHtml; }, 3000);
+        })
+        .catch(function() {
+            link.innerHTML = '<i class="fas fa-times" style="font-size:.85rem;"></i> Failed';
+            link.style.color = '#dc3545';
+            setTimeout(function() { link.innerHTML = origHtml; link.style.color = ''; }, 3000);
+        });
+}
+document.getElementById('hm-load-example-csv').addEventListener('click', function(e) {
+    e.preventDefault();
+    hmLoadExample('/static/peptide/examples/example_merged_dataframe.csv', 'merged-file-input', 'hm-load-example-csv');
+});
+document.getElementById('hm-load-example-fasta').addEventListener('click', function(e) {
+    e.preventDefault();
+    hmLoadExample('/static/peptide/examples/example_protein_sequences.fasta', 'fasta-file-input', 'hm-load-example-fasta');
+});
+</script>
+{% endblock %}
