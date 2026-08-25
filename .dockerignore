@@ -45,14 +45,12 @@ uploads/temp/*
 !uploads/temp/.gitkeep
 
 # Not needed at runtime -- README docs, source data/reference material for
-# local dev, and the test suite. supplementals/ and examples/ in particular
-# are 60MB + 32MB of manuscript figures/sample datasets that the running
-# app never reads (the /peptiline/supplementals/ page serves from
-# static/peptide/publications/... instead -- see docs/SPLIT_PLAN.md).
+# local dev, and the test suite. examples/ (32MB of sample datasets) and
+# legacy_v1/ (notebooks + a superseded 60MB supplementals/ set) are neither
+# read by the running app -- see docs/SPLIT_PLAN.md and legacy_v1/README.md.
 README.md
 LICENSE
 docs
 tests
 examples
-supplementals
-notebook_requirements.txt
+legacy_v1
