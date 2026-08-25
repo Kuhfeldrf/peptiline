@@ -21,6 +21,14 @@ class Command(BaseCommand):
         except Exception as exc:
             self.stderr.write(f"WARNING: Migrations failed: {exc}")
 
+        # mbpdb_replica schema also needs creating on first boot -- data is
+        # populated separately via `manage.py loadreplica` (see
+        # docs/SPLIT_PLAN.md section 3), this just ensures the tables exist.
+        try:
+            call_command("migrate", "mbpdb_replica", database="mbpdb_replica", interactive=False)
+        except Exception as exc:
+            self.stderr.write(f"WARNING: mbpdb_replica migration failed: {exc}")
+
         call_command("clearsessions")
 
         username = os.environ.get("DJANGO_SUPERUSER_USERNAME")

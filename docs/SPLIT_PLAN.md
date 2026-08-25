@@ -45,6 +45,50 @@ Phase 2 (DB replica — MBPDB search still intentionally unavailable, correct fo
 
 ---
 
+## 0c. UPDATE 2026-08-25 — MBPDB-formatting removal, repo pushed to GitHub
+
+Per user request: stripped the app down to just the landing page + the three PeptiLine
+modules, and dropped MBPDB's shared nav/footer chrome in favor of PeptiLine's own design
+system on every page (not just the landing page, which is all it covered before).
+
+**Code changes:**
+- `templates/peptide/base.html`: `<head>` now loads the `design-system.css`/Inter font/
+  Font Awesome assets unconditionally (previously only `peptiline_landing.html` loaded
+  them, so module pages never got the modern look). The old Bootstrap `menubar-nav` block
+  is replaced with the same `pl-nav` markup the landing page used, trimmed to **About /
+  Tools (Data Transformation, Data Analysis, Heatmap Visualization only) / Contact** —
+  Home, Search, Help, and PepEx all dropped from the nav. Footer simplified to drop the
+  unused `latest_peptides` loop (MBPDB-only context this app's views never populate).
+- `templates/peptide/peptiline_landing.html`: its own duplicate head/nav/footer block
+  overrides deleted entirely — now inherits the same chrome as every other page from
+  `base.html`, so there's exactly one nav/footer implementation instead of two drifting
+  copies.
+- Removed the MBPDB-only `pepex`/`peptide_search` routes, view (`pepex_unavailable`), and
+  template — this repo is now just the landing page + the three modules, nothing else.
+- `static/peptide/hero.png` copied over from `~/mbpdb` (missing since the original vendoring
+  pass, same class of bug as `MBPDB_Help.pdf` before it) — the landing page hero image now
+  actually loads instead of silently degrading via the lenient static storage fallback.
+- Contact email (`Contact-MBPDB@oregonstate.edu`) was left as-is — not asked to change, and
+  a real replacement wasn't specified. Worth revisiting once PeptiLine has its own contact
+  channel, since it's the one remaining visible MBPDB reference in the nav.
+
+**Repo/deployment:**
+- Committed and pushed to `origin/django_apps`.
+- `main` was stale (last real content was the "Vendor v2" commit, `275fc15` merge); confirmed
+  it was a strict ancestor of `django_apps` (clean fast-forward relationship), merged
+  `django_apps` into local `main`, and pushed — `main` is now current at commit `2047fe5`.
+  `origin/main` is `git@github.com-kuhfeldrf:Kuhfeldrf/peptiline.git` (the real GitHub repo
+  — `.github/workflows/deploy.yml`'s `on: push: branches: [main]` trigger now points at
+  actual content, though it still won't run successfully until the GitHub secrets it
+  references are added, see Phase 4).
+- Rebuilt the Docker image with these changes, pushed `mbpdb/peptiline:latest`
+  (digest `sha256:8deb175e21068b5b638c3f144b02159511e8289609192afb1f3d3837cd9357c2`), and
+  redeployed `peptilinecontainer` by digest (`--revision-suffix nav1`). Verified live:
+  trimmed nav present (`About`/`Tools`/`Contact`, no `Home`/`Search`/`Help`), hero image
+  200s, `/pepex/` 404s, all module routes still 200/302.
+
+---
+
 ## 0b. Original "RESUME HERE" note (2026-08-24, superseded by the above — kept for context)
 
 **Azure is currently in a broken state — read this before doing anything else.**
@@ -435,11 +479,54 @@ Given the citation-URL constraint (§1), the recommended sequence is:
       pre-existing test-harness gap, not a split-related regression, left as known future
       work rather than rebuilding the harness now.
 
-### Phase 2 — Database replica plumbing — **not started** (deferred; see below)
-Deliberately skipped for this pass at the user's direction (2026-08-24: "build a Docker
-container image, migrate and push, test locally" — no replica work requested yet). MBPDB
-search in this standalone deployment currently raises the clear `RuntimeError` from Phase 1
-instead of working; this phase is what makes it actually work via a replicated copy.
+### Phase 2 — Database replica plumbing — **done 2026-08-25** (simple-copy version)
+
+Implemented per explicit user direction to keep this simple: a literal SQLite table copy
+via `ATTACH DATABASE`, not the JSON dumpdata/loaddata round-trip originally drafted below
+(tried first, worked, replaced anyway per "we can just make a simple copy of the DB SQLite
+database"). Two independent DB files/deployments are accepted for now — no live sync between
+MBPDB and PeptiLine, "figure out later" per user.
+
+- `mbpdb_replica/` (new Django app): `ProteinInfo`, `ProteinVariant`, `PeptideInfo`,
+  `Function`, `Reference` — field-for-field copies of MBPDB's `peptide.models`, managed
+  models with their own migration.
+- `peptiline/db_router.py` (`MBPDBReplicaRouter`): pins every `mbpdb_replica` model to the
+  `mbpdb_replica` DB alias (`mbpdb_replica.sqlite3`, physically separate from PeptiLine's own
+  `db.sqlite3`) for both reads and migrations; everything else stays on `default`.
+- `mbpdb_replica/management/commands/loadreplica.py`: given a path to a copy of MBPDB's
+  `db.sqlite3`, `ATTACH DATABASE`s it and does explicit-column `INSERT ... SELECT` for all
+  five tables (children deleted/inserted in FK-safe order). No Django serialization step, so
+  the replica is byte-identical to the source — verified: `run_blast_search` against the
+  replica returns results identical to querying MBPDB's live `db.sqlite3` directly for the
+  same peptides (both exact-match and BLAST-homology paths tested).
+- `data_transformation/services/blast_search.py` now imports directly from
+  `mbpdb_replica.models` — the Phase-1 lazy-import/`RuntimeError` guard is gone; an empty
+  (not-yet-loaded) replica just returns no results rather than erroring.
+- `mbpdb_seed.sqlite3` — a checked-in snapshot of MBPDB's `db.sqlite3` (2MB), loaded into
+  `mbpdb_replica` at every container boot via `start.sh` (after `bootstrap`). Refreshing it
+  is a manual "copy a newer MBPDB db.sqlite3 over this file, commit, rebuild" step for now.
+  **Explicitly confirmed with the user before committing**: `kuhfeldrf/peptiline` is a public
+  GitHub repo and the README states MBPDB's data is "privately maintained" and "not part of
+  this codebase" — bundling a real data snapshot contradicts that line. User's call: commit
+  it anyway (the bioactivity annotations aren't actually sensitive). README's "MBPDB
+  integration" section should be updated to reflect that this is no longer accurate (Phase 6).
+- Dockerfile: added `ncbi-blast+` back (needed now that search is real) and
+  `touch`/chown/chmod for `mbpdb_replica.sqlite3` alongside `db.sqlite3`.
+- `peptiline/management/commands/bootstrap.py`: also runs
+  `migrate mbpdb_replica --database=mbpdb_replica` so the replica schema exists on first boot,
+  independent of whether `loadreplica` succeeds.
+
+**Verified locally end-to-end** (venv + full Docker container): migrations create both DBs
+correctly, `loadreplica` against a copy of MBPDB's real `db.sqlite3` loads 2806 rows across
+5 tables (47/26/727/912/1094 — matches MBPDB's live counts exactly), exact-match search
+(`REKVLASS`, `YLGSRY`) and homology search (`REKVLASA` @ 80% → hits `REKVLASS` @ 87.5%) both
+return correct results, cross-checked against direct SQL against MBPDB's own `db.sqlite3`.
+All app routes still 200/302 in the container with the new boot step added.
+
+**Not yet done**: rebuild+push the image with these changes and redeploy to Azure (in
+progress); a real cross-container refresh mechanism (Blob storage push/pull, scheduled job)
+remains future work — this is a one-time-per-image-build snapshot, not live sync, by design
+for this pass.
 - [ ] Add a second `DATABASES` alias (`mbpdb_replica`) + a Django database router to
       PeptiLine's settings so replica tables are physically separate from PeptiLine's own
       operational SQLite file.

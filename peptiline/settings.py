@@ -66,7 +66,10 @@ INSTALLED_APPS = (
     "data_analysis",
     "heatmap_viz",
     "django_celery_progress",
+    "mbpdb_replica",
 )
+
+DATABASE_ROUTERS = ["peptiline.db_router.MBPDBReplicaRouter"]
 
 MIDDLEWARE = [
     "peptiline.middleware.HealthCheckMiddleware",
@@ -105,7 +108,15 @@ DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": os.path.join(BASE_DIR, "db.sqlite3"),
-    }
+    },
+    # Replicated MBPDB reference tables (ProteinInfo/ProteinVariant/
+    # PeptideInfo/Function/Reference) -- physically separate SQLite file so
+    # a `loadreplica` refresh can never lock out or corrupt PeptiLine's own
+    # writes. See mbpdb_replica/ and docs/SPLIT_PLAN.md section 3.
+    "mbpdb_replica": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": os.path.join(BASE_DIR, "mbpdb_replica.sqlite3"),
+    },
 }
 
 FILE_UPLOAD_HANDLERS = (

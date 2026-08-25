@@ -28,8 +28,11 @@ env
 *-checkpoint.ipynb
 *.ipynb
 
-# Build artifacts and caches
-*.sqlite3
+# Build artifacts and caches -- runtime-generated DB files only.
+# mbpdb_seed.sqlite3 is NOT excluded: it's a checked-in data snapshot the
+# image needs at build time (see docs/SPLIT_PLAN.md section 3).
+db.sqlite3
+mbpdb_replica.sqlite3
 static_files
 *.log
 
