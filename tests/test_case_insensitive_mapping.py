@@ -7,7 +7,7 @@ import pytest
 
 from data_transformation.services import data_loader
 
-EXAMPLES = "peptide/static/peptide/examples/not_in_use_examples"
+EXAMPLES = "examples/legacy_v1/additional_peptidomic_input_formats"
 
 FILES = {
     "max_quant.csv": (",", "Sequence"),

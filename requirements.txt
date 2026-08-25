@@ -1,11 +1,13 @@
 # PeptiLine standalone requirements.
 # Subset of the parent MBPDB application's requirements.txt, dropping
-# MBPDB-only pieces (gunicorn deployment extras, PEPEX/BLAST-library build
-# scripts) that don't apply to a standalone PeptiLine install. NCBI BLAST+
-# (blastp) is a system dependency, not a pip package, and is only needed for
-# the MBPDB-search code path (see README "MBPDB integration").
+# MBPDB-only pieces (PEPEX/BLAST-library build scripts) that don't apply to
+# a standalone PeptiLine install. NCBI BLAST+ (blastp) is a system
+# dependency, not a pip package, and is only needed for the MBPDB-search
+# code path (see README "MBPDB integration"), which this deployment does
+# not yet have (see docs/SPLIT_PLAN.md).
 Django>=4.2,<5.0
 whitenoise
+gunicorn
 celery
 django-redis
 django-celery-progress
@@ -15,6 +17,7 @@ pandas>=2.0.0
 scipy
 statsmodels
 plotly
+matplotlib
 openpyxl
 biopython
 
