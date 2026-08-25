@@ -198,16 +198,6 @@
                     </div>
                 </div>
 
-                <div class="dt-file-input">
-                    <label>FASTA Protein Sequences <span style="color:#6c757d; font-weight:400;">(Optional)</span></label>
-                    <div class="dt-dropzone" data-input="fasta_file" style="width:33%;">
-                        <input type="file" name="fasta_file" id="fasta_file" accept=".fasta,.fa,.faa,.txt">
-                        <div class="drop-text"><i class="fas fa-cloud-upload-alt"></i>Drag & drop or click to select</div>
-                        <div class="file-name hidden"></div>
-                    </div>
-                    <div class="help-text">Additional FASTA protein sequences to supplement the default bovine/human milk protein database</div>
-                    <div class="dt-example-links"><i class="fas fa-download" style="font-size:0.75rem;"></i> <a href="{% static 'peptide/examples/example_protein_sequences.fasta' %}" download>Download example file</a> &middot; <a href="#" class="dt-load-example" data-input-id="fasta_file" data-url="{% static 'peptide/examples/example_protein_sequences.fasta' %}"><i class="fas fa-upload" style="font-size:0.75rem;"></i> Load example</a></div>
-                </div>
                 <button type="submit" class="dt-btn dt-btn-primary" id="upload-btn">
                     <i class="fas fa-upload"></i> Upload & Validate
                 </button>
@@ -390,25 +380,45 @@
     <!-- Step 3: Protein Mapping -->
     <div class="dt-step-content" data-step="3">
         <div class="dt-card">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                <h4 style="margin: 0;">Protein Mapping</h4>
-                <div style="display: flex; gap: 8px; align-items: center;">
-                    <button class="dt-btn dt-btn-primary" id="fetch-uniprot-btn">
-                        <i class="fas fa-download"></i> Fetch from UniProt
-                    </button>
-                </div>
-            </div>
+            <h4 style="margin: 0 0 12px;">Protein Mapping</h4>
 
-            <!-- Mapping key upload -->
-            <div class="dt-file-input" style="margin-bottom: 16px;">
-                <label>Upload Mapping Key <span style="color:#6c757d; font-weight:400;">(Optional — re-apply a previously saved mapping)</span></label>
-                <div class="dt-dropzone" data-input="map_file" style="width: 25%;">
-                    <input type="file" name="map_file" id="protein-map-input" accept=".json">
-                    <div class="drop-text"><i class="fas fa-cloud-upload-alt"></i>Drag & drop or click to select</div>
-                    <div class="file-name hidden"></div>
+            <!-- Protein identifier resolution: custom FASTA, UniProt fetch, or a saved mapping key -->
+            <div style="margin-bottom:20px; padding-bottom:20px; border-bottom:2px solid #dee2e6;">
+                <h5 style="margin-top:0;"><i class="fas fa-dna" style="color:#1976d2; margin-right:6px;"></i>Map Protein Identifiers</h5>
+                <p style="color:#666; margin:4px 0 12px;">Resolve ambiguous protein mapping from search engines. Then, if your data has unknown protein names, you can provide your own FASTA file or fetch from UniProt.</p>
+
+                <div class="dt-or-row">
+                    <div class="dt-file-input" style="flex:none; width:33%;">
+                        <label for="fasta_file" style="font-size:0.9rem; color:#555;">FASTA File <span style="color:#6c757d; font-weight:400;">(Optional)</span></label>
+                        <div class="dt-dropzone" data-input="fasta_file" style="width:100%;">
+                            <input type="file" name="fasta_file" id="fasta_file" accept=".fasta,.fa,.faa,.txt">
+                            <div class="drop-text"><i class="fas fa-cloud-upload-alt"></i>Drag & drop or click to select</div>
+                            <div class="file-name hidden"></div>
+                        </div>
+                        <div class="help-text">Additional FASTA protein sequences to supplement the default bovine/human milk protein database</div>
+                        <div class="dt-example-links"><i class="fas fa-download" style="font-size:0.75rem;"></i> <a href="{% static 'peptide/examples/example_protein_sequences.fasta' %}" download>Download example file</a> &middot; <a href="#" class="dt-load-example" data-input-id="fasta_file" data-url="{% static 'peptide/examples/example_protein_sequences.fasta' %}"><i class="fas fa-upload" style="font-size:0.75rem;"></i> Load example</a></div>
+                        <div id="fasta-upload-status"></div>
+                    </div>
+                    <div class="dt-or-divider">OR</div>
+                    <div style="flex:none; width:33%;">
+                        <label style="font-size:0.9rem; color:#555; display:block; margin-bottom:4px;">Fetch Automatically <span style="color:#6c757d; font-weight:400;">(Optional)</span></label>
+                        <button class="dt-btn dt-btn-primary" id="fetch-uniprot-btn">
+                            <i class="fas fa-download"></i> Fetch from UniProt
+                        </button>
+                        <div class="help-text" style="font-size: 0.85rem; color: #666; margin-top: 2px;">Automatically look up any protein IDs in your data that aren't already in the database.</div>
+                    </div>
                 </div>
-                <div class="dt-example-links"><i class="fas fa-download" style="font-size:0.75rem;"></i> <a href="{% static 'peptide/examples/example_protein_mapping_key.json' %}" download>Download example file</a> &middot; <a href="#" class="dt-load-example" data-input-id="protein-map-input" data-url="{% static 'peptide/examples/example_protein_mapping_key.json' %}"><i class="fas fa-upload" style="font-size:0.75rem;"></i> Load example</a></div>
-                <div id="protein-map-upload-status"></div>
+
+                <div class="dt-file-input" style="margin-top:16px;">
+                    <label>Upload Mapping Key <span style="color:#6c757d; font-weight:400;">(Optional — re-apply a previously saved mapping)</span></label>
+                    <div class="dt-dropzone" data-input="map_file" style="width: 25%;">
+                        <input type="file" name="map_file" id="protein-map-input" accept=".json">
+                        <div class="drop-text"><i class="fas fa-cloud-upload-alt"></i>Drag & drop or click to select</div>
+                        <div class="file-name hidden"></div>
+                    </div>
+                    <div class="dt-example-links"><i class="fas fa-download" style="font-size:0.75rem;"></i> <a href="{% static 'peptide/examples/example_protein_mapping_key.json' %}" download>Download example file</a> &middot; <a href="#" class="dt-load-example" data-input-id="protein-map-input" data-url="{% static 'peptide/examples/example_protein_mapping_key.json' %}"><i class="fas fa-upload" style="font-size:0.75rem;"></i> Load example</a></div>
+                    <div id="protein-map-upload-status"></div>
+                </div>
             </div>
 
             <div id="protein-info"></div>
@@ -540,5 +550,5 @@
 {% endblock %}
 
 {% block 'scripts' %}
-<script src="{% static 'peptide/js/data_transformation.js' %}?v=32"></script>
+<script src="{% static 'peptide/js/data_transformation.js' %}?v=34"></script>
 {% endblock %}

@@ -24,15 +24,6 @@ class PeptidomicUploadForm(forms.Form):
             'class': 'form-control-file',
         }),
     )
-    fasta_file = forms.FileField(
-        label='FASTA Protein Sequences (Optional)',
-        help_text='FASTA file with protein sequences for mapping',
-        required=False,
-        widget=forms.ClearableFileInput(attrs={
-            'accept': '.fasta,.fa,.faa,.txt',
-            'class': 'form-control-file',
-        }),
-    )
     similarity_threshold = forms.IntegerField(
         label='BLAST Similarity Threshold',
         initial=80,
@@ -54,6 +45,18 @@ class PeptidomicUploadForm(forms.Form):
                 'Please upload a peptidomic data file or multiple files to merge.'
             )
         return cleaned_data
+
+
+class FastaUploadForm(forms.Form):
+    """Step 3: Upload a custom FASTA file to supplement the protein database."""
+    fasta_file = forms.FileField(
+        label='Custom FASTA Protein Sequences',
+        help_text='FASTA file with protein sequences for mapping',
+        widget=forms.ClearableFileInput(attrs={
+            'accept': '.fasta,.fa,.faa,.txt',
+            'class': 'form-control-file',
+        }),
+    )
 
 
 class GroupUploadForm(forms.Form):

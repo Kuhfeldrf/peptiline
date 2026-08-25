@@ -187,29 +187,22 @@ select.multi-select:disabled { background: #f8f9fa; color: #aaa; }
             </div>
             <div class="selector-block" style="grid-row:2; grid-column:1;">
                 <label><i class="fas fa-dna"></i> Proteins <small class="text-muted">(sorted by abundance)</small></label>
-                <select id="protein-selector" class="multi-select" multiple size="5" disabled></select>
-                <small class="text-muted">Hold Ctrl/Cmd to select multiple</small>
+                <select id="protein-selector" class="multi-select" multiple size="6" disabled></select>
+                <small class="text-muted">Hold Ctrl/Cmd to select multiple &middot; leave on
+                  <label><i class="fas fa-dna"></i> Proteins</label>
             </div>
             <div class="selector-block" id="function-selector-block" style="grid-row:2; grid-column:2; display:none;">
                 <label><i class="fas fa-flask"></i> Functions</label>
-                <select id="function-selector" class="multi-select" multiple size="5" disabled></select>
-                <small class="text-muted">Hold Ctrl/Cmd to select multiple</small>
+                <select id="function-selector" class="multi-select" multiple size="6" disabled></select>
+                <small class="text-muted">Hold Ctrl/Cmd to select multiple &middot; leave on
+                    <em>None</em> for no function breakdown</small>
             </div>
         </div>
 
-        <!-- Plot Filter (below selectors) -->
-        <div style="margin-bottom:14px; max-width:200px;">
-            <label style="font-weight:600; font-size:.92rem; margin-bottom:4px; display:block;">
-                <i class="fas fa-filter"></i> Plot Filter
-            </label>
-            <select id="plot-filter" disabled style="width:100%; border:1px solid #ced4da; border-radius:4px; padding:5px 8px; font-size:.92rem;">
-                <option value="No Filter">No Filter</option>
-                <option value="Selected Protein(s)">Selected Protein(s)</option>
-                <option value="Selected Function(s)">Selected Function(s)</option>
-                <option value="Both">Both</option>
-                <option value="Functional vs Non-Functional Peptides">Functional vs Non-Functional</option>
-            </select>
-        </div>
+        <!-- What the current selection means. The old "Plot Filter" dropdown was
+             removed: the selections above are the filter, and this line spells
+             out the mode they add up to. -->
+        <div id="filter-summary" class="status-box status-info" style="margin-bottom:14px;"></div>
 
         <hr style="margin:14px 0;">
 
@@ -439,6 +432,14 @@ select.multi-select:disabled { background: #f8f9fa; color: #aaa; }
 const CSRF = '{{ csrf_token }}';
 let currentFigJson = null;
 
+// Sentinels for "this selector applies no filter". They must match
+// NO_PROTEIN_FILTER / NO_FUNCTION_FILTER in
+// data_analysis/services/data_processor.py — an explicit "None" keeps
+// "no filter on this dimension" distinct from "every protein/function",
+// which produce genuinely different plots.
+const NO_PROTEIN_FILTER  = 'No Protein Filter';
+const NO_FUNCTION_FILTER = 'No Function Filter';
+
 function getCsrf() { return CSRF; }
 
 function showStatus(container, message, type='info') {
@@ -526,7 +527,7 @@ async function handleUpload(file) {
 
     populateSelectors(data);
     enableStep2();
-    applyPlotFilterGreying();
+    applySelectionRules();
     applyPlotTypeGreying();  // set Show Stats visibility for the default plot type
 }
 
@@ -555,33 +556,30 @@ function populateSelectors(data) {
     grpSel.innerHTML = '';
     data.groups.forEach(g => grpSel.add(new Option(g, g, true, true)));
 
+    // Nothing is pre-selected beyond the "None" sentinel: the selection IS the
+    // filter now, so auto-selecting the top 10 proteins *and* the top 10
+    // functions would silently start everyone in the "Both" mode.
     const protSel = document.getElementById('protein-selector');
     protSel.innerHTML = '';
-    protSel.add(new Option('All Proteins (No Filter)', 'All Proteins (No Filter)', false, false));
-    const numProt = Math.min(10, data.proteins.length);
-    data.proteins.forEach((p, i) => {
-        const sel = i < numProt;
-        protSel.add(new Option(p.label, p.id, sel, sel));
-    });
+    protSel.add(new Option('None — no protein filter', NO_PROTEIN_FILTER, true, true));
+    protSel.add(new Option('All Proteins (broken out individually)', 'All Proteins (No Filter)', false, false));
+    data.proteins.forEach(p => protSel.add(new Option(p.label, p.id, false, false)));
 
     const fnBlock = document.getElementById('function-selector-block');
     const fnSel   = document.getElementById('function-selector');
     if (data.has_functions && data.functions && data.functions.length) {
         fnBlock.style.display = '';
         fnSel.innerHTML = '';
+        fnSel.add(new Option('None — no function filter', NO_FUNCTION_FILTER, true, true));
         fnSel.add(new Option('All Functional Peptides', 'All Functional Peptides', false, false));
-        const numFn = Math.min(10, data.functions.length);
-        data.functions.forEach((f, i) => {
-            const sel = i < numFn;
-            fnSel.add(new Option(f, f, sel, sel));
-        });
+        // Directly after "All Functional Peptides": picking the two together is
+        // how the old "Functional vs Non-Functional" mode is requested.
+        fnSel.add(new Option('Non-Functional Peptides', 'Non-Functional Peptides', false, false));
+        data.functions.forEach(f => fnSel.add(new Option(f, f, false, false)));
     } else {
         fnBlock.style.display = 'none';
-        const pf = document.getElementById('plot-filter');
-        ['Selected Function(s)', 'Both', 'Functional vs Non-Functional Peptides'].forEach(v => {
-            const opt = pf.querySelector(`option[value="${v}"]`);
-            if (opt) opt.disabled = true;
-        });
+        fnSel.innerHTML = '';
+        fnSel.add(new Option('None — no function filter', NO_FUNCTION_FILTER, true, true));
     }
 }
 
@@ -626,22 +624,49 @@ document.getElementById('rg-plot-type').addEventListener('click', applyPlotTypeG
 // ── Item 13: Relative metric → uncheck and grey log transform ────
 document.getElementById('rg-metric-type').addEventListener('click', applyPlotTypeGreying);
 
-// ── Plot filter: grey protein/function selectors + orientation ───
-function applyPlotFilterGreying() {
-    const filterVal = document.getElementById('plot-filter').value;
-    const protSel   = document.getElementById('protein-selector');
-    const fnSel     = document.getElementById('function-selector');
-    const fnBlock   = document.getElementById('function-selector-block');
+// ── Derived plot filter ──────────────────────────────────────────
+// Mirrors derive_plot_filter() in data_analysis/services/data_processor.py.
+// The server derives the mode itself from the same selections; this copy exists
+// only to drive the UI (orientation greying + the summary line).
+function selectionIsActive(values, noneSentinel) {
+    return values.some(v => v && v !== noneSentinel);
+}
 
-    const enableProt = filterVal === 'Selected Protein(s)' || filterVal === 'Both';
-    const enableFn   = filterVal === 'Selected Function(s)' || filterVal === 'Both';
+function derivePlotFilter() {
+    const prots = getMultiSelectValues(document.getElementById('protein-selector'));
+    const fns   = getMultiSelectValues(document.getElementById('function-selector'));
+    const prot  = selectionIsActive(prots, NO_PROTEIN_FILTER);
+    const func  = selectionIsActive(fns, NO_FUNCTION_FILTER);
 
-    // Grey out protein selector when not relevant (dim the <select> itself).
-    setControlEnabled(protSel, enableProt, { row: protSel });
+    if (func && fns.includes('All Functional Peptides') && fns.includes('Non-Functional Peptides'))
+        return 'Functional vs Non-Functional Peptides';
+    if (prot && func) return 'Both';
+    if (prot) return 'Selected Protein(s)';
+    if (func) return 'Selected Function(s)';
+    return 'No Filter';
+}
 
-    // Grey out function selector when not relevant (only if visible)
-    if (fnBlock.style.display !== 'none') {
-        setControlEnabled(fnSel, enableFn, { row: fnSel });
+const FILTER_SUMMARY = {
+    'No Filter':
+        'No protein or function breakdown — totals across the whole dataset.',
+    'Selected Protein(s)':
+        'Filtered/broken out by the selected protein(s).',
+    'Selected Function(s)':
+        'Filtered/broken out by the selected bioactive function(s).',
+    'Both':
+        'Filtered by the selected protein(s) <em>and</em> function(s).',
+    'Functional vs Non-Functional Peptides':
+        'Split into functional vs non-functional peptides (both "All Functional Peptides" and "Non-Functional Peptides" are selected).',
+};
+
+// ── Selection → orientation greying + summary line ───────────────
+function applySelectionRules() {
+    const filterVal = derivePlotFilter();
+
+    const summary = document.getElementById('filter-summary');
+    if (summary) {
+        summary.innerHTML = '<strong>Current filter:</strong> ' +
+            (FILTER_SUMMARY[filterVal] || filterVal);
     }
 
     // Item 12: Grey out invalid orientation options based on filter
@@ -664,7 +689,9 @@ function applyPlotFilterGreying() {
     }
 }
 
-document.getElementById('plot-filter').addEventListener('change', applyPlotFilterGreying);
+['protein-selector', 'function-selector'].forEach(id => {
+    document.getElementById(id).addEventListener('change', applySelectionRules);
+});
 
 // ── Generate Plot ─────────────────────────────────────────────────
 document.getElementById('generate-btn').addEventListener('click', generatePlot);
@@ -682,19 +709,19 @@ async function generatePlot() {
     plotMsgs.innerHTML = '';
 
     // Item 12: Validate filter / orientation compatibility
-    const _filterVal = document.getElementById('plot-filter').value;
+    const _filterVal = derivePlotFilter();
     const _orientVal = getRadioValue('plot-orientation');
     if (_filterVal === 'Selected Protein(s)' && _orientVal === 'By Function') {
         plotMsgs.innerHTML = '<div class="status-box status-error"><strong>Invalid combination:</strong> ' +
-            '"Selected Protein(s)" filter cannot be used with "By Function" orientation. ' +
-            'Switch to "By Sample" or "By Protein" orientation.</div>';
+            'A protein-only selection cannot be plotted with "By Function" orientation. ' +
+            'Select one or more Functions, or switch to "By Sample" / "By Protein" orientation.</div>';
         btn.disabled = false; spinner.style.display = 'none'; return;
     }
     if ((_filterVal === 'Selected Function(s)' || _filterVal === 'Functional vs Non-Functional Peptides')
             && _orientVal === 'By Protein') {
         plotMsgs.innerHTML = '<div class="status-box status-error"><strong>Invalid combination:</strong> ' +
-            'Function-based filter cannot be used with "By Protein" orientation. ' +
-            'Switch to "By Sample" or "By Function" orientation.</div>';
+            'A function-only selection cannot be plotted with "By Protein" orientation. ' +
+            'Select one or more Proteins, or switch to "By Sample" / "By Function" orientation.</div>';
         btn.disabled = false; spinner.style.display = 'none'; return;
     }
 
@@ -707,7 +734,6 @@ async function generatePlot() {
         selected_proteins:  selectedProteins,
         selected_functions: selectedFunctions,
         plot_type:        getRadioValue('plot-type'),
-        plot_filter:      document.getElementById('plot-filter').value,
         orientation:      getRadioValue('plot-orientation'),
         abs_or_count:     getRadioValue('abs-or-count'),
         metric_type:      getRadioValue('metric-type'),
@@ -908,7 +934,7 @@ if (new URLSearchParams(window.location.search).get('from_dt') === '1') {
             data.warnings.forEach(w => appendStatus(uploadStatus, w, 'warning'));
         populateSelectors(data);
         enableStep2();
-        applyPlotFilterGreying();
+        applySelectionRules();
         applyPlotTypeGreying();  // set Show Stats visibility for the default plot type
     }
 }
