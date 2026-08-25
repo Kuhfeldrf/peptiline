@@ -523,10 +523,42 @@ correctly, `loadreplica` against a copy of MBPDB's real `db.sqlite3` loads 2806 
 return correct results, cross-checked against direct SQL against MBPDB's own `db.sqlite3`.
 All app routes still 200/302 in the container with the new boot step added.
 
-**Not yet done**: rebuild+push the image with these changes and redeploy to Azure (in
-progress); a real cross-container refresh mechanism (Blob storage push/pull, scheduled job)
+Rebuilt, pushed, and redeployed to Azure (`peptilinecontainer--replica1`) — verified live:
+all routes 200/302, example files and corrected supplementals load, search returns real
+results. A real cross-container refresh mechanism (Blob storage push/pull, scheduled job)
 remains future work — this is a one-time-per-image-build snapshot, not live sync, by design
 for this pass.
+
+---
+
+## 0d. UPDATE 2026-08-25 — repo cleanup: legacy_v1/ folder, README refresh
+
+Per user request: created top-level `legacy_v1/` (matching the naming convention already
+used by `examples/legacy_v1/` and `utils/legacy_v1/`) and moved everything from the
+pre-Django notebook era into it: the five `.ipynb` files, `_settings.py`, and
+`notebook_requirements.txt`. Also moved the root `supplementals/` folder (60MB) in there —
+confirmed via `0c` above that it's a stale, superseded set (S1-S13/S1-S6, `zukaitis_2026`-
+style numbering) that the live app never actually served; the real, current supplementals
+(S1-S15/S1-S5, `kuhfeld_2026`) already live under `static/peptide/publications/`. Added
+`legacy_v1/README.md` explaining what's there and why. Updated `.dockerignore` (one
+`legacy_v1` entry replaces the old separate `supplementals`/`notebook_requirements.txt`
+lines) and the top-level `README.md`'s "Project structure", "Data and reproducibility"
+(fixed the now-corrected supplementals claim), and "Legacy notebook implementation" sections
+to match.
+
+**Caught a real regression while verifying**: moving files was safe, but the pytest suite's
+`conftest.py` broke — 13 new failures, all `AppRegistryNotReady`. Root cause was unrelated to
+the move itself: earlier in this session (`0c`), `blast_search.py`'s MBPDB-model import was
+changed from a try/except-guarded `peptide.models` import to a direct, unguarded
+`mbpdb_replica.models` import. `mbpdb_replica` is a real local app, so defining its model
+classes now requires the Django app registry to be populated — but `conftest.py` only ever
+called `settings.configure(INSTALLED_APPS=[], ...)`, never `django.setup()`. Fixed by adding
+`mbpdb_replica` to the test `INSTALLED_APPS`, giving it an in-memory `DATABASES` entry, and
+calling `django.setup()`. Also dropped the `conftest.py`'s now-fully-dead `peptide.celery`
+sys.modules stub (nothing has imported `peptide.*` since the Phase 1 rename). Back to the
+same 314/318 passing (the 2 pre-existing, documented `TestTransferFromDtFasta` failures) after
+the fix. Verified Docker build still produces the same 184 static files (nothing needed by
+the app was in the moved directories) and all routes still 200/302.
 - [ ] Add a second `DATABASES` alias (`mbpdb_replica`) + a Django database router to
       PeptiLine's settings so replica tables are physically separate from PeptiLine's own
       operational SQLite file.
@@ -678,8 +710,8 @@ mirror these for `peptilinecontainer` unless there's a specific reason to diverg
 - [x] Deploy PeptiLine standalone; smoke-test all three modules — **done 2026-08-25**, all 9
       routes (`/ /health/ /data_transformation/ /data_analysis/ /heatmap/ /about_us/ /pepex/
       /peptiline/supplementals/ /admin/`) return 200/302 against the live deployment. MBPDB
-      search smoke-test not applicable yet — no replica exists (Phase 2), so it correctly
-      returns the "not available" message rather than a crash.
+      search itself also verified live (see §0c) — the replica loads at boot and returns
+      real, correct results.
 
 ### Phase 5 — Cut over MBPDB's in-process PeptiLine routes
 - [ ] Replace MBPDB's `/peptiline/`, `/data_transformation/`, `/data_analysis/`,

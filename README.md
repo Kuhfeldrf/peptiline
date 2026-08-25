@@ -147,7 +147,11 @@ Everything else, including data transformation, UniProt sequence retrieval, stat
 
 The manuscript's case study (bitterness in aged Cheddar cheese) used PeptiLine to generate Figures 5-7 and Supplementary Figures S1-S6. Raw mass spectrometry data are deposited at ProteomeXchange, accession **PXD079655**. The exact application version used to generate the manuscript's figures is archived on Zenodo: `ZENODO_DOI_PLACEHOLDER`.
 
-Supporting tables and figures (S1-S13, S1-S6) are provided in `supplementals/`, matching what the hosted app serves at `/peptiline/supplementals/`. A step-by-step reproduction protocol, module-by-module settings for every case-study figure, is in `docs/REPRODUCIBILITY.md`.
+Supporting tables and figures (S1-S15 tables, S1-S5 figures) are served at
+[`/peptiline/supplementals/`](https://mbpdb.nws.oregonstate.edu/peptiline/supplementals/), backed by
+`static/peptide/publications/kuhfeld_2026/supplementals/` in this repository. A step-by-step
+reproduction protocol, module-by-module settings for every case-study figure, is in
+`docs/REPRODUCIBILITY.md`.
 
 ## System and dependency versions
 
@@ -166,16 +170,21 @@ Full pinned versions in `requirements.txt`.
 
 ```
 peptiline/
-├── data_transformation/   # Module 1: upload, mapping, annotation, export
-├── data_analysis/         # Module 2: descriptive statistics and plots
-├── heatmap_viz/            # Module 3: sequence-mapped heatmaps
-├── utils/                 # Shared helpers (UniProt client, static export)
-├── examples/               # Sample input files
-├── supplementals/          # Manuscript Supporting Information (tables + figures)
-├── docs/                   # USER_GUIDE, REPRODUCIBILITY, TROUBLESHOOTING, INSTALL
-├── requirements.txt
+├── peptiline/              # Django project config (settings, urls, wsgi, celery)
+├── data_transformation/    # Module 1: upload, mapping, annotation, export
+├── data_analysis/          # Module 2: descriptive statistics and plots
+├── heatmap_viz/             # Module 3: sequence-mapped heatmaps
+├── mbpdb_replica/           # Read-only copy of MBPDB's search tables (see docs/SPLIT_PLAN.md)
+├── utils/                  # Shared helpers (UniProt client, static export)
+├── templates/, static/      # Django templates and static assets
+├── examples/                # Sample input files
+├── tests/                  # pytest suite
+├── docs/                   # USER_GUIDE, REPRODUCIBILITY, TROUBLESHOOTING, INSTALL, SPLIT_PLAN
+├── legacy_v1/               # Archived pre-Django notebook implementation -- see legacy_v1/README.md
+├── Dockerfile, nginx.conf, start.sh   # Container image / deployment
+├── manage.py, requirements.txt
 ├── LICENSE
-└── README.md               # This file
+└── README.md                # This file
 ```
 
 ## Documentation
@@ -236,4 +245,4 @@ For larger changes, open an issue first to discuss scope.
 
 ## Legacy notebook implementation
 
-The original Jupyter/ipywidgets notebook implementation (v1, accompanying the initial manuscript submission) is archived at `github.com/kuhfeldrf/peptiline`, tagged `v1.0`. It is kept for historical reference and is not maintained; use this repository for current development and for the deployed application.
+The original Jupyter/ipywidgets notebook implementation (v1, accompanying the initial manuscript submission) that the current Django app was extracted and rewritten from lives in [`legacy_v1/`](legacy_v1/) — see `legacy_v1/README.md`. It is kept for historical reference only, is not maintained, is not part of the Docker build, and is not used by the deployed application; use the top-level `data_transformation/`, `data_analysis/`, and `heatmap_viz/` modules for current development.
