@@ -19,6 +19,13 @@ import io
 import plotly.io as pio
 from PIL import Image
 
+# Pillow's decompression-bomb heuristic assumes an untrusted/unknown source;
+# these PNGs are rendered server-side from our own figures, and a large
+# publication figure at PUBLICATION_DPI routinely exceeds Pillow's default
+# 89-megapixel ceiling. Raise it well above what any real figure needs
+# instead of disabling the check outright.
+Image.MAX_IMAGE_PIXELS = 300_000_000
+
 # Publication resolution. The target journal (JPR/ACS) specifies a minimum of
 # 300 dpi for COLOUR art (docs/JPR_journal_requirements.md); 600 dpi is used
 # here to sit comfortably above that floor and also clear the 600-dpi grayscale

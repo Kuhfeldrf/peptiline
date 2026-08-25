@@ -1,16 +1,24 @@
 """
 Django views for the Data Analysis web app.
 """
+from __future__ import annotations
+
 import json
 import os
 import uuid
 
-import pandas as pd
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render
 from django.views.decorators.http import require_POST, require_GET
 
-from .services import data_processor, plotter
+from utils.lazy_import import LazyModule
+
+# pandas/numpy/scipy are heavy; the URLconf import chain loads this module
+# on the very first request handled after boot (probe or otherwise), so
+# they're deferred until a view actually uses them.
+pd = LazyModule('pandas')
+data_processor = LazyModule('data_analysis.services.data_processor')
+plotter = LazyModule('data_analysis.services.plotter')
 
 
 # ---------------------------------------------------------------------------

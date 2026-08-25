@@ -20,6 +20,7 @@ urlpatterns = [
     path('reset-groups/', views.reset_groups, name='dt_reset_groups'),
     path('skip-groups/', views.skip_groups, name='dt_skip_groups'),
     path('step3/', views.get_step3_form, name='dt_step3'),
+    path('upload-fasta/', views.upload_fasta_file, name='dt_upload_fasta'),
     path('start-uniprot/', views.start_uniprot_fetch, name='dt_start_uniprot'),
     path('save-uniprot/', views.save_uniprot_results, name='dt_save_uniprot'),
     path('submit-proteins/', views.submit_protein_decisions, name='dt_submit_proteins'),

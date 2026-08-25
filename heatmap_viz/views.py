@@ -1,17 +1,25 @@
 """
 Django views for the Heatmap Visualization web app.
 """
+from __future__ import annotations
+
 import json
 import os
 import uuid
 import base64
 
-import pandas as pd
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render
 from django.views.decorators.http import require_POST, require_GET, require_http_methods
 
-from .services import data_processor
+from utils.lazy_import import LazyModule
+
+# pandas and data_processor (which pulls in numpy) are heavy; the URLconf
+# import chain loads this module on the very first request handled after
+# boot (probe or otherwise), so both are deferred until a view actually
+# uses them instead of paying that cost before the app can serve anything.
+pd = LazyModule('pandas')
+data_processor = LazyModule('heatmap_viz.services.data_processor')
 
 
 # ---------------------------------------------------------------------------

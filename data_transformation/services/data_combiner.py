@@ -10,8 +10,38 @@ import numpy as np
 from .data_loader import find_species, extract_protein_id
 
 
+def _first_protein_field(value) -> str:
+    """Replicate the old loop's ``proteins[0]`` extraction for one cell.
+
+    Priority order matters and must match exactly: a semicolon-delimited
+    cell is split on ';' even if it also contains '/' or ',' -- only the
+    first delimiter found (in that priority) is used, same as the original
+    if/elif chain.
+    """
+    if isinstance(value, list):
+        return str(value[0]) if value else ''
+    s = str(value)
+    if ';' in s:
+        return s.split(';', 1)[0]
+    if '/' in s:
+        return s.split('/', 1)[0]
+    if ',' in s:
+        return s.split(',', 1)[0]
+    return s
+
+
 def add_protein_info(df, protein_dict):
-    """Add protein species and name columns based on Protein column."""
+    """Add protein species and name columns based on Protein column.
+
+    Vectorized. This used to be an iterrows() pass with a per-cell `.at[]`
+    write for every peptide row -- on a large upload that's the difference
+    between a sub-second call and a multi-second one. The one genuinely
+    order-dependent part (deriving a *new* protein_dict entry from a
+    pipe-delimited header the first time an unknown protein ID is seen, so
+    later rows for that ID benefit but earlier ones don't) is reproduced
+    exactly via each protein ID's first-discovery *row position*, rather than
+    processing row by row.
+    """
     df = df.copy()
 
     if 'protein_species' not in df.columns:
@@ -19,45 +49,76 @@ def add_protein_info(df, protein_dict):
     if 'protein_name' not in df.columns:
         df['protein_name'] = 'Unknown'
 
-    for idx, row in df.iterrows():
-        if isinstance(row['Protein'], list):
-            proteins = [str(p) for p in row['Protein']]
-        else:
-            protein_str = str(row['Protein'])
-            if ';' in protein_str:
-                proteins = protein_str.split(';')
-            elif '/' in protein_str:
-                proteins = protein_str.split('/')
-            elif ',' in protein_str:
-                proteins = protein_str.split(',')
-            else:
-                proteins = [protein_str]
+    if 'Protein' not in df.columns or df.empty:
+        return df
 
-        if proteins and proteins[0] != '' and proteins[0] != 'nan':
-            protein_raw = proteins[0].strip()
+    protein_raw = df['Protein'].map(_first_protein_field).str.strip()
+    valid = (protein_raw != '') & (protein_raw != 'nan')
 
-            if '|' in protein_raw:
-                parts = protein_raw.split('|')
-                protein_id = parts[1].strip() if len(parts) >= 2 else protein_raw
-            else:
-                protein_id = protein_raw
+    # astype(object) after each .str[i] extraction: when every row lacks that
+    # many pipe-delimited parts, the extracted column is all-NaN and pandas
+    # infers float64 for it, which the .str accessor then refuses outright --
+    # object dtype keeps it usable (NaN passes through elementwise) same as
+    # for a mixed string/NaN column.
+    pipe_parts = protein_raw.str.split('|')
+    pipe_part_1 = pipe_parts.str[1].astype(object)
+    pipe_part_2 = pipe_parts.str[2].astype(object)
+    protein_id = pd.Series(np.where(
+        valid & (pipe_parts.str.len() >= 2),
+        pipe_part_1.str.strip(),
+        protein_raw,
+    ), index=df.index)
 
-            protein_info = protein_dict.get(protein_id, {})
+    pre_existing_ids = set(protein_dict.keys())
 
-            if not protein_info and '|' in protein_raw:
-                parts = protein_raw.split('|')
-                if len(parts) == 3:
-                    name_species = parts[2]
-                    if '_' in name_species:
-                        name, species_abbrev = name_species.split('_', 1)
-                        species = find_species(species_abbrev)
-                        protein_info = {'name': name if name else protein_id, 'species': species}
-                        protein_dict[protein_id] = protein_info
+    # Candidate rows: pipe format with exactly 3 parts, an underscore in the
+    # name/species field, and a protein ID not already known -- exactly the
+    # condition the old code derived a brand-new protein_dict entry under.
+    has_3_parts = valid & (pipe_parts.str.len() == 3)
+    name_species = pd.Series(
+        np.where(has_3_parts, pipe_part_2, ''), index=df.index
+    )
+    has_underscore = has_3_parts & name_species.str.contains('_', regex=False)
+    not_pre_existing = ~protein_id.isin(pre_existing_ids)
+    candidate_mask = has_underscore & not_pre_existing
 
-            if df.at[idx, 'protein_species'] == 'Unknown':
-                df.at[idx, 'protein_species'] = protein_info.get('species', "Unknown")
-            if df.at[idx, 'protein_name'] == 'Unknown':
-                df.at[idx, 'protein_name'] = protein_info.get('name', "Unknown")
+    discover_ok = pd.Series(False, index=df.index)
+    if candidate_mask.any():
+        split_ns = name_species[candidate_mask].str.split('_', n=1)
+        cand_name = split_ns.str[0]
+        cand_species_abbrev = split_ns.str[1]
+        cand_species = cand_species_abbrev.map(find_species)
+        cand_pid = protein_id[candidate_mask]
+
+        candidates = pd.DataFrame({
+            'pid': cand_pid.values,
+            'name': cand_name.values,
+            'species': cand_species.values,
+            'pos': np.flatnonzero(candidate_mask.to_numpy()),
+        })
+        # First occurrence (by original row order) wins per protein ID --
+        # same as the old code only deriving once, on the first row where
+        # that ID's entry was still missing.
+        first_wins = candidates.sort_values('pos').drop_duplicates('pid', keep='first')
+
+        for _, r in first_wins.iterrows():
+            name = r['name'] if r['name'] else r['pid']
+            protein_dict[r['pid']] = {'name': name, 'species': r['species']}
+
+        discover_pos = first_wins.set_index('pid')['pos']
+        row_pos = pd.Series(np.arange(len(df)), index=df.index)
+        own_discover_pos = protein_id.map(discover_pos)
+        discover_ok = own_discover_pos.notna() & (row_pos >= own_discover_pos)
+
+    has_info = pd.Series(protein_id.isin(pre_existing_ids), index=df.index) | discover_ok
+
+    species_vals = protein_id.map(lambda pid: protein_dict.get(pid, {}).get('species', 'Unknown'))
+    name_vals = protein_id.map(lambda pid: protein_dict.get(pid, {}).get('name', 'Unknown'))
+
+    fill_species = (df['protein_species'] == 'Unknown') & has_info
+    fill_name = (df['protein_name'] == 'Unknown') & has_info
+    df.loc[fill_species, 'protein_species'] = species_vals[fill_species]
+    df.loc[fill_name, 'protein_name'] = name_vals[fill_name]
 
     # Reorder columns
     all_cols = list(df.columns)

@@ -1,11 +1,12 @@
 """
 Django views for the data transformation wizard.
 """
+from __future__ import annotations
+
 import json
 import os
 import uuid
 
-import pandas as pd
 from django.conf import settings
 from django.core.cache import cache
 from django.http import JsonResponse, HttpResponse, FileResponse
@@ -13,10 +14,22 @@ from django.shortcuts import render
 from django.views.decorators.http import require_POST, require_GET
 from celery.result import AsyncResult
 
-from .forms import PeptidomicUploadForm, GroupUploadForm
-from .services import data_loader, blast_search, group_processing, protein_handler, data_combiner, export_manager
-from .tasks import run_blast_search_task, fetch_uniprot_task
+from .forms import PeptidomicUploadForm, GroupUploadForm, FastaUploadForm
 from utils.toolbox_helpers import handle_uploaded_file, clear_temp_directory
+from utils.lazy_import import LazyModule
+
+# pandas/numpy/scipy (via these services, and via .tasks -> services.blast_search)
+# are heavy; the URLconf import chain loads this module on the very first
+# request handled after boot (probe or otherwise), so they're deferred until
+# a view actually uses them.
+pd = LazyModule('pandas')
+data_loader = LazyModule('data_transformation.services.data_loader')
+blast_search = LazyModule('data_transformation.services.blast_search')
+group_processing = LazyModule('data_transformation.services.group_processing')
+protein_handler = LazyModule('data_transformation.services.protein_handler')
+data_combiner = LazyModule('data_transformation.services.data_combiner')
+export_manager = LazyModule('data_transformation.services.export_manager')
+tasks = LazyModule('data_transformation.tasks')
 
 
 def _get_work_dir(request):
@@ -184,11 +197,12 @@ def upload_files(request):
         # protein_database.fasta (71 full-sequence proteins) is kept for BLAST/PEPEX.
         protein_dict = data_loader.parse_fasta_headers_file(settings.PROTEIN_HEADERS_FILE)
 
-        # Handle optional FASTA file — merges on top of default dict
-        fasta_file = request.FILES.get('fasta_file')
-        if fasta_file:
-            user_proteins = data_loader.parse_uploaded_fasta(fasta_file.read(), fasta_file.name)
-            protein_dict.update(user_proteins)
+        # Re-apply a custom FASTA file previously uploaded in the Protein Mapping
+        # step (see upload_fasta_file) so re-submitting this form doesn't lose it.
+        prior_fasta_path = os.path.join(work_dir, 'fasta_file.orig')
+        if os.path.exists(prior_fasta_path):
+            with open(prior_fasta_path, 'rb') as fh:
+                protein_dict.update(data_loader.parse_uploaded_fasta(fh.read()))
 
         _save_json(work_dir, 'protein_dict', protein_dict)
 
@@ -245,13 +259,16 @@ def upload_files(request):
         # Store sequences for BLAST
         _save_json(work_dir, 'sequences', sequences)
 
-        # Save original filenames so they can be restored on resume
+        # Save original filenames so they can be restored on resume. The FASTA
+        # filename is managed separately by upload_fasta_file (Protein Mapping
+        # step) — preserve whatever is already on record for it here.
         merge_file_names = [mf.name for mf in merge_files] if merged_from else None
+        existing_file_names = _load_json(work_dir, 'uploaded_file_names') or {}
         _save_json(work_dir, 'uploaded_file_names', {
             'peptidomic_file': pep_file_name if not merged_from else None,
             'merge_files': merge_file_names,
             'functional_file': func_file.name if func_file else None,
-            'fasta_file': fasta_file.name if fasta_file else None,
+            'fasta_file': existing_file_names.get('fasta_file'),
         })
 
         # Save original file bytes so they can be reloaded on resume
@@ -278,14 +295,8 @@ def upload_files(request):
                 stale = os.path.join(work_dir, 'functional_file.orig')
                 if os.path.exists(stale):
                     os.remove(stale)
-            if fasta_file:
-                fasta_file.seek(0)
-                with open(os.path.join(work_dir, 'fasta_file.orig'), 'wb') as fh:
-                    fh.write(fasta_file.read())
-            else:
-                stale = os.path.join(work_dir, 'fasta_file.orig')
-                if os.path.exists(stale):
-                    os.remove(stale)
+            # fasta_file.orig is managed separately by upload_fasta_file
+            # (Protein Mapping step) — not touched here.
         except Exception:
             pass  # Non-fatal: resume will still show filenames without reloadable bytes
 
@@ -340,7 +351,7 @@ def start_blast_search(request):
             'count': count,
         })
 
-    task = run_blast_search_task.delay(work_dir, sequences, threshold)
+    task = tasks.run_blast_search_task.delay(work_dir, sequences, threshold)
     request.session['dt_blast_task_id'] = task.id
 
     return JsonResponse({'task_id': task.id})
@@ -786,6 +797,51 @@ def get_step3_form(request):
 
 
 @require_POST
+def upload_fasta_file(request):
+    """
+    Upload and validate a custom FASTA file, merging its protein entries into
+    protein_dict on top of whatever is already known (default headers file
+    and/or previously fetched UniProt results).
+    """
+    work_dir = _get_work_dir(request)
+    form = FastaUploadForm(request.POST, request.FILES)
+    if not form.is_valid():
+        return JsonResponse({'error': '; '.join(
+            e for errors in form.errors.values() for e in errors
+        )}, status=400)
+
+    fasta_file = request.FILES['fasta_file']
+    content = fasta_file.read()
+
+    is_valid, error_msg = data_loader.validate_fasta_format(content)
+    if not is_valid:
+        return JsonResponse({'error': f'Invalid FASTA file: {error_msg}'}, status=400)
+
+    user_proteins = data_loader.parse_uploaded_fasta(content, fasta_file.name)
+    if not user_proteins:
+        return JsonResponse(
+            {'error': 'No protein sequences could be parsed from this FASTA file.'}, status=400
+        )
+
+    protein_dict = _load_json(work_dir, 'protein_dict') or {}
+    protein_dict.update(user_proteins)
+    _save_json(work_dir, 'protein_dict', protein_dict)
+
+    # Save the filename and original bytes so the upload survives session resume
+    # and so re-submitting Step 1 can re-apply it (see upload_files).
+    file_names = _load_json(work_dir, 'uploaded_file_names') or {}
+    file_names['fasta_file'] = fasta_file.name
+    _save_json(work_dir, 'uploaded_file_names', file_names)
+    try:
+        with open(os.path.join(work_dir, 'fasta_file.orig'), 'wb') as fh:
+            fh.write(content)
+    except Exception:
+        pass  # Non-fatal: mapping is still applied, just won't survive resume
+
+    return JsonResponse({'success': True, 'added': len(user_proteins)})
+
+
+@require_POST
 def start_uniprot_fetch(request):
     """Launch UniProt fetch as a Celery task."""
     work_dir = _get_work_dir(request)
@@ -800,7 +856,7 @@ def start_uniprot_fetch(request):
     if not missing_ids:
         return JsonResponse({'skipped': True, 'message': 'No missing proteins to fetch'})
 
-    task = fetch_uniprot_task.delay(missing_ids)
+    task = tasks.fetch_uniprot_task.delay(missing_ids)
     request.session['dt_uniprot_task_id'] = task.id
 
     return JsonResponse({'task_id': task.id, 'count': len(missing_ids)})
@@ -1055,10 +1111,23 @@ def reset_proteins(request):
     combinations/merge-group state, but decisions are also persisted
     server-side in protein_decisions.json / source_renames.json. Without
     deleting them, a page resume / step-3 re-fetch restores the prior mapping.
+
+    Also forgets a previously uploaded custom FASTA file (its saved bytes and
+    filename record) so it isn't silently re-applied on the next resume or
+    Step 1 re-submit.
     """
     work_dir = _get_work_dir(request)
     _delete_json(work_dir, 'protein_decisions')
     _delete_json(work_dir, 'source_renames')
+
+    fasta_path = os.path.join(work_dir, 'fasta_file.orig')
+    if os.path.exists(fasta_path):
+        os.remove(fasta_path)
+    file_names = _load_json(work_dir, 'uploaded_file_names') or {}
+    if file_names.get('fasta_file'):
+        file_names['fasta_file'] = None
+        _save_json(work_dir, 'uploaded_file_names', file_names)
+
     return JsonResponse({'success': True})
 
 

@@ -5,7 +5,6 @@ Extracted from data_analysis.ipynb DataTransformation and DataHandler classes.
 import re
 import io
 import traceback
-from collections import defaultdict
 
 import numpy as np
 import pandas as pd
@@ -30,6 +29,133 @@ def _clean_protein_name(name) -> str:
     """Strip trailing UniProt FASTA metadata and a leading entry-name token."""
     s = _FASTA_META_RE.split(str(name), 1)[0].strip()
     return _ENTRY_NAME_LEADER_RE.sub('', s, count=1).strip()
+
+
+_PROTEIN_DELIM_RE = re.compile(r'\s*;\s*|\s*/\s*|\s*,\s*')
+
+
+def _split_protein_ids(value) -> list:
+    """Split one 'Protein' cell into individual protein IDs.
+
+    Cells are either a delimited string (';', '/', ',') from a directly
+    uploaded CSV, or a genuine Python list object (from a pickled/transferred
+    dataframe — Data Transformation's extract_protein_id() stores a real list
+    for multi-protein peptides; see extract_protein_dict() above for why a
+    bare str() would mangle that case).
+    """
+    if isinstance(value, list):
+        return [str(p).strip() for p in value if str(p).strip()]
+    if pd.isna(value):
+        return []
+    return [p for p in _PROTEIN_DELIM_RE.split(str(value)) if p]
+
+
+def _compute_protein_abundance(df: pd.DataFrame, avg_columns: list) -> dict:
+    """
+    Total abundance per protein ID, vectorized.
+
+    Mirrors the old row-by-row version (each peptide's abundance split evenly
+    across the protein IDs on its row) without an `iterrows()` pass: the
+    per-row abundance sum uses pandas' vectorized `.sum(axis=1)`, and the
+    per-protein accumulation uses `explode()` + `groupby().sum()` instead of a
+    Python dict built up one row at a time. On wide/tall uploads this is the
+    difference between a sub-second call and one that can run for minutes.
+    """
+    if 'Protein' not in df.columns or not avg_columns:
+        return {}
+
+    total_ab = df[avg_columns].apply(pd.to_numeric, errors='coerce').fillna(0).sum(axis=1)
+    parts = df['Protein'].map(_split_protein_ids)
+    n_parts = parts.map(len)
+
+    has_parts = n_parts > 0
+    if not has_parts.any():
+        return {}
+
+    per_protein = pd.Series(0.0, index=df.index)
+    per_protein[has_parts] = total_ab[has_parts] / n_parts[has_parts]
+
+    exploded = pd.DataFrame({'pid': parts, 'val': per_protein}).explode('pid')
+    exploded = exploded.dropna(subset=['pid'])
+    if exploded.empty:
+        return {}
+    return exploded.groupby('pid')['val'].sum().to_dict()
+
+
+_BROADER_FUNCTIONS = {'Functional Peptides', 'Non-Functional Peptides', 'All Functional Peptides', 'Other Functions'}
+
+
+def _compute_function_counts(df: pd.DataFrame) -> dict:
+    """
+    Peptide count per individual function label.
+
+    NOTE: measured, this is deliberately *not* an explode()/value_counts()
+    pipeline. That was tried first and benchmarked slower than this plain
+    loop at every size from 50k to 500k rows (pandas' per-call overhead on
+    split/explode/dropna/strip/isin outweighs what a tight Python loop over
+    already-split strings costs). Unlike the protein-abundance and
+    protein-dict cases above, this one was never an iterrows() bottleneck --
+    dropna() already does the heavy lifting, and iterating the leftover
+    Series of strings is cheap. Kept as a shared function purely to
+    de-duplicate the two call sites (get_selector_options and
+    DataAnalysisState._resolve_all_functions).
+    """
+    if 'function' not in df.columns:
+        return {}
+    function_totals: dict = {}
+    for func_str in df['function'].dropna():
+        if isinstance(func_str, str):
+            for func in [f.strip() for f in func_str.split(';')]:
+                if func and func not in _BROADER_FUNCTIONS:
+                    function_totals[func] = function_totals.get(func, 0) + 1
+    return function_totals
+
+
+# ---------------------------------------------------------------------------
+# Selection sentinels + plot-filter derivation
+# ---------------------------------------------------------------------------
+# The UI used to carry an explicit "Plot Filter" dropdown that decided which of
+# the protein / function selectors actually applied; the selectors themselves
+# were greyed out until the dropdown said otherwise, which users consistently
+# missed. The dropdown is gone: what the user selects IS the filter. Each
+# selector carries an explicit "None" sentinel at the top so that "no filter on
+# this dimension" stays distinguishable from "every protein/function", which are
+# genuinely different plots (the latter breaks the data out per item).
+
+NO_PROTEIN_FILTER = 'No Protein Filter'
+ALL_PROTEINS = 'All Proteins (No Filter)'
+NO_FUNCTION_FILTER = 'No Function Filter'
+ALL_FUNCTIONAL = 'All Functional Peptides'
+NON_FUNCTIONAL = 'Non-Functional Peptides'
+
+
+def _selection_is_active(raw, none_sentinel) -> bool:
+    """True when a selector actually restricts/breaks out the plot."""
+    return bool([v for v in (raw or []) if v and v != none_sentinel])
+
+
+def derive_plot_filter(selected_proteins_raw, selected_functions_raw) -> str:
+    """Infer the legacy plot_filter mode from the two selections.
+
+    Kept as a string because the plotting layer branches on these five modes
+    throughout; only its *source* changed (selections instead of a dropdown).
+    Selecting both "All Functional Peptides" and "Non-Functional Peptides" is
+    how the old "Functional vs Non-Functional" mode is now requested.
+    """
+    prot = _selection_is_active(selected_proteins_raw, NO_PROTEIN_FILTER)
+    func = _selection_is_active(selected_functions_raw, NO_FUNCTION_FILTER)
+
+    fn_set = set(selected_functions_raw or [])
+    if func and ALL_FUNCTIONAL in fn_set and NON_FUNCTIONAL in fn_set:
+        return 'Functional vs Non-Functional Peptides'
+
+    if prot and func:
+        return 'Both'
+    if prot:
+        return 'Selected Protein(s)'
+    if func:
+        return 'Selected Function(s)'
+    return 'No Filter'
 
 
 # ---------------------------------------------------------------------------
@@ -111,50 +237,61 @@ def process_group_data(df: pd.DataFrame):
 # ---------------------------------------------------------------------------
 
 def extract_protein_dict(df: pd.DataFrame) -> dict:
-    """Build {protein_id: {name, species, description}} from DataFrame."""
-    protein_dict = {}
+    """Build {protein_id: {name, species, description}} from DataFrame.
+
+    Vectorized: called unconditionally on every upload/transfer (same as
+    get_selector_options), so this used to be a second full iterrows() pass
+    over the whole peptide table. explode() replaces the per-row ID-splitting
+    loop, and a single drop_duplicates(keep='first') reproduces the old "first
+    occurrence wins" rule for name/species (rows are exploded in original
+    order, so the first row a protein ID appears in is still what wins).
+    """
+    protein_dict: dict = {}
     if 'Protein' not in df.columns:
         return protein_dict
 
-    for _, row in df.iterrows():
-        protein_value = row.get('Protein', '')
-        is_list = isinstance(protein_value, list)
-        if (is_list and not protein_value) or (not is_list and pd.isna(protein_value)):
-            continue
-        # Data Transformation's extract_protein_id() stores a genuine Python
-        # list (not a joined string) for multi-protein peptides. str()-ing
-        # that produces its bracketed repr (e.g. "['Q5SX40', 'Q5SX39']"),
-        # which would otherwise become one bogus, unmatched protein ID -- this
-        # path is only reachable via a transferred/pickled dataframe, since a
-        # directly uploaded CSV can never contain a real list object in a cell.
-        if isinstance(protein_value, list):
-            candidate_ids = [str(p) for p in protein_value]
+    # Data Transformation's extract_protein_id() stores a genuine Python list
+    # (not a joined string) for multi-protein peptides -- _split_protein_ids
+    # handles both that and the delimited-string case from a directly
+    # uploaded CSV (see its docstring for why str()-ing a list would mangle it).
+    parts = df['Protein'].map(_split_protein_ids)
+    has_parts = parts.map(len) > 0
+    if not has_parts.any():
+        return protein_dict
+
+    # NA sentinels reproduce row.get(col, default) when the column is absent
+    # entirely: pd.isna() below then falls back exactly as the old code did.
+    name_col = df['protein_name'] if 'protein_name' in df.columns else pd.Series(pd.NA, index=df.index)
+    species_col = df['protein_species'] if 'protein_species' in df.columns else pd.Series(pd.NA, index=df.index)
+
+    exploded = pd.DataFrame({
+        'pid': parts[has_parts],
+        'name_value': name_col[has_parts],
+        'species_value': species_col[has_parts],
+    }).explode('pid')
+    exploded = exploded.drop_duplicates(subset='pid', keep='first')
+
+    for pid, name_value, species_value in zip(
+        exploded['pid'], exploded['name_value'], exploded['species_value']
+    ):
+        # Data Transformation's own "cleaning up placeholder values" step
+        # (data_combiner.py) replaces the literal string 'Unknown' with
+        # pd.NA before the merged dataframe is saved -- so a transferred
+        # dataset's unresolved names arrive as pd.NA, not the string
+        # 'Unknown'. pd.isna() catches that (and None/NaN) uniformly, which
+        # plain string matching cannot. Treat any of those, or the literal
+        # string itself (belt-and-suspenders for other sources), as no name
+        # at all and fall back to the protein ID -- matches the Heatmap
+        # module's convention so an unmapped protein is never shown as a
+        # bare, unhelpful placeholder.
+        if pd.isna(name_value):
+            name = pid
         else:
-            candidate_ids = re.split(r'\s*;\s*|\s*/\s*|\s*,\s*', str(protein_value))
-        for protein_id in candidate_ids:
-            protein_id = protein_id.strip()
-            if not protein_id or protein_id in protein_dict:
-                continue
-            name_value = row.get('protein_name', protein_id)
-            # Data Transformation's own "cleaning up placeholder values" step
-            # (data_combiner.py) replaces the literal string 'Unknown' with
-            # pd.NA before the merged dataframe is saved -- so a transferred
-            # dataset's unresolved names arrive as pd.NA, not the string
-            # 'Unknown'. pd.isna() catches that (and None/NaN) uniformly,
-            # which plain string matching cannot. Treat any of those, or the
-            # literal string itself (belt-and-suspenders for other sources),
-            # as no name at all and fall back to the protein ID -- matches
-            # the Heatmap module's convention so an unmapped protein is never
-            # shown as a bare, unhelpful placeholder.
-            if pd.isna(name_value):
-                name = protein_id
-            else:
-                name = str(name_value).strip()
-                if not name or name.lower() in ('unknown', 'nan', 'none'):
-                    name = protein_id
-            species_value = row.get('protein_species', 'Unknown')
-            species = 'Unknown' if pd.isna(species_value) else str(species_value)
-            protein_dict[protein_id] = {'name': name, 'species': species}
+            name = str(name_value).strip()
+            if not name or name.lower() in ('unknown', 'nan', 'none'):
+                name = pid
+        species = 'Unknown' if pd.isna(species_value) else str(species_value)
+        protein_dict[pid] = {'name': name, 'species': species}
     return protein_dict
 
 
@@ -200,27 +337,7 @@ def get_selector_options(merged_df: pd.DataFrame, group_data_dict: dict, protein
     avg_columns = [col for col in merged_df.columns if col.startswith('Avg_')]
 
     # Proteins – sorted by total abundance
-    protein_abundance: dict[str, float] = {}
-    if 'Protein' in merged_df.columns and avg_columns:
-        for _, row in merged_df.iterrows():
-            protein_value = row.get('Protein', '')
-            if isinstance(protein_value, list):
-                parts = [str(p).strip() for p in protein_value if str(p).strip()]
-            elif pd.isna(protein_value):
-                parts = []
-            else:
-                parts = [
-                    p.strip() for p in re.split(r'\s*;\s*|\s*/\s*|\s*,\s*', str(protein_value))
-                    if p.strip()
-                ]
-            total_ab = sum(
-                float(row.get(col, 0) or 0)
-                for col in avg_columns
-                if pd.notna(row.get(col))
-            )
-            per_protein = total_ab / max(1, len(parts))
-            for pid in parts:
-                protein_abundance[pid] = protein_abundance.get(pid, 0) + per_protein
+    protein_abundance = _compute_protein_abundance(merged_df, avg_columns)
 
     all_proteins_sorted = sorted(
         protein_dict.keys(),
@@ -237,15 +354,7 @@ def get_selector_options(merged_df: pd.DataFrame, group_data_dict: dict, protein
         'function' in merged_df.columns
         and not merged_df['function'].isna().all()
     )
-    broader = {'Functional Peptides', 'Non-Functional Peptides', 'All Functional Peptides', 'Other Functions'}
-    function_totals: dict[str, float] = defaultdict(float)
-    if has_functions:
-        for func_str in merged_df['function'].dropna():
-            if isinstance(func_str, str):
-                for func in [f.strip() for f in func_str.split(';')]:
-                    if func and func not in broader:
-                        function_totals[func] += 1
-
+    function_totals = _compute_function_counts(merged_df) if has_functions else {}
     functions = [f for f, _ in sorted(function_totals.items(), key=lambda x: x[1], reverse=True)]
 
     # Which groups carry replicate-level ('Grouped:') columns. In this module a
@@ -395,10 +504,21 @@ class DataAnalysisState:
 
         # Widget-state equivalents from params
         self.selected_groups: list = params.get('selected_groups', list(group_data_dict.keys()))
-        self.selected_proteins_raw: list = params.get('selected_proteins', ['All Proteins (No Filter)'])
-        self.selected_functions_raw: list = params.get('selected_functions', ['All Functional Peptides'])
+        self.selected_proteins_raw: list = params.get('selected_proteins', [NO_PROTEIN_FILTER])
+        self.selected_functions_raw: list = params.get('selected_functions', [NO_FUNCTION_FILTER])
         self.plot_type: str = params.get('plot_type', 'Grouped Bar Plots')
-        self.plot_filter: str = params.get('plot_filter', 'No Filter')
+        # The Plot Filter dropdown is gone from the UI: the mode is derived from
+        # what the user selected. An explicit plot_filter is still honoured so
+        # programmatic callers (and the test suite) can pin a mode directly.
+        self.plot_filter: str = params.get('plot_filter') or derive_plot_filter(
+            self.selected_proteins_raw, self.selected_functions_raw)
+        # Which dimensions the user actually restricted. Derived from the raw
+        # selections rather than from plot_filter so that an explicitly-passed
+        # mode and a derived one behave the same.
+        self.protein_filter_active: bool = _selection_is_active(
+            self.selected_proteins_raw, NO_PROTEIN_FILTER)
+        self.function_filter_active: bool = _selection_is_active(
+            self.selected_functions_raw, NO_FUNCTION_FILTER)
         self.abs_or_count: str = params.get('abs_or_count', 'Abundance')
         self.metric_type: str = params.get('metric_type', 'Absolute')
         self.orientation: str = params.get('orientation', 'By Sample')
@@ -498,19 +618,7 @@ class DataAnalysisState:
 
     def _resolve_all_proteins(self):
         """Build all_proteins list sorted by abundance."""
-        protein_abundance: dict[str, float] = {}
-        if 'Protein' in self.merged_df.columns and self.avg_columns:
-            for _, row in self.merged_df.iterrows():
-                protein_str = str(row.get('Protein', ''))
-                parts = [p.strip() for p in protein_str.split(';') if p.strip()]
-                total_ab = sum(
-                    float(row.get(col, 0) or 0)
-                    for col in self.avg_columns
-                    if pd.notna(row.get(col))
-                )
-                per_protein = total_ab / max(1, len(parts))
-                for pid in parts:
-                    protein_abundance[pid] = protein_abundance.get(pid, 0) + per_protein
+        protein_abundance = _compute_protein_abundance(self.merged_df, self.avg_columns)
 
         self.all_proteins = sorted(
             self.protein_dict.keys(),
@@ -523,12 +631,19 @@ class DataAnalysisState:
         self._resolve_all_proteins()
         names_to_ids = {self.protein_dict[pid].get('name', pid): pid for pid in self.protein_dict}
 
-        if 'All Proteins (No Filter)' in self.selected_proteins_raw:
+        # "All Proteins", or no protein restriction at all, both resolve to every
+        # protein: downstream lookups (protein_df, reps dicts) always need a
+        # concrete list — whether the plot breaks out per protein is decided by
+        # plot_filter, not here.
+        if (ALL_PROTEINS in self.selected_proteins_raw
+                or not self.protein_filter_active):
             self.selected_proteins = list(self.all_proteins)
             return
 
         resolved = []
         for sel in self.selected_proteins_raw:
+            if sel == NO_PROTEIN_FILTER:
+                continue
             if sel in self.protein_dict:
                 resolved.append(sel)
             elif sel in names_to_ids:
@@ -538,14 +653,7 @@ class DataAnalysisState:
         self.selected_proteins = resolved or list(self.all_proteins)
 
     def _resolve_all_functions(self):
-        broader = {'Functional Peptides', 'Non-Functional Peptides', 'All Functional Peptides', 'Other Functions'}
-        function_totals: dict[str, float] = defaultdict(float)
-        if 'function' in self.merged_df.columns:
-            for func_str in self.merged_df['function'].dropna():
-                if isinstance(func_str, str):
-                    for func in [f.strip() for f in func_str.split(';')]:
-                        if func and func not in broader:
-                            function_totals[func] += 1
+        function_totals = _compute_function_counts(self.merged_df)
         self.all_functions = [
             f for f, _ in sorted(function_totals.items(), key=lambda x: x[1], reverse=True)
         ]
@@ -556,10 +664,16 @@ class DataAnalysisState:
 
         if self.plot_filter == 'Functional vs Non-Functional Peptides':
             self.selected_functions = ['Functional Peptides', 'Non-Functional Peptides']
-        elif 'All Functional Peptides' in self.selected_functions_raw:
+        elif (ALL_FUNCTIONAL in self.selected_functions_raw
+                or not self.function_filter_active):
+            # "All Functional Peptides", or no function restriction: same as for
+            # proteins, resolve to the full list for downstream lookups.
             self.selected_functions = [f for f in self.all_functions if f not in broader]
         else:
-            self.selected_functions = [f for f in self.selected_functions_raw if f not in broader]
+            self.selected_functions = [
+                f for f in self.selected_functions_raw
+                if f not in broader and f != NO_FUNCTION_FILTER
+            ]
 
         # Generate function color map
         colors = get_color_sequence(len(self.all_functions), self.color_scheme)
@@ -580,10 +694,12 @@ class DataAnalysisState:
         # Protein filter – match by ID against the 'Protein' column (semicolon-separated IDs).
         # When plot_minor=True, skip the protein restriction so all protein rows remain in
         # filtered_df; process_protein_data() will aggregate non-selected ones into "Other Proteins".
-        if (self.plot_filter in ('Selected Protein(s)', 'Both')
+        if (self.plot_filter in ('Selected Protein(s)', 'Both',
+                                 'Functional vs Non-Functional Peptides')
+                and self.protein_filter_active
                 and 'Protein' in df.columns
                 and not self.plot_minor):
-            if 'All Proteins (No Filter)' not in self.selected_proteins_raw:
+            if ALL_PROTEINS not in self.selected_proteins_raw:
                 sel_ids = set(self.selected_proteins)
                 protein_mask = df['Protein'].fillna('').apply(
                     lambda x: bool(sel_ids.intersection(p.strip() for p in x.split(';')))
@@ -612,7 +728,11 @@ class DataAnalysisState:
             combined = protein_mask & function_mask
         elif self.plot_filter == 'Selected Protein(s)':
             combined = protein_mask
-        elif self.plot_filter in ('Selected Function(s)', 'Functional vs Non-Functional Peptides'):
+        elif self.plot_filter == 'Functional vs Non-Functional Peptides':
+            # function_mask stays all-True here (the split is made downstream, not
+            # by filtering); the protein restriction, if any, still applies.
+            combined = protein_mask & function_mask
+        elif self.plot_filter == 'Selected Function(s)':
             combined = function_mask
         else:
             combined = pd.Series(True, index=df.index)
@@ -930,29 +1050,45 @@ class DataAnalysisState:
         if not available_ab or 'Protein' not in df.columns:
             return
 
-        # Calculate protein totals – track per-group peptide sets for Count columns
+        # Calculate protein totals – track per-group peptide sets for Count columns.
+        #
+        # Vectorized: explode() turns "one row per peptide" into "one row per
+        # (peptide, protein-id) pair" without a Python iterrows() pass over
+        # every peptide row. What's left is a Python loop, but over distinct
+        # protein IDs (a groupby) rather than over every row -- on a dataset
+        # with many peptides per protein that's an order-of-magnitude fewer
+        # iterations, and each iteration's work (sums, boolean masks, set
+        # construction) is a vectorized pandas op rather than per-cell access.
+        pep_id_col = 'Unique Peptide ID' if 'Unique Peptide ID' in df.columns else None
+        pid_parts = df['Protein'].astype(str).str.split(';')
+        exploded = df.assign(_pid=pid_parts).explode('_pid')
+        exploded['_pid'] = exploded['_pid'].str.strip()
+        exploded = exploded[exploded['_pid'] != '']
+
         protein_data = {}
-        for idx, row in df.iterrows():
-            proteins = [p.strip() for p in str(row.get('Protein', '')).split(';') if p.strip()]
-            pep_id = row.get('Unique Peptide ID', '')
-            for pid in proteins:
-                if pid not in protein_data:
-                    protein_data[pid] = {
-                        'peptides': set(),
-                        'peptides_by_group': {g: set() for g in self.selected_groups},
-                        'abundance': {g: 0.0 for g in self.selected_groups},
-                        'row_idx': [],  # filtered_df rows mapped to this protein (for SEM)
-                    }
-                protein_data[pid]['peptides'].add(pep_id)
-                protein_data[pid]['row_idx'].append(idx)
-                for g in self.selected_groups:
-                    col = f'Avg_{g}'
-                    if col in row:
-                        v = row[col]
-                        if pd.notna(v):
-                            protein_data[pid]['abundance'][g] += float(v)
-                            if float(v) > 0:
-                                protein_data[pid]['peptides_by_group'][g].add(pep_id)
+        if not exploded.empty:
+            for pid, g in exploded.groupby('_pid', sort=False):
+                # A plain numpy bool array indexes positionally, sidestepping any
+                # ambiguity from duplicate index labels (explode() repeats the
+                # original row's index for each protein ID it produced).
+                pep_ids_here = g[pep_id_col] if pep_id_col else pd.Series([''] * len(g), index=g.index)
+                abundance = {}
+                peptides_by_group = {}
+                for grp in self.selected_groups:
+                    col = f'Avg_{grp}'
+                    if col in g.columns:
+                        col_vals = pd.to_numeric(g[col], errors='coerce')
+                        abundance[grp] = float(col_vals.fillna(0).sum())
+                        peptides_by_group[grp] = set(pep_ids_here[(col_vals > 0).to_numpy()])
+                    else:
+                        abundance[grp] = 0.0
+                        peptides_by_group[grp] = set()
+                protein_data[pid] = {
+                    'peptides': set(pep_ids_here),
+                    'peptides_by_group': peptides_by_group,
+                    'abundance': abundance,
+                    'row_idx': list(g.index),  # filtered_df rows mapped to this protein (for SEM)
+                }
 
         rows = []
         for pid, pdata in protein_data.items():

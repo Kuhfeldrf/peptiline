@@ -1340,6 +1340,35 @@
         }, function(msg) { btn.disabled = false; showError(msg); });
     });
 
+    // Custom FASTA file — auto-validate and merge into the protein database
+    // on file selection or drop, then reprocess the mapping (same as a
+    // UniProt fetch) so any previously-ambiguous/unknown proteins pick up
+    // the newly-supplied species and name information.
+    document.getElementById('fasta_file').addEventListener('change', function() {
+        if (!this.files.length) return;
+        var statusEl = document.getElementById('fasta-upload-status');
+        statusEl.innerHTML = '<div class="dt-alert dt-alert-info" style="margin-top:6px;">' +
+            '<span class="dt-spinner"></span> Validating & applying FASTA file...</div>';
+
+        var formData = new FormData();
+        formData.append('fasta_file', this.files[0]);
+        ajax('POST', 'upload-fasta/', formData, function(resp) {
+            statusEl.innerHTML = '<div class="dt-alert dt-alert-success" style="margin-top:6px;">' +
+                '<i class="fas fa-check-circle"></i> Loaded <strong>' + resp.added +
+                '</strong> protein sequence(s) from FASTA file.</div>';
+            ajax('GET', 'step3/', null, function(r) {
+                renderStep3Info(r);
+                document.getElementById('protein-info').insertAdjacentHTML('afterbegin',
+                    '<div class="dt-alert dt-alert-success" style="margin-bottom:8px;">' +
+                    '<i class="fas fa-check-circle"></i> Protein mapping re-processed using the ' +
+                    'uploaded FASTA file.</div>');
+            });
+        }, function(msg) {
+            statusEl.innerHTML = '<div class="dt-alert dt-alert-danger" style="margin-top:6px;">' +
+                msg + '</div>';
+        });
+    });
+
     // Upload mapping key — auto-apply on file selection or drop
     document.getElementById('protein-map-input').addEventListener('change', function() {
         if (!this.files.length) return;
@@ -1408,6 +1437,11 @@
         clearDropzone('protein-map-input');
         var statusEl = document.getElementById('protein-map-upload-status');
         if (statusEl) statusEl.innerHTML = '';
+
+        // Clear the uploaded custom FASTA file input + its dropzone display and status.
+        clearDropzone('fasta_file');
+        var fastaStatusEl = document.getElementById('fasta-upload-status');
+        if (fastaStatusEl) fastaStatusEl.innerHTML = '';
 
         // Delete the server-side saved decisions and merge/rename groups, then
         // re-fetch step 3 so combinations and merge groups redraw at their

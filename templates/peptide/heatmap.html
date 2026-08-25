@@ -240,7 +240,7 @@ select.multi-select:disabled { background: #f8f9fa; color: #aaa; }
                 <small class="text-muted">Hold Ctrl/Cmd to select multiple</small>
             </div>
             <div class="selector-block">
-                <label><i class="fas fa-layer-group"></i> Sample Variables</label>
+                <label><i class="fas fa-layer-group"></i> Sample Groups</label>
                 <select id="varkey-selector" class="multi-select" multiple size="6" disabled></select>
                 <small class="text-muted">Hold Ctrl/Cmd to select multiple</small>
             </div>
@@ -501,11 +501,10 @@ select.multi-select:disabled { background: #f8f9fa; color: #aaa; }
 
                     <div style="display:flex; align-items:center; gap:8px; min-width:0;">
                         <label style="font-weight:600; font-size:.92rem; white-space:nowrap; flex-shrink:0; width:195px;">Legend Position</label>
-                        <select id="legend-position" title="Right: one combined legend beside the plot, groups stacked with the text going down. Below (side by side): each legend group becomes its own unit under the protein-sequence x-axis, centred side by side and wrapped onto another row when they don't fit — frees the full figure width for the heatmap. Below (stacked): the same units one above the other, one per row, so no figure width can crowd them." disabled
+                        <select id="legend-position" title="Right: one combined legend beside the plot, groups stacked with the text going down. Below x-axis: each legend group becomes its own unit under the protein-sequence x-axis, one per row, so no figure width can crowd them — frees the full figure width for the heatmap." disabled
                                 style="flex:1; min-width:0; border:1px solid #ced4da; border-radius:4px; padding:4px 8px; font-size:.92rem;">
                             <option value="right" selected>Right of plot (combined)</option>
-                            <option value="below">Below x-axis (side by side)</option>
-                            <option value="below-stacked">Below x-axis (stacked)</option>
+                            <option value="below">Below x-axis</option>
                         </select>
                     </div>
 
@@ -1304,23 +1303,37 @@ function repackBelowLegends(gd) {
     });
     if (row.length) rows.push(row);
 
-    const strip  = plan.row_px * Math.max(rows.length, 1);
+    const nRows  = Math.max(rows.length, 1);
+    const strip  = plan.row_px * nRows;
     const height = plan.base_height_px + strip;
     const bottom = plan.base_bottom_px + strip;
     const plotH  = Math.max(height - plan.top_px - bottom, 1);
 
     const update = { height: height, 'margin.b': bottom };
+    let x0 = Infinity, x1 = -Infinity;
+    // 'below' is stacked-only — one unit per row, centred. Mirrors
+    // _below_legend_geometry() in heatmap_renderer.py.
     rows.forEach(function(r, ri) {
-        const span = r.reduce(function(s, u) { return s + u.width; }, 0)
-                     + plan.gap_px * (r.length - 1);
-        let cursor = -span / 2;
+        const contentW = r.reduce(function(s, u) { return s + u.width; }, 0);
+        let cursor = -(contentW + plan.gap_px * (r.length - 1)) / 2;
         const y = -((plan.axis_zone_px + ri * plan.row_px) / plotH);
         r.forEach(function(u) {
             update[u.ref + '.x'] = 0.5 + (cursor + u.width / 2) / avail;
             update[u.ref + '.y'] = y;
+            x0 = Math.min(x0, 0.5 + cursor / avail);
+            x1 = Math.max(x1, 0.5 + (cursor + u.width) / avail);
             cursor += u.width + plan.gap_px;
         });
     });
+
+    // Single outline around the whole strip (all units, all rows) — mirrors
+    // the 'shapes[0]' rect built by _below_legend_layout() in heatmap_renderer.py.
+    const padX = plan.outline_pad_px / avail;
+    const padY = plan.outline_pad_px / plotH;
+    update['shapes[0].x0'] = x0 - padX;
+    update['shapes[0].x1'] = x1 + padX;
+    update['shapes[0].y0'] = -((plan.axis_zone_px / plotH)) + padY;
+    update['shapes[0].y1'] = -((plan.axis_zone_px + nRows * plan.row_px) / plotH) - padY;
     Plotly.relayout(gd, update);
 }
 
@@ -1522,6 +1535,13 @@ async function generateHeatmap() {
                 scrollZoom: true,
                 displayModeBar: true,
                 useResizeObserver: true,
+                // Zoom runs along the sequence axis only (every y-axis is
+                // fixedrange server-side), so the box/lasso selection tools and
+                // "Autoscale" — which would rescale to the trace extents and
+                // discard the uniform abundance scale — are just traps here.
+                // Double-click restores the band's full residue window.
+                modeBarButtonsToRemove: ['select2d', 'lasso2d', 'autoScale2d'],
+                doubleClick: 'reset',
             });
             cont.classList.remove('hidden');
             // Force a resize after the container becomes visible, then place any
@@ -1578,6 +1598,8 @@ async function generateHeatmap() {
                 scrollZoom: true,
                 displayModeBar: true,
                 modeBarButtonsToAdd: ['zoom2d', 'pan2d', 'resetScale2d'],
+                modeBarButtonsToRemove: ['select2d', 'lasso2d', 'autoScale2d'],
+                doubleClick: 'reset',
             }).then(() => repackBelowLegends(compactDiv));
             compactCont.classList.remove('hidden');
         } catch(e) {
@@ -1626,7 +1648,7 @@ function downloadInteractiveHtml() {
 </head><body>
 <div id="plot"></div>
 <script>
-Plotly.newPlot('plot', ${JSON.stringify(figSpec.data)}, Object.assign({}, ${JSON.stringify(figSpec.layout)}, {autosize:true}), {responsive:true,scrollZoom:true,displayModeBar:true});
+Plotly.newPlot('plot', ${JSON.stringify(figSpec.data)}, Object.assign({}, ${JSON.stringify(figSpec.layout)}, {autosize:true}), {responsive:true,scrollZoom:true,displayModeBar:true,modeBarButtonsToRemove:['select2d','lasso2d','autoScale2d'],doubleClick:'reset'});
 window.addEventListener('resize', function(){ Plotly.Plots.resize(document.getElementById('plot')); });
 <\/script>
 </body></html>`;
