@@ -23,6 +23,13 @@
 
     <!-- select2-bootstrap4-theme -->
     <link href="https://raw.githack.com/ttskch/select2-bootstrap4-theme/master/dist/select2-bootstrap4.css" rel="stylesheet"> <!-- for live demo page -->
+
+    <!-- PeptiLine design system: nav/footer chrome on every page (not MBPDB's) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="{% static 'peptide/theme/css/design-system.css' %}" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
@@ -141,32 +148,31 @@
 <body>
 
 {% block 'nav' %}
-<div id="menubar-wrapper">
-    <ul class="menubar-nav">
-        <li><a href="{% url 'peptide_search' %}">Search</a></li>
-        <li><a href="{% url 'peptiline_landing' %}">PeptiLine</a></li>
-        <li><a href="{% url 'about_us' %}">About</a></li>
-        <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Contact<span class="caret"></span></a>
-            <ul class="dropdown-menu">
-            <li><a href="mailto:Contact-MBPDB@oregonstate.edu">Contact-MBPDB@oregonstate.edu</a></li>
-                <!-- Add more dropdown items here if necessary -->
+<header class="pl-nav">
+    <div class="pl-nav-inner">
+        <a class="pl-nav-brand" href="{% url 'peptiline_landing' %}">Pepti<span class="pl-brand-accent">Line</span></a>
+        <nav aria-label="Primary">
+            <ul class="pl-nav-links">
+                <li><a href="{% url 'about_us' %}">About</a></li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Tools <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{% url 'data_transformation' %}">Data Transformation</a></li>
+                        <li><a href="{% url 'data_analysis:index' %}">Data Analysis</a></li>
+                        <li><a href="{% url 'heatmap_viz:index' %}">Heatmap Visualization</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Contact<span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="mailto:Contact-MBPDB@oregonstate.edu">Contact-MBPDB@oregonstate.edu</a></li>
+                    </ul>
+                </li>
             </ul>
-        </li>
-        <li class="dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Tools <span class="caret"></span></a>
-            <ul class="dropdown-menu">
-                <li><a href="{% url 'peptiline_landing' %}">PeptiLine</a></li>
-                <li><a href="{% url 'data_transformation' %}">Data Transformation</a></li>
-                <li><a href="{% url 'data_analysis:index' %}">Data Analysis</a></li>
-                <li><a href="{% url 'heatmap_viz:index' %}">Heatmap Visualization</a></li>
-                <li><a href="{% url 'pepex' %}">PepEx</a></li>
-            </ul>
-        </li>
-        <li><a href="{% static 'peptide/MBPDB_Help.pdf' %}" target="_blank">Help</a></li>
-    </ul>
-</div>
+        </nav>
+    </div>
+</header>
 {% endblock 'nav' %}
-        <!-- /#menubar-wrapper -->
 
         <!-- Page Content -->
         <div id="page-content-wrapper">
@@ -186,14 +192,11 @@
     <!-- /#wrapper -->
 </body>
 {% block 'footer' %}
-   <footer>
-    <div class="footer-content">
-        If you are referencing this database: <a href="{% url 'about_us' %}#Cite"><b>please cite</b></a><br>
-        {% for pep in latest_peptides %}
-            Database updated: {{pep.time_approved}}
-        {% endfor %}
+<footer class="pl-footer">
+    <div class="pl-footer-content">
+        If you are referencing this database: <a href="{% url 'about_us' %}#Cite">please cite</a>
     </div>
-    </footer>
+</footer>
 {% endblock 'footer' %}
     <!-- jQuery -->
     <!--<script src="{% static 'peptide/theme/js/jquery.js' %}"></script>-->

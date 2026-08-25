@@ -1193,7 +1193,7 @@ class TestNotebookParity(unittest.TestCase):
 
 ARCHIVE = os.path.join(
     os.path.dirname(os.path.dirname(__file__)),
-    'peptide', 'notebooks', 'archive'
+    'examples', 'legacy_v1', 'archive'
 )
 
 
@@ -1218,7 +1218,7 @@ def _load_real(filename, file_type='Peptidomic'):
 
 ADDITIONAL_FORMATS = os.path.join(
     os.path.dirname(os.path.dirname(__file__)),
-    'peptide', 'static', 'peptide', 'examples', 'not_in_use_examples'
+    'examples', 'legacy_v1', 'additional_peptidomic_input_formats'
 )
 
 

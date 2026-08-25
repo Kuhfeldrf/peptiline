@@ -1,0 +1,69 @@
+name: Deploy PeptiLine Container to Azure
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    services:
+      redis:
+        image: redis:latest
+        ports:
+          - 6379:6379
+
+    steps:
+    - name: Checkout to the branch
+      uses: actions/checkout@v5
+
+    - name: Azure Login
+      uses: azure/login@v3
+      with:
+        creds: ${{ secrets.PEPTILINECONTAINER_AZURE_CREDENTIALS }}
+
+    - name: Build and push container image to registry
+      uses: azure/container-apps-deploy-action@v1
+      with:
+        appSourcePath: .
+        registryUrl: docker.io
+        registryUsername: ${{ secrets.PEPTILINECONTAINER_REGISTRY_USERNAME }}
+        registryPassword: ${{ secrets.PEPTILINECONTAINER_REGISTRY_PASSWORD }}
+        containerAppName: peptilinecontainer
+        resourceGroup: COH_MBPDB_RG
+        imageToBuild: mbpdb/peptiline:latest
+        dockerfilePath: Dockerfile
+        targetPort: 8000
+        ingress: external
+        environmentVariables: |
+          DJANGO_SETTINGS_MODULE=peptiline.settings
+          WEBSITES_PORT=8000
+          WEBSITES_CONTAINER_START_TIME_LIMIT=1800
+          DJANGO_SECRET_KEY=${{ secrets.PEPTILINE_DJANGO_SECRET_KEY }}
+          DJANGO_ALLOWED_HOSTS=${{ secrets.PEPTILINE_DJANGO_ALLOWED_HOSTS }}
+          DJANGO_CORS_ORIGINS=${{ secrets.PEPTILINE_DJANGO_CORS_ORIGINS }}
+          DJANGO_CSRF_ORIGINS=${{ secrets.PEPTILINE_DJANGO_CSRF_ORIGINS }}
+          DJANGO_SUPERUSER_USERNAME=${{ secrets.PEPTILINE_DJANGO_SUPERUSER_USERNAME }}
+          DJANGO_SUPERUSER_EMAIL=${{ secrets.PEPTILINE_DJANGO_SUPERUSER_EMAIL }}
+          DJANGO_SUPERUSER_PASSWORD=${{ secrets.PEPTILINE_DJANGO_SUPERUSER_PASSWORD }}
+
+    - name: Update environment variables
+      run: |
+        az containerapp update \
+          --name peptilinecontainer \
+          --resource-group COH_MBPDB_RG \
+          --container-name peptilinecontainer \
+          --set-env-vars \
+          "DJANGO_SETTINGS_MODULE=peptiline.settings" \
+          "WEBSITES_PORT=8000" \
+          "WEBSITES_CONTAINER_START_TIME_LIMIT=1800" \
+          "DJANGO_SECRET_KEY=${{ secrets.PEPTILINE_DJANGO_SECRET_KEY }}" \
+          "DJANGO_ALLOWED_HOSTS=${{ secrets.PEPTILINE_DJANGO_ALLOWED_HOSTS }}" \
+          "DJANGO_CORS_ORIGINS=${{ secrets.PEPTILINE_DJANGO_CORS_ORIGINS }}" \
+          "DJANGO_CSRF_ORIGINS=${{ secrets.PEPTILINE_DJANGO_CSRF_ORIGINS }}" \
+          "DJANGO_SUPERUSER_USERNAME=${{ secrets.PEPTILINE_DJANGO_SUPERUSER_USERNAME }}" \
+          "DJANGO_SUPERUSER_EMAIL=${{ secrets.PEPTILINE_DJANGO_SUPERUSER_EMAIL }}" \
+          "DJANGO_SUPERUSER_PASSWORD=${{ secrets.PEPTILINE_DJANGO_SUPERUSER_PASSWORD }}"

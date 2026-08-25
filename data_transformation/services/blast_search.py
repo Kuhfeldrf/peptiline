@@ -14,13 +14,27 @@ import pandas as pd
 import numpy as np
 from django.conf import settings
 
-# KNOWN BLOCKER (see L-7 in the manuscript repo's TRACKER.md): this module-level
-# import reaches into the private MBPDB application's Django models and has no
-# equivalent in a standalone install. Until it is made lazy/optional, importing
-# this module outside the MBPDB codebase raises ImportError at load time, which
-# breaks the whole Data Transformation dashboard rather than just MBPDB search.
-# Not yet fixed in this vendoring pass; see README "MBPDB integration".
-from peptide.models import PeptideInfo, ProteinInfo, Function, Reference
+# L-7 fix (see the manuscript repo's TRACKER.md): the MBPDB reference models
+# (peptide.models) don't exist in a standalone install -- this repo has no
+# replicated copy of them yet (see docs/SPLIT_PLAN.md section 3). Importing
+# them lazily, inside the functions that actually need them, means the rest
+# of the Data Transformation dashboard keeps working; only an actual MBPDB
+# search attempt fails, with a clear error instead of an ImportError at
+# module load that would take down the whole app.
+try:
+    from peptide.models import PeptideInfo, ProteinInfo, Function, Reference
+except ModuleNotFoundError:
+    PeptideInfo = ProteinInfo = Function = Reference = None
+
+
+def _require_mbpdb_models():
+    if PeptideInfo is None:
+        raise RuntimeError(
+            "MBPDB search is not available in this standalone PeptiLine "
+            "deployment (no replicated MBPDB database configured yet -- "
+            "see docs/SPLIT_PLAN.md). Upload a pre-downloaded MBPDB TSV or "
+            "your own functional annotation table instead."
+        )
 
 
 def create_work_directory(base_dir=None):
@@ -88,6 +102,8 @@ def run_blast_search(peptides, similarity_threshold=100, work_dir=None,
     Returns:
         pd.DataFrame with search results
     """
+    _require_mbpdb_models()
+
     if work_dir is None:
         work_dir = create_work_directory()
 

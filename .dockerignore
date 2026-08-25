@@ -1,0 +1,55 @@
+# Git and version control
+.git
+.gitignore
+.github
+
+# Python
+__pycache__
+*.py[cod]
+*$py.class
+.venv
+.venv*/
+venv
+env
+*.egg-info
+.eggs
+.pytest_cache
+
+# IDE and editor
+.idea
+.vscode
+.cursor
+.claude
+*.swp
+*.swo
+
+# Jupyter
+.ipynb_checkpoints
+*-checkpoint.ipynb
+*.ipynb
+
+# Build artifacts and caches
+*.sqlite3
+static_files
+*.log
+
+# Local dev and test
+.env
+.env.*
+*.env
+.DS_Store
+uploads/temp/*
+!uploads/temp/.gitkeep
+
+# Not needed at runtime -- README docs, source data/reference material for
+# local dev, and the test suite. supplementals/ and examples/ in particular
+# are 60MB + 32MB of manuscript figures/sample datasets that the running
+# app never reads (the /peptiline/supplementals/ page serves from
+# static/peptide/publications/... instead -- see docs/SPLIT_PLAN.md).
+README.md
+LICENSE
+docs
+tests
+examples
+supplementals
+notebook_requirements.txt

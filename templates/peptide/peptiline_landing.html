@@ -1,57 +1,6 @@
 {% extends 'peptide/base.html' %}
 {% load static %}
-
-{% block 'head' %}
-<!-- PeptiLine design system: scoped to the landing page only -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-<link href="{% static 'peptide/theme/css/design-system.css' %}" rel="stylesheet">
-{% endblock 'head' %}
-
-{% block 'nav' %}
-<header class="pl-nav">
-    <div class="pl-nav-inner">
-        <a class="pl-nav-brand" href="{% url 'peptiline_landing' %}">Pepti<span class="pl-brand-accent">Line</span></a>
-        <nav aria-label="Primary">
-            <ul class="pl-nav-links">
-                <li><a href="{% url 'peptiline_landing' %}">Home</a></li>
-                <li><a href="{% url 'peptide_search' %}">Search</a></li>
-                <li><a href="{% url 'about_us' %}">About</a></li>
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Tools <span class="caret"></span></a>
-                    <ul class="dropdown-menu">
-                        <li><a href="{% url 'peptiline_landing' %}">PeptiLine</a></li>
-                        <li><a href="{% url 'data_transformation' %}">Data Transformation</a></li>
-                        <li><a href="{% url 'data_analysis:index' %}">Data Analysis</a></li>
-                        <li><a href="{% url 'heatmap_viz:index' %}">Heatmap Visualization</a></li>
-                        <li><a href="{% url 'pepex' %}">PepEx</a></li>
-                    </ul>
-                </li>
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Contact<span class="caret"></span></a>
-                    <ul class="dropdown-menu">
-                        <li><a href="mailto:Contact-MBPDB@oregonstate.edu">Contact-MBPDB@oregonstate.edu</a></li>
-                    </ul>
-                </li>
-                <li><a href="{% static 'peptide/MBPDB_Help.pdf' %}" target="_blank">Help</a></li>
-            </ul>
-        </nav>
-    </div>
-</header>
-{% endblock 'nav' %}
-
-{% block 'footer' %}
-<footer class="pl-footer">
-    <div class="pl-footer-content">
-        If you are referencing this database: <a href="{% url 'about_us' %}#Cite">please cite</a>
-        {% for pep in latest_peptides %}
-            &middot; Database updated: {{pep.time_approved}}
-        {% endfor %}
-    </div>
-</footer>
-{% endblock 'footer' %}
+{# nav/head/footer now come from base.html -- see docs/SPLIT_PLAN.md "MBPDB-formatting removal" #}
 
 {% block 'content' %}
 <div class="pl-page">

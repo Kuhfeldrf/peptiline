@@ -1,0 +1,43 @@
+# Applied via: az containerapp update -n peptilinecontainer -g COH_MBPDB_RG \
+#   --yaml lib/container-app-probes.yaml   (or the equivalent template patch)
+#
+# httpGet against GET /health/ (peptiline.views.health_check), not bare TCP
+# against port 8000. MBPDB's live mbpdbcontainer currently runs with plain
+# tcpSocket probes (confirmed via `az containerapp show`, 2026-08-24) even
+# though it ships an unused httpGet probes file identical in spirit to this
+# one -- see docs/SPLIT_PLAN.md Phase 4. TCP-on-8000 passes as soon as nginx
+# binds the port in start.sh, well before gunicorn is listening on 8001
+# behind it, so Container Apps can mark a replica ready/healthy while it's
+# still 502ing every request. httpGet only succeeds once nginx can actually
+# proxy a real response back from Django.
+properties:
+  template:
+    containers:
+    - name: peptilinecontainer
+      image: docker.io/mbpdb/peptiline:latest
+      probes:
+      - type: Startup
+        httpGet:
+          path: /health/
+          port: 8000
+          scheme: HTTP
+        initialDelaySeconds: 1
+        periodSeconds: 1
+        timeoutSeconds: 3
+        failureThreshold: 240
+      - type: Readiness
+        httpGet:
+          path: /health/
+          port: 8000
+          scheme: HTTP
+        periodSeconds: 5
+        timeoutSeconds: 3
+        failureThreshold: 3
+      - type: Liveness
+        httpGet:
+          path: /health/
+          port: 8000
+          scheme: HTTP
+        periodSeconds: 10
+        timeoutSeconds: 5
+        failureThreshold: 3
