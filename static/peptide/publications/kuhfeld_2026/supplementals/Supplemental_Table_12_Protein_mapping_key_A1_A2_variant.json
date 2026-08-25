@@ -1,0 +1,59 @@
+{
+  "version": 1,
+  "protein_decisions": {
+    "P02754; Q9BDG3": {
+      "action": "SPLIT",
+      "protein_ids": [
+        "P02754"
+      ]
+    },
+    "G9G9X6; P00711": {
+      "action": "SPLIT",
+      "protein_ids": [
+        "G9G9X6"
+      ]
+    },
+    "A5D980; P02662": {
+      "action": "SPLIT",
+      "protein_ids": [
+        "A5D980",
+        "P02662"
+      ]
+    },
+    "P02666A1; P02666A2": {
+      "action": "CUSTOM",
+      "protein_id": "P02666"
+    },
+    "P31096; Q58DM6": {
+      "action": "SPLIT",
+      "protein_ids": [
+        "P31096"
+      ]
+    },
+    "C6KGD7; C6KGD8; C6KGD9": {
+      "action": "SPLIT",
+      "protein_ids": [
+        "C6KGD8"
+      ]
+    },
+    "P02754; Q9TRB9": {
+      "action": "SPLIT",
+      "protein_ids": [
+        "P02754"
+      ]
+    },
+    "A5D7J7; P02663": {
+      "action": "SPLIT",
+      "protein_ids": [
+        "A5D7J7",
+        "P02663"
+      ]
+    },
+    "A5D974; P02663": {
+      "action": "SPLIT",
+      "protein_ids": [
+        "P02663"
+      ]
+    }
+  }
+}

@@ -6,15 +6,17 @@ ENV DJANGO_SETTINGS_MODULE=peptiline.settings
 ENV PIP_ROOT_USER_ACTION=ignore
 
 # System dependencies + gosu (privilege dropping) + celery_user, mirroring
-# the MBPDB monolith's Dockerfile. No ncbi-blast+/perl scripts here -- this
-# standalone deployment has no MBPDB-backed search yet (see
-# docs/SPLIT_PLAN.md section 3, database replication).
+# the MBPDB monolith's Dockerfile. ncbi-blast+ is needed here now that
+# blast_search.py queries the mbpdb_replica database directly (see
+# docs/SPLIT_PLAN.md section 3, database replication) -- no perl/PEPEX
+# scripts, those stay MBPDB-only.
 RUN apt-get update && apt-get install -y \
     gosu \
     nginx \
     dos2unix \
     nano \
     sqlite3 \
+    ncbi-blast+ \
     redis-server \
     build-essential \
     curl \
@@ -31,9 +33,9 @@ COPY . /app
 
 RUN chown -R celery_user:celery_user /app && \
     chmod -R 755 /app && \
-    touch /app/db.sqlite3 && \
-    chown celery_user:celery_user /app/db.sqlite3 && \
-    chmod 664 /app/db.sqlite3 && \
+    touch /app/db.sqlite3 /app/mbpdb_replica.sqlite3 && \
+    chown celery_user:celery_user /app/db.sqlite3 /app/mbpdb_replica.sqlite3 && \
+    chmod 664 /app/db.sqlite3 /app/mbpdb_replica.sqlite3 && \
     mkdir -p /app/uploads/temp && \
     chown celery_user:celery_user /app/uploads/temp && \
     chmod 750 /app/uploads/temp
