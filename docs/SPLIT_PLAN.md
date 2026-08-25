@@ -725,6 +725,38 @@ mirror these for `peptilinecontainer` unless there's a specific reason to diverg
       (BLAST is still needed for MBPDB's own search, so likely nothing to drop there, but
       recheck `requirements.txt` for PeptiLine-only packages).
 
+---
+
+## 0e. UPDATE 2026-08-25 — synced with MBPDB feature commits since vendoring
+
+The 2026-08-14 vendoring pass was a point-in-time snapshot; MBPDB's `main` kept moving.
+Diffed `~/mbpdb/include/peptide/peptide/{data_transformation,data_analysis,heatmap_viz,utils}`
+against this repo's copies (the Phase-0 diff task, done properly this time — the earlier
+"done" checkmark only verified the namespace-rewrite, not actual content drift) and found six
+commits' worth of real changes to port: Data Analysis's Plot Filter dropdown removal
+(derive the mode from selections instead), Data Transformation's FASTA-upload move to
+Protein Mapping + iterrows() vectorization, and Heatmap's axis-lock/zoom fix. Ported each,
+reapplying PeptiLine's standalone import adjustments on top (see commit `fa313b2`). Also
+brought over `utils/lazy_import.py` (LazyModule), previously not ported — it's directly
+relevant to PeptiLine too, not just MBPDB, since both run at `minReplicas: 0`.
+
+**Also found and fixed**: the landing-page gallery plots (`static/peptide/plots/`, 27 files)
+were never vendored at all — same class of gap as `hero.png`/screenshots/examples before.
+
+**Found, did not fix**: porting `heatmap_renderer.py` surfaced that MBPDB's own `main` has
+had 6 failing tests in `test_heatmap_legend_position.py` since commit `6f1b606d` (changed
+`_below_legend_geometry`'s return signature without updating the test) — confirmed by running
+MBPDB's own test suite directly, not just inferring from the port. This is upstream, not
+something to silently paper over from this repo; ported the same (currently broken) test file
+for accurate parity and flagged it to the user. **Someone should fix this in MBPDB directly**
+and PeptiLine will need the corresponding test-file re-sync when that happens.
+
+Verified: `manage.py check` clean, full suite gives the same 308 passed/8 failed as MBPDB's
+own working tree, Docker build confirms the actual UI changes (plot-filter dropdown gone,
+FASTA upload under Protein Mapping) and all routes/gallery assets 200.
+
+---
+
 ### Phase 6 — Documentation and cleanup
 - [ ] Update this repo's `README.md` (hosted URL, MBPDB integration section — live search
       now works in the standalone deployment via replica, not just TSV upload/local-only).
