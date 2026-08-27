@@ -14,12 +14,11 @@ import pandas as pd
 import numpy as np
 from django.conf import settings
 
-# L-7 fix (see the manuscript repo's TRACKER.md): queries now run against
-# mbpdb_replica's models -- a read-only copy of MBPDB's ProteinInfo/
-# PeptideInfo/Function/Reference tables, refreshed via `manage.py
-# loadreplica` (see docs/SPLIT_PLAN.md section 3). If the replica hasn't
-# been loaded yet the tables just exist empty, so a search returns no
-# results rather than crashing the whole Data Transformation dashboard.
+# Queries run against mbpdb_replica's models -- a read-only copy of MBPDB's
+# ProteinInfo/PeptideInfo/Function/Reference tables. mbpdb_replica.sqlite3 is
+# committed to the repo already populated; `manage.py loadreplica <db.sqlite3>`
+# refreshes it from a newer MBPDB dump. If the replica is ever empty a search
+# returns no results rather than crashing the Data Transformation dashboard.
 from mbpdb_replica.models import PeptideInfo, ProteinInfo, Function, Reference
 
 
