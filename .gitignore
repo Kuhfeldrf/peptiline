@@ -7,3 +7,6 @@ uploads/temp/*
 !uploads/temp/.gitkeep
 .env
 .pytest_cache/
+static/peptide/plots/backup/
+*:Zone.Identifier
+*:sec.endpointdlp
