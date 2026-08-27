@@ -11,8 +11,10 @@ Formats:
     metadata (via Pillow), so a journal's automated resolution check reads it.
   * SVG — true vector output; scales losslessly, text stays text.
 
-Kaleido 0.2.x ships its own headless Chromium, so this adds no separate
-system-Chrome dependency on the server.
+Kaleido v1+ downloads its own headless Chrome build (see Dockerfile's
+`kaleido_get_chrome` step) rather than bundling one, so no system Chrome
+package is needed, but the Chrome binary's shared-library dependencies
+(libnss3, libgbm1, etc. — also installed in the Dockerfile) must be present.
 """
 import io
 

@@ -23,11 +23,35 @@ RUN apt-get update && apt-get install -y \
     && useradd -r -s /sbin/nologin celery_user \
     && rm -rf /var/lib/apt/lists/*
 
+# Shared libraries headless Chrome needs at runtime (see kaleido_get_chrome
+# below) — python:3.10 doesn't ship these by default.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libnspr4 \
+    libnss3 \
+    libdbus-1-3 \
+    libatk1.0-0 \
+    libatk-bridge2.0-0 \
+    libcups2 \
+    libxkbcommon0 \
+    libatspi2.0-0 \
+    libxcomposite1 \
+    libxdamage1 \
+    libxfixes3 \
+    libxrandr2 \
+    libgbm1 \
+    libasound2 \
+    && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 
 COPY requirements.txt .
 RUN pip install --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
+
+# Downloads a self-contained Chrome for Testing build that Kaleido locates
+# automatically at runtime (no system Chrome/PATH entry needed) — required
+# for the PNG/SVG plot export endpoints in data_analysis and heatmap_viz.
+RUN kaleido_get_chrome -f
 
 COPY . /app
 

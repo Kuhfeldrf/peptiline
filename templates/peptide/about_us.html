@@ -7,8 +7,24 @@
     Data Transformation, Data Analysis, and Heatmap Visualization.
 </p>
 <p>
-    This standalone deployment does not yet include live MBPDB search --
-    upload a pre-downloaded MBPDB TSV, or your own functional annotation
-    table, in the Data Transformation module instead.
+    Data Transformation includes a live MBPDB search (BLAST- and exact-match
+    against the Milk Bioactive Peptide Database) for annotating peptidomic
+    results with known bioactive functions -- uploading a pre-downloaded
+    MBPDB TSV, or your own functional annotation table, is also supported for
+    those who prefer it.
 </p>
+
+<section id="Cite">
+    <h2>Please Cite:</h2>
+    <div style="display:flex; flex-direction:column; gap:16px; max-width:800px;">
+        <div class="pl-pub">
+            <div class="pl-pub-icon"><i class="fas fa-book"></i></div>
+            <div>
+                <div class="pl-pub-title">PeptiLine: an interactive platform for customizable functional peptidomic analysis</div>
+                <div class="pl-pub-meta">Kuhfeld RF, Nielsen SD-H, Dallas DC. bioRxiv 2025.10.23.684139, 2025.</div>
+                <a class="pl-link" href="https://www.biorxiv.org/content/10.1101/2025.10.23.684139v1" target="_blank" rel="noopener">Read the paper <i class="fas fa-arrow-up-right-from-square"></i></a>
+            </div>
+        </div>
+    </div>
+</section>
 {% endblock 'content' %}

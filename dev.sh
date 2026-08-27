@@ -22,6 +22,18 @@ python3 manage.py check --deploy 2>/dev/null || python3 manage.py check
 echo ""
 echo "=== Applying migrations ==="
 python3 manage.py migrate --run-syncdb --noinput
+python3 manage.py migrate --database=mbpdb_replica --noinput
+
+# mbpdb_replica lives in its own sqlite file (settings.py DATABASES alias) and
+# starts empty until loaded — without this, MBPDB search silently returns 0
+# results instead of erroring, which looks like a bug rather than empty data.
+# Reloaded unconditionally on every start (same as start.sh in the container)
+# since loadreplica just replaces the tables wholesale — cheap and idempotent.
+if [ -f mbpdb_seed.sqlite3 ]; then
+  echo ""
+  echo "=== Loading MBPDB replica seed data ==="
+  python3 manage.py loadreplica mbpdb_seed.sqlite3
+fi
 
 echo ""
 echo "=== Collecting static files ==="

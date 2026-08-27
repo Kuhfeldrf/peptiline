@@ -5,6 +5,7 @@ from . import views
 
 urlpatterns = [
     path("health/", views.health_check, name="health_check"),
+    path("check-progress/<str:task_id>/", views.check_progress, name="check_progress"),
     path("admin/", admin.site.urls),
     # PeptiLine landing page is both the site root and the historical
     # /peptiline/ path -- see docs/SPLIT_PLAN.md section 6 (URL continuity):

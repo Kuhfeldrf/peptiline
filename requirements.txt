@@ -22,8 +22,11 @@ openpyxl
 biopython
 
 # kaleido — server-side static image export for Plotly figures (publication
-# PNG at 600 dpi + true-vector SVG) via utils/plotly_export.py.
-kaleido==0.2.1
+# PNG at 600 dpi + true-vector SVG) via utils/plotly_export.py. v1+ is a
+# rewrite that no longer bundles Chromium; it needs a Chrome/Chromium binary
+# available at runtime (see Dockerfile's `kaleido_get_chrome` step) and is
+# required by plotly>=6, which no longer supports the 0.2.x Kaleido API.
+kaleido>=1
 # Pillow — stamps DPI (pHYs) metadata into exported PNGs.
 Pillow>=10.0.0
 
