@@ -166,69 +166,77 @@
                         <div class="help-text">Upload multiple Proteome Discoverer files to merge into a single dataset</div>
                     </div>
                 </div>
-                <!-- Functional data OR BLAST threshold (same row) -->
-                <div class="dt-or-row">
-                    <div class="dt-file-input" style="flex:none; width:33%;">
-                        <label>MBPDB Functional Data <span style="color:#6c757d; font-weight:400;">(Optional)</span></label>
-                        <div class="dt-dropzone" data-input="functional_file" style="width:100%;">
-                            <input type="file" name="functional_file" id="functional_file" accept=".csv,.tsv,.txt,.xlsx,.xls">
-                            <div class="drop-text"><i class="fas fa-cloud-upload-alt"></i>Drag & drop or click to select</div>
-                            <div class="file-name hidden"></div>
-                        </div>
-                        <div class="help-text">Pre-computed MBPDB results (columns: search_peptide, peptide, function) — skips BLAST search</div>
-                        <div class="dt-example-links"><i class="fas fa-download" style="font-size:0.75rem;"></i> <a href="{% static 'peptide/examples/example_mbpdb_functional_data.csv' %}" download>Download example file</a> &middot; <a href="#" class="dt-load-example" data-input-id="functional_file" data-url="{% static 'peptide/examples/example_mbpdb_functional_data.csv' %}"><i class="fas fa-upload" style="font-size:0.75rem;"></i> Load example</a></div>
-                    </div>
-                    <div class="dt-or-divider">OR</div>
-                    <div class="dt-blast-inline" id="blast-threshold-section">
-                        <label style="font-weight:600; margin-bottom:4px; display:block;">BLAST Similarity Threshold</label>
-                        <select name="similarity_threshold" id="similarity_threshold" class="form-control" style="width: 100%; max-width: 220px;">
-                            <option value="100">100% (Exact match)</option>
-                            <option value="90">90%</option>
-                            <option value="80" selected>80%</option>
-                            <option value="70">70%</option>
-                            <option value="60">60%</option>
-                            <option value="50">50%</option>
-                            <option value="40">40%</option>
-                            <option value="30">30%</option>
-                            <option value="20">20%</option>
-                            <option value="10">10%</option>
-                            <option value="0">0%</option>
-                        </select>
-                        <div class="help-text" style="margin-top:4px;">Minimum sequence similarity for MBPDB matching</div>
-                    </div>
-                </div>
 
                 <button type="submit" class="dt-btn dt-btn-primary" id="upload-btn">
-                    <i class="fas fa-upload"></i> Upload & Validate
+                    <i class="fas fa-upload"></i> Upload
                 </button>
             </form>
+            <div id="upload-summary" style="margin-top:12px;"></div>
         </div>
 
-        <!-- Upload results -->
-        <div id="upload-results" class="dt-card hidden">
-            <h4>Upload Summary</h4>
-            <div id="upload-summary"></div>
-            <div style="margin-top: 12px;">
-                <button class="dt-btn dt-btn-primary" id="start-blast-btn" style="margin-right: 8px;">
-                    <i class="fas fa-search"></i> Search MBPDB
-                </button>
-                <button class="dt-btn dt-btn-secondary" id="skip-blast-btn">
-                    Skip Search <i class="fas fa-forward"></i>
-                </button>
+        <!-- Functional annotation -->
+        <div id="functional-card" class="dt-card">
+            <h4>Functional Annotation <span style="font-weight:400; font-size:0.85rem; color:#6c757d;">(Optional)</span></h4>
+            <p style="color:#666; margin:4px 0 12px;">Upload a pre-computed functional annotation table, or search a functional database by sequence similarity.</p>
+            <!-- Pre-computed functional data OR live database search (source + threshold) -->
+            <div class="dt-or-row">
+                <div class="dt-file-input" style="flex:none; width:33%;">
+                    <label for="functional_file" style="font-size:0.9rem; color:#555;">Upload Functional Data</label>
+                    <div class="dt-dropzone" data-input="functional_file" style="width:100%;">
+                        <input type="file" name="functional_file" id="functional_file" accept=".csv,.tsv,.txt,.xlsx,.xls">
+                        <div class="drop-text"><i class="fas fa-cloud-upload-alt"></i>Drag & drop or click to select</div>
+                        <div class="file-name hidden"></div>
+                    </div>
+                    <div class="help-text">Pre-computed functional annotation results (columns: search_peptide, peptide, function) — skips the database search</div>
+                    <div class="dt-example-links"><i class="fas fa-download" style="font-size:0.75rem;"></i> <a href="{% static 'peptide/examples/example_functional_data.csv' %}" download>Download example file</a> &middot; <a href="#" class="dt-load-example" data-input-id="functional_file" data-url="{% static 'peptide/examples/example_functional_data.csv' %}"><i class="fas fa-upload" style="font-size:0.75rem;"></i> Load example</a></div>
+                </div>
+                <div class="dt-or-divider">OR</div>
+                <div class="dt-file-input" id="blast-threshold-section" style="flex:none; width:33%;">
+                    <label for="annotation_source" style="font-size:0.9rem; color:#555;">Select source of functional annotation</label>
+                    <select name="annotation_source" id="annotation_source" class="form-control" style="width:100%; margin-bottom:12px;">
+                        <option value="mbpdb" selected>MBPDB</option>
+                    </select>
+                    <label for="similarity_threshold" style="font-size:0.9rem; color:#555;">Functional Similarity Threshold</label>
+                    <select name="similarity_threshold" id="similarity_threshold" class="form-control" style="width:100%;">
+                        <option value="100">100% (Exact match)</option>
+                        <option value="90">90%</option>
+                        <option value="80" selected>80%</option>
+                        <option value="70">70%</option>
+                        <option value="60">60%</option>
+                        <option value="50">50%</option>
+                        <option value="40">40%</option>
+                        <option value="30">30%</option>
+                        <option value="20">20%</option>
+                        <option value="10">10%</option>
+                        <option value="0">0%</option>
+                    </select>
+                    <div class="help-text">Minimum sequence similarity for database matching</div>
+                </div>
             </div>
-        </div>
+            <div id="functional-actions" style="margin-top: 12px;">
+                <button class="dt-btn dt-btn-primary" id="start-blast-btn" style="margin-right: 8px;" disabled>
+                    <i class="fas fa-tags"></i> Run Functional Annotation
+                </button>
+                <button class="dt-btn dt-btn-secondary" id="skip-blast-btn" disabled>
+                    Skip <i class="fas fa-forward"></i>
+                </button>
+                <div class="help-text" id="functional-gate-note" style="margin-top:6px;">
+                    <i class="fas fa-circle-info"></i> Upload your peptidomic data above first.
+                </div>
+            </div>
 
-        <!-- BLAST progress -->
-        <div id="blast-progress" class="dt-card hidden">
-            <h4><span class="dt-spinner"></span>Searching MBPDB Database...</h4>
-        </div>
-
-        <!-- BLAST results -->
-        <div id="blast-results" class="dt-card hidden">
-            <h4 id="blast-results-heading">MBPDB Search Results</h4>
-            <div id="blast-summary"></div>
-            <div style="margin-top: 12px;">
+            <div id="blast-progress" class="hidden dt-alert dt-alert-info" style="margin-top:12px;">
+                <span class="dt-spinner"></span>Searching functional database...
+            </div>
+            <div id="blast-summary" style="margin-top:12px;"></div>
+            <div id="blast-continue" class="hidden" style="margin-top:12px;">
                 <button class="dt-btn dt-btn-primary" id="goto-step2-btn">Continue to Study Variables <i class="fas fa-arrow-right"></i></button>
+            </div>
+
+            <div style="margin-top:16px; border-top:1px solid #dee2e6; padding-top:16px;">
+                <button class="dt-btn dt-btn-secondary" id="reset-uploads-btn">
+                    <i class="fas fa-trash"></i> Reset Uploads &amp; Search
+                </button>
             </div>
         </div>
     </div>

@@ -91,11 +91,11 @@ def _get_abundance_cols(group_data):
 
 
 # ---------------------------------------------------------------------------
-# Export: MBPDB results (TSV)
+# Export: functional annotation results (TSV)
 # ---------------------------------------------------------------------------
 
 def export_mbpdb_results(mbpdb_df):
-    """Export MBPDB search results as TSV bytes."""
+    """Export functional annotation results as TSV bytes."""
     if mbpdb_df is None or 'function' not in mbpdb_df.columns:
         return None
     return mbpdb_df.to_csv(sep='\t', index=False).encode('utf-8')

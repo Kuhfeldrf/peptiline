@@ -83,6 +83,36 @@ def _delete_json(work_dir, name):
         os.remove(path)
 
 
+# State derived from a specific peptidomic dataset. A fresh peptidomic upload
+# invalidates all of it, so upload_files() clears these before repopulating —
+# otherwise stale column renames / groups / protein mappings from a previous
+# dataset are validated against the new one and fail ("columns not present").
+_DOWNSTREAM_JSON = [
+    'base_columns', 'raw_columns', 'column_renames', 'group_data',
+    'tech_dup_mapping', 'annotation_source', 'threshold',
+    'protein_decisions', 'source_renames', 'unresolvable_proteins',
+]
+_DOWNSTREAM_DF = [
+    'functional_data', 'mbpdb_results', 'merged_df', 'pd_results_cleaned',
+]
+
+
+def _reset_downstream_state(request, work_dir):
+    """Clear all session state derived from a previous peptidomic dataset so a
+    new upload repopulates groups, renames, and protein mappings from scratch."""
+    for name in _DOWNSTREAM_JSON:
+        _delete_json(work_dir, name)
+    for name in _DOWNSTREAM_DF:
+        path = os.path.join(work_dir, f'{name}.pkl')
+        if os.path.exists(path):
+            os.remove(path)
+    stale = os.path.join(work_dir, 'functional_file.orig')
+    if os.path.exists(stale):
+        os.remove(stale)
+    for key in ('dt_blast_task_id', 'dt_uniprot_task_id'):
+        request.session.pop(key, None)
+
+
 def _apply_renames_to_list(cols, renames):
     """Apply a column-rename mapping to a list of column names.
 
@@ -170,27 +200,23 @@ def upload_files(request):
                 return JsonResponse({'error': error_msg}, status=400)
             pep_file_name = pep_file.name
 
+        # A new peptidomic dataset invalidates everything derived from the
+        # previous one — wipe it so groups / renames / protein mappings are
+        # repopulated fresh below and in the later wizard steps.
+        _reset_downstream_state(request, work_dir)
+
         _save_df(work_dir, 'pd_results', df)
 
         # Save column list for group processing
         columns = df.columns.tolist()
         _save_json(work_dir, 'columns', columns)
 
-        # Handle optional functional data file
-        func_file = request.FILES.get('functional_file')
+        # Functional annotation (file upload or database search) is handled in a
+        # separate step — see start_blast_search. Here we only detect an embedded
+        # 'function' column on re-uploaded transformed files (below).
         func_warnings = []
         has_mbpdb = False
         mbpdb_rows = 0
-        if func_file:
-            func_df, f_status, f_error, _ = data_loader.load_and_validate_file(
-                func_file, func_file.name, 'MBPDB'
-            )
-            if f_status == 'no':
-                func_warnings.append(f'Functional data file warning: {f_error}')
-            elif func_df is not None:
-                _save_df(work_dir, 'functional_data', func_df)
-                has_mbpdb = True
-                mbpdb_rows = len(func_df)
 
         # Load default protein dictionary from the headers-only reference file
         # (948 proteins: bovine, human, and other milk-relevant species).
@@ -206,10 +232,6 @@ def upload_files(request):
 
         _save_json(work_dir, 'protein_dict', protein_dict)
 
-        # Store similarity threshold (may be None when functional data skips BLAST)
-        threshold = form.cleaned_data.get('similarity_threshold') or 80
-        _save_json(work_dir, 'threshold', threshold)
-
         # Extract sequences for BLAST
         sequences = data_loader.extract_sequences(df)
 
@@ -217,7 +239,7 @@ def upload_files(request):
         # BLAST only accepts amino-acid letters; a single bad sequence makes
         # blastp fail and the whole batch silently returns zero matches.
         # We surface this as a warning so the user can still proceed (e.g. to
-        # use the app without running the MBPDB search).
+        # use the app without running the database search).
         invalid_peptides = data_loader.find_invalid_peptide_sequences(sequences)
         if invalid_peptides:
             invalid_set = set(invalid_peptides)
@@ -231,11 +253,11 @@ def upload_files(request):
             func_warnings.append(
                 f'{len(invalid_peptides)} peptide sequence(s) contain '
                 f'non-alphabetic characters and will be excluded from the '
-                f'MBPDB search: {preview_str}{extra}. The MBPDB search only '
+                f'database search: {preview_str}{extra}. The database search only '
                 f'accepts sequences made of amino-acid letters (A–Z). To '
                 f'include these peptides, remove the non-alphabetic '
                 f'characters from your dataset and re-upload. You can still '
-                f'continue without running the MBPDB search.'
+                f'continue without running the database search.'
             )
 
         # Auto-detect embedded function column in peptidomic data (re-uploaded transformed file)
@@ -267,7 +289,7 @@ def upload_files(request):
         _save_json(work_dir, 'uploaded_file_names', {
             'peptidomic_file': pep_file_name if not merged_from else None,
             'merge_files': merge_file_names,
-            'functional_file': func_file.name if func_file else None,
+            'functional_file': None,  # cleared by _reset_downstream_state above
             'fasta_file': existing_file_names.get('fasta_file'),
         })
 
@@ -287,14 +309,8 @@ def upload_files(request):
                 if os.path.exists(stale):
                     os.remove(stale)
 
-            if func_file:
-                func_file.seek(0)
-                with open(os.path.join(work_dir, 'functional_file.orig'), 'wb') as fh:
-                    fh.write(func_file.read())
-            else:
-                stale = os.path.join(work_dir, 'functional_file.orig')
-                if os.path.exists(stale):
-                    os.remove(stale)
+            # functional_file.orig is written by start_blast_search (Functional
+            # Annotation step) — not touched here.
             # fasta_file.orig is managed separately by upload_fasta_file
             # (Protein Mapping step) — not touched here.
         except Exception:
@@ -314,13 +330,45 @@ def upload_files(request):
 
 @require_POST
 def start_blast_search(request):
-    """Launch BLAST search as a Celery task."""
+    """Run the functional annotation step: either ingest an uploaded functional
+    data file, or launch a database (BLAST) search as a Celery task."""
     work_dir = _get_work_dir(request)
     sequences = _load_json(work_dir, 'sequences')
-    threshold = _load_json(work_dir, 'threshold') or 80
 
-    if not sequences:
-        return JsonResponse({'error': 'No sequences to search'}, status=400)
+    # Functional Annotation step inputs (sent with the "Search" action).
+    func_file = request.FILES.get('functional_file')
+    if func_file:
+        func_df, f_status, f_error, _ = data_loader.load_and_validate_file(
+            func_file, func_file.name, 'MBPDB'
+        )
+        if f_status == 'no':
+            return JsonResponse(
+                {'error': f'Functional data file: {f_error}'}, status=400
+            )
+        if func_df is not None:
+            _save_df(work_dir, 'functional_data', func_df)
+            file_names = _load_json(work_dir, 'uploaded_file_names') or {}
+            file_names['functional_file'] = func_file.name
+            _save_json(work_dir, 'uploaded_file_names', file_names)
+            try:
+                func_file.seek(0)
+                with open(os.path.join(work_dir, 'functional_file.orig'), 'wb') as fh:
+                    fh.write(func_file.read())
+            except Exception:
+                pass  # Non-fatal: resume still shows the filename
+
+    posted_threshold = request.POST.get('similarity_threshold')
+    if posted_threshold not in (None, ''):
+        try:
+            _save_json(work_dir, 'threshold', int(posted_threshold))
+        except (TypeError, ValueError):
+            pass
+
+    source = request.POST.get('annotation_source')
+    if source:
+        _save_json(work_dir, 'annotation_source', source)
+
+    threshold = _load_json(work_dir, 'threshold') or 80
 
     # Check for uploaded functional data (skip BLAST if provided)
     func_df = _load_df(work_dir, 'functional_data')
@@ -328,7 +376,7 @@ def start_blast_search(request):
         _save_df(work_dir, 'mbpdb_results', func_df)
         return JsonResponse({
             'skipped': True,
-            'message': 'Using uploaded functional data instead of BLAST search',
+            'message': 'Using uploaded functional data instead of a database search',
             'count': len(func_df),
         })
 
@@ -350,6 +398,12 @@ def start_blast_search(request):
             'message': 'Using function data embedded in uploaded file',
             'count': count,
         })
+
+    if not sequences:
+        return JsonResponse({
+            'error': 'No peptide sequences available. Upload peptidomic data first, '
+                     'or provide a functional annotation file.'
+        }, status=400)
 
     task = tasks.run_blast_search_task.delay(work_dir, sequences, threshold)
     request.session['dt_blast_task_id'] = task.id
@@ -1417,8 +1471,8 @@ def view_export(request, export_type):
 
         if export_type == 'mbpdb_results':
             if mbpdb_results is None or mbpdb_results.empty:
-                return JsonResponse({'error': 'No MBPDB results available'}, status=404)
-            sheets = [df_to_sheet(mbpdb_results, 'MBPDB Results')]
+                return JsonResponse({'error': 'No functional annotation results available'}, status=404)
+            sheets = [df_to_sheet(mbpdb_results, 'Functional Annotation')]
 
         elif export_type == 'group_definitions':
             if not group_data:
@@ -1656,7 +1710,7 @@ def download_export(request, export_type):
 
     if export_type == 'mbpdb_results':
         content = export_manager.export_mbpdb_results(mbpdb_results)
-        filename = 'MBPDB_SEARCH.tsv'
+        filename = 'functional_annotation_results.tsv'
         content_type = 'text/tab-separated-values'
 
     elif export_type == 'group_definitions':
@@ -1797,7 +1851,7 @@ def download_all_exports(request):
                 zf.writestr(filename, content)
 
         if has_mbpdb:
-            _add('MBPDB_SEARCH.tsv', export_manager.export_mbpdb_results(mbpdb_results))
+            _add('functional_annotation_results.tsv', export_manager.export_mbpdb_results(mbpdb_results))
 
         if has_groups:
             _add('categorical_variable_definitions.json',
@@ -1846,7 +1900,7 @@ def download_all_exports(request):
 
     buf.seek(0)
     response = HttpResponse(buf.getvalue(), content_type='application/zip')
-    response['Content-Disposition'] = 'attachment; filename="mbpdb_results.zip"'
+    response['Content-Disposition'] = 'attachment; filename="data_transformation_exports.zip"'
     return response
 
 

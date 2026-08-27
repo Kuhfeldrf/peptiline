@@ -224,6 +224,14 @@
     // Step 1: Upload & BLAST
     // -----------------------------------------------------------------------
 
+    // The Functional Annotation actions require an uploaded peptidomic dataset.
+    function enableFunctionalActions() {
+        document.getElementById('start-blast-btn').disabled = false;
+        document.getElementById('skip-blast-btn').disabled = false;
+        var note = document.getElementById('functional-gate-note');
+        if (note) note.classList.add('hidden');
+    }
+
     document.getElementById('upload-form').addEventListener('submit', function(e) {
         e.preventDefault();
         var singleInput = document.getElementById('peptidomic_file');
@@ -255,7 +263,7 @@
         }
         ajax('POST', 'upload/', formData, function(resp) {
             btn.disabled = false;
-            btn.innerHTML = '<i class="fas fa-upload"></i> Upload & Validate';
+            btn.innerHTML = '<i class="fas fa-upload"></i> Upload';
 
             var summary = '';
             if (resp.merged_from) {
@@ -270,27 +278,32 @@
                 summary += '<div class="dt-alert dt-alert-warning">' + resp.warning + '</div>';
             }
 
+            document.getElementById('upload-summary').innerHTML = summary;
+
             if (resp.has_mbpdb) {
-                // MBPDB file provided — skip the Search/Skip step entirely.
-                // Fold everything into one combined "Upload Summary" card.
-                summary += '<div class="dt-alert dt-alert-success">' +
-                    '<i class="fas fa-check-circle"></i> MBPDB file loaded: <strong>' +
-                    resp.mbpdb_rows + '</strong> records. Skipping BLAST search.</div>';
+                // Embedded function column detected — skip the Functional
+                // Annotation step entirely.
+                document.getElementById('functional-card').classList.add('hidden');
                 ajax('POST', 'start-blast/', null, function(blastResp) {
-                    summary += '<div class="dt-alert dt-alert-info">' +
-                        '<i class="fas fa-database"></i> ' + blastResp.message +
-                        ' (' + blastResp.count + ' records)</div>';
-                    document.getElementById('blast-results-heading').textContent = 'Upload Summary';
-                    document.getElementById('blast-summary').innerHTML = summary;
-                    document.getElementById('blast-results').classList.remove('hidden');
+                    document.getElementById('upload-summary').innerHTML = summary +
+                        '<div class="dt-alert dt-alert-success">' +
+                        '<i class="fas fa-check-circle"></i> Functional data loaded: <strong>' +
+                        resp.mbpdb_rows + '</strong> records. Skipping database search.</div>' +
+                        '<div class="dt-alert dt-alert-info"><i class="fas fa-database"></i> ' +
+                        blastResp.message + ' (' + blastResp.count + ' records)</div>' +
+                        '<div style="margin-top:12px;"><button class="dt-btn dt-btn-primary" ' +
+                        'id="goto-step2-btn-embedded">Continue to Study Variables ' +
+                        '<i class="fas fa-arrow-right"></i></button></div>';
+                    document.getElementById('goto-step2-btn-embedded')
+                        .addEventListener('click', function() { goToStep(2); loadStep2(); });
                 });
             } else {
-                document.getElementById('upload-summary').innerHTML = summary;
-                document.getElementById('upload-results').classList.remove('hidden');
+                document.getElementById('functional-card').classList.remove('hidden');
+                enableFunctionalActions();
             }
         }, function(msg) {
             btn.disabled = false;
-            btn.innerHTML = '<i class="fas fa-upload"></i> Upload & Validate';
+            btn.innerHTML = '<i class="fas fa-upload"></i> Upload';
             showError(msg);
         });
     });
@@ -299,27 +312,37 @@
         var btn = this;
         btn.disabled = true;
 
-        ajax('POST', 'start-blast/', null, function(resp) {
+        var fnInput = document.getElementById('functional_file');
+        var srcEl = document.getElementById('annotation_source');
+        var threshEl = document.getElementById('similarity_threshold');
+        var blastData = new FormData();
+        if (fnInput && fnInput.files.length) { blastData.append('functional_file', fnInput.files[0]); }
+        if (srcEl) { blastData.append('annotation_source', srcEl.value); }
+        if (threshEl) { blastData.append('similarity_threshold', threshEl.value); }
+
+        ajax('POST', 'start-blast/', blastData, function(resp) {
+            document.getElementById('functional-actions').classList.add('hidden');
             if (resp.skipped) {
-                document.getElementById('blast-results').classList.remove('hidden');
                 document.getElementById('blast-summary').innerHTML =
                     '<div class="dt-alert dt-alert-info">' + resp.message +
                     ' (' + resp.count + ' rows)</div>';
+                document.getElementById('blast-continue').classList.remove('hidden');
                 return;
             }
             document.getElementById('blast-progress').classList.remove('hidden');
             pollCompletion(resp.task_id, function() {
                 ajax('GET', 'blast-results/' + resp.task_id + '/', null, function(r) {
                     document.getElementById('blast-progress').classList.add('hidden');
-                    document.getElementById('blast-results').classList.remove('hidden');
                     document.getElementById('blast-summary').innerHTML =
                         '<div class="dt-alert dt-alert-success">Search complete. Found <strong>' +
                         r.count + '</strong> matches.</div>';
+                    document.getElementById('blast-continue').classList.remove('hidden');
                 });
             }, function() {
                 document.getElementById('blast-progress').classList.add('hidden');
+                document.getElementById('functional-actions').classList.remove('hidden');
                 btn.disabled = false;
-                showError('BLAST search failed. Check server logs.');
+                showError('Database search failed. Check server logs.');
             });
         }, function(msg) {
             btn.disabled = false;
@@ -330,6 +353,13 @@
     document.getElementById('skip-blast-btn').addEventListener('click', function() {
         goToStep(2);
         loadStep2();
+    });
+
+    document.getElementById('reset-uploads-btn').addEventListener('click', function() {
+        if (!confirm('This clears the peptidomic upload and the functional annotation ' +
+                     'and starts over. Continue?')) return;
+        ajax('POST', 'cleanup/', null, function() { location.reload(); },
+             function() { location.reload(); });
     });
 
     document.getElementById('goto-step2-btn').addEventListener('click', function() {
@@ -1513,8 +1543,8 @@
         var items = [
             {key: 'merged_dataset', icon: 'fa-table', label: 'Merged Dataset',
              title: 'Full peptide-level dataset with abundances, functional annotations and study-variable groupings'},
-            {key: 'mbpdb_results', icon: 'fa-database', label: 'MBPDB Results',
-             title: 'MBPDB search matches for each queried peptide, with the database sequence and reported bioactivity'},
+            {key: 'mbpdb_results', icon: 'fa-database', label: 'Functional Database Results',
+             title: 'Functional database search matches for each queried peptide, with the database sequence and reported bioactivity'},
             {key: 'summed_function', icon: 'fa-flask', label: 'Summed Functional Data',
              title: 'Peptide abundance and count summed by functional category for each group'},
             {key: 'column_rename_key', icon: 'fa-pen-to-square', label: 'Column Rename Key',
@@ -1831,6 +1861,14 @@
 
         makeResumeBtn('Upload Data', 'fa-upload', function() {
             goToStep(1);
+            if (resp.has_data) {
+                document.getElementById('upload-summary').innerHTML =
+                    '<div class="dt-alert dt-alert-info">' +
+                    '<i class="fas fa-check-circle"></i> Peptidomic data already uploaded. ' +
+                    'Re-upload above to replace it, or continue with the functional annotation below.</div>';
+                document.getElementById('functional-card').classList.remove('hidden');
+                enableFunctionalActions();
+            }
         });
         makeResumeBtn('Study Variables', 'fa-layer-group', function() {
             goToStep(2); loadStep2();

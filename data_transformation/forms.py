@@ -16,8 +16,8 @@ class PeptidomicUploadForm(forms.Form):
         }),
     )
     functional_file = forms.FileField(
-        label='MBPDB Functional Data File (Optional)',
-        help_text='CSV, TSV, or XLSX file with MBPDB search results',
+        label='Functional Annotation Data File (Optional)',
+        help_text='CSV, TSV, or XLSX file with pre-computed functional annotation results',
         required=False,
         widget=forms.ClearableFileInput(attrs={
             'accept': '.csv,.tsv,.txt,.xlsx,.xls',
@@ -25,7 +25,7 @@ class PeptidomicUploadForm(forms.Form):
         }),
     )
     similarity_threshold = forms.IntegerField(
-        label='BLAST Similarity Threshold',
+        label='Functional Similarity Threshold',
         initial=80,
         required=False,
         min_value=0,
