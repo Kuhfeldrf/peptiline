@@ -887,7 +887,10 @@ def generate_heatmap(
             lp_selected_color=pp.get('lp_selected_color', 'Set3'),
             avglp_selected_color=pp.get('avglp_selected_color', 'Dark2'),
             xaxis_label=resolved_xaxis_label,
-            yaxis_label=pp.get('yaxis_label', '') or 'Averaged Peptide Abundance',
+            # Pass the raw user value (blank = auto). The renderer picks the
+            # fallback: effect-size metric name in comparison mode, else the
+            # abundance default — a user label always overrides both.
+            yaxis_label=(pp.get('yaxis_label') or '').strip(),
             yaxis_position=pp.get('yaxis_position', 5),
             legend_title_input_1=pp.get('legend_title_1', 'Sample Type:'),
             legend_title_input_2=pp.get('legend_title_2', 'Peptide Counts:'),

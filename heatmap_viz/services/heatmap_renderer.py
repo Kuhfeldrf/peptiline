@@ -2557,14 +2557,16 @@ def visualize_sequence_heatmap_interactive(
     _ytitle_px     = 28                            # rotated title band width (font 15)
     left_margin    = int(min(300, max(90, _ytitle_px + 14 + _label_zone_px)))
 
-    # In comparison mode the row-1 panel is the signed contrast, so the rotated
-    # axis title names the effect-size metric rather than abundance.
-    if contrast_is_active:
+    # A user-supplied Y-Axis Label always wins. Otherwise fall back to the
+    # effect-size metric name in comparison mode, or the abundance default.
+    if yaxis_label:
+        _ytitle = yaxis_label
+    elif contrast_is_active:
         _ytitle = ('Standardized Mean Difference (Cohen’s d)'
                    if comparison_track.get('metric') == 'smd'
                    else 'log₂ Fold Change')
     else:
-        _ytitle = yaxis_label or 'Averaged Peptide Abundance'
+        _ytitle = 'Averaged Peptide Abundance'
     fig.add_annotation(
         text=_ytitle,
         xref='paper', yref='paper', x=0, y=0.5,
