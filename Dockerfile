@@ -53,6 +53,14 @@ RUN pip install --upgrade pip && \
 # for the PNG/SVG plot export endpoints in data_analysis and heatmap_viz.
 RUN kaleido_get_chrome -f
 
+# matplotlib's first import scans every system font to build its cache
+# (fontManager) if one isn't already on disk -- a multi-second cost that,
+# without this, was paid by whichever request first hit a heatmap render
+# after every scale-from-zero cold start. Baking the cache into the image
+# here means it's just read, not rebuilt, at request time. Runs as root,
+# same as gunicorn does at runtime, so the cache lands where it's looked for.
+RUN python -c "import matplotlib.pyplot"
+
 COPY . /app
 
 RUN chown -R celery_user:celery_user /app && \
