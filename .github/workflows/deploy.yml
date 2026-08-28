@@ -56,6 +56,7 @@ jobs:
           --name peptilinecontainer \
           --resource-group COH_MBPDB_RG \
           --container-name peptilinecontainer \
+          --cpu 1.0 --memory 2.0Gi \
           --set-env-vars \
           "DJANGO_SETTINGS_MODULE=peptiline.settings" \
           "WEBSITES_PORT=8000" \
@@ -67,3 +68,6 @@ jobs:
           "DJANGO_SUPERUSER_USERNAME=${{ secrets.PEPTILINE_DJANGO_SUPERUSER_USERNAME }}" \
           "DJANGO_SUPERUSER_EMAIL=${{ secrets.PEPTILINE_DJANGO_SUPERUSER_EMAIL }}" \
           "DJANGO_SUPERUSER_PASSWORD=${{ secrets.PEPTILINE_DJANGO_SUPERUSER_PASSWORD }}"
+
+    - name: Apply health probe configuration
+      run: ./deploy/apply-probes.sh
