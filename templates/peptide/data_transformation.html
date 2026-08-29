@@ -86,9 +86,9 @@
        vertically in a narrow column beside the method selector. */
     .dt-export-actions { align-items: center; }
     .dt-corr-opts { display: flex; align-items: center; gap: 8px; margin-right: 4px; }
-    .dt-corr-opts select { font-size: 0.78rem; padding: 2px 4px; border: 1px solid #ced4da; border-radius: 4px; }
-    .dt-corr-logs { display: flex; flex-direction: column; gap: 0; line-height: 1.15; }
-    .dt-corr-logs label { display: flex; align-items: center; gap: 4px; font-size: 0.72rem; color: #555; white-space: nowrap; }
+    .dt-corr-opts select { font-size: 1rem; padding: 2px 4px; border: 1px solid #ced4da; border-radius: 4px; }
+    .dt-corr-logs { display: flex; flex-direction: column; gap: 0; line-height: 1.2; }
+    .dt-corr-logs label { display: flex; align-items: center; gap: 4px; font-size: 1rem; color: #555; white-space: nowrap; }
     .dt-corr-logs input { margin: 0; }
     /* Viewer */
     .dt-viewer-tabs { display: flex; flex-wrap: wrap; gap: 2px; margin-bottom: -1px; }
@@ -146,32 +146,23 @@
     <!-- Step 1: Upload -->
     <div class="dt-step-content active" data-step="1">
         <div class="dt-card">
-            <h4>Upload Peptidomic Data</h4>
+            <h4 style="margin: 0 0 12px;">Upload &amp; Validate Data</h4>
+
+            <!-- Peptidomic data (sub-section) -->
+            <div style="margin-bottom:20px; padding-bottom:20px; border-bottom:2px solid #dee2e6;">
+            <h5 style="margin-top:0;"><i class="fas fa-file-import" style="color:#1976d2; margin-right:6px;"></i>Upload Peptidomic Data</h5>
             <form id="upload-form" enctype="multipart/form-data">
                 {% csrf_token %}
-                <span style="display:block; font-weight:600; margin-bottom:4px;">Peptidomic Data File <span style="color: #dc3545;">*</span></span>
-                <div class="dt-or-row">
-                    <div class="dt-file-input" style="flex:none; width:33%;">
-                        <label for="peptidomic_file" style="font-size:0.9rem; color:#555;">Single Dataset</label>
-                        <div class="dt-dropzone" data-input="peptidomic_file" style="width:100%;">
-                            <input type="file" name="peptidomic_file" id="peptidomic_file" accept=".csv,.tsv,.txt,.xlsx,.xls">
-                            <div class="drop-text"><i class="fas fa-cloud-upload-alt"></i>Drag & drop or click to select</div>
-                            <div class="file-name hidden"></div>
-                        </div>
-                        <div class="help-text">CSV, TSV, or XLSX peptidomic results. Column names are auto-detected for Proteome Discoverer, MaxQuant, PEAKS, Spectronaut, and Skyline exports.</div>
-                        <div class="dt-example-links"><i class="fas fa-download" style="font-size:0.75rem;"></i> <a href="{% static 'peptide/examples/example_peptidomic_data.csv' %}" download>Download example file</a> &middot; <a href="#" class="dt-load-example" data-input-id="peptidomic_file" data-url="{% static 'peptide/examples/example_peptidomic_data.csv' %}"><i class="fas fa-upload" style="font-size:0.75rem;"></i> Load example</a></div>
+                <span style="display:block; font-weight:600; margin-bottom:4px;">Peptidomic Data File(s) <span style="color: #dc3545;">*</span></span>
+                <div class="dt-file-input" style="width:50%;">
+                    <div class="dt-dropzone" data-input="peptidomic_file" style="width:100%;">
+                        <input type="file" name="peptidomic_file" id="peptidomic_file" accept=".csv,.tsv,.txt,.xlsx,.xls" multiple>
+                        <div class="drop-text"><i class="fas fa-cloud-upload-alt"></i>Drag &amp; drop or click to select &mdash; add multiple files to merge them into one dataset</div>
+                        <div class="file-name hidden"></div>
+                        <div class="merge-file-list hidden"></div>
                     </div>
-                    <div class="dt-or-divider">OR</div>
-                    <div class="dt-file-input" style="flex:none; width:33%;">
-                        <label for="merge_files" style="font-size:0.9rem; color:#555;">Multiple Datasets</label>
-                        <div class="dt-dropzone" data-input="merge_files" style="width:100%;">
-                            <input type="file" name="merge_files" id="merge_files" accept=".csv,.tsv,.txt,.xlsx,.xls" multiple>
-                            <div class="drop-text"><i class="fas fa-cloud-upload-alt"></i>Drag & drop or click to select multiple files</div>
-                            <div class="file-name hidden"></div>
-                            <div class="merge-file-list hidden"></div>
-                        </div>
-                        <div class="help-text">Upload multiple Proteome Discoverer files to merge into a single dataset</div>
-                    </div>
+                    <div class="help-text">CSV, TSV, or XLSX peptidomic results. Column names are auto-detected for Proteome Discoverer, MaxQuant, PEAKS, Spectronaut, and Skyline exports. Select multiple Proteome Discoverer files to merge them into a single dataset.</div>
+                    <div class="dt-example-links"><i class="fas fa-download" style="font-size:0.75rem;"></i> <a href="{% static 'peptide/examples/example_peptidomic_data.csv' %}" download>Download example file</a> &middot; <a href="#" class="dt-load-example" data-input-id="peptidomic_file" data-url="{% static 'peptide/examples/example_peptidomic_data.csv' %}"><i class="fas fa-upload" style="font-size:0.75rem;"></i> Load example</a></div>
                 </div>
 
                 <button type="submit" class="dt-btn dt-btn-primary" id="upload-btn">
@@ -179,11 +170,12 @@
                 </button>
             </form>
             <div id="upload-summary" style="margin-top:12px;"></div>
-        </div>
+            </div>
+            <!-- /Peptidomic data -->
 
-        <!-- Functional annotation -->
-        <div id="functional-card" class="dt-card">
-            <h4>Functional Annotation <span style="font-weight:400; font-size:0.85rem; color:#6c757d;">(Optional)</span></h4>
+            <!-- Functional annotation (sub-section) -->
+            <div id="functional-card" style="margin-bottom:20px;">
+            <h5 style="margin-top:0;"><i class="fas fa-tags" style="color:#1976d2; margin-right:6px;"></i>Functional Annotation <span style="font-weight:400; font-size:0.85rem; color:#6c757d;">(Optional)</span></h5>
             <p style="color:#666; margin:4px 0 12px;">Upload a pre-computed functional annotation table, or search a functional database by sequence similarity.</p>
             <!-- Pre-computed functional data OR live database search (source + threshold) -->
             <div class="dt-or-row">
@@ -239,7 +231,11 @@
             <div id="blast-continue" class="hidden" style="margin-top:12px;">
                 <button class="dt-btn dt-btn-primary" id="goto-step2-btn">Continue to Study Variables <i class="fas fa-arrow-right"></i></button>
             </div>
+            </div>
+            <!-- /Functional annotation -->
 
+            <!-- Actions: reset applies to both the peptidomic upload and the
+                 functional annotation. -->
             <div style="margin-top:16px; border-top:1px solid #dee2e6; padding-top:16px;">
                 <button class="dt-btn dt-btn-secondary" id="reset-uploads-btn">
                     <i class="fas fa-trash"></i> Reset Uploads &amp; Search
@@ -255,10 +251,13 @@
             <p style="color:#666;">Group your abundance columns into experimental conditions. If any columns are technical replicates, define them below first — they will be averaged into a single biological replicate and become available in the group selector.</p>
             <div id="dt-error-step2" class="dt-alert dt-alert-danger hidden" style="margin-bottom:12px;"></div>
 
+            <hr style="border:none; border-top:2px solid #dee2e6; margin:8px 0 20px;">
+
             <!-- Rename Abundance Columns (optional sub-section) -->
             <div style="margin-bottom:20px; padding-bottom:20px; border-bottom:2px solid #dee2e6;">
                 <h5 style="margin-top:0;"><i class="fas fa-pen-to-square" style="color:#1976d2; margin-right:6px;"></i>Rename Abundance Columns <span style="font-weight:400; font-size:0.85rem; color:#6c757d;">(Optional)</span></h5>
                 <p style="color:#666; margin:4px 0 12px;">Instrument exports often use long sample names (e.g. <em>Abundance F1 Sample Threshold</em>). Map them to shorter labels here first — the simplified names are used throughout the technical-replicate and grouping steps below.</p>
+                <div id="dt-error-rename" class="dt-alert dt-alert-danger hidden" style="margin-bottom:12px;"></div>
 
                 <div class="dt-file-input" style="margin-bottom:14px;">
                     <label>Upload Rename Definition <span style="color:#6c757d; font-weight:400;">(Optional)</span></label>
@@ -292,6 +291,7 @@
             <!-- Technical Replicate Assignment (optional sub-section) -->
             <div style="margin-bottom:20px; padding-bottom:20px; border-bottom:2px solid #dee2e6;">
                 <h5 style="margin-top:0;"><i class="fas fa-vials" style="color:#1976d2; margin-right:6px;"></i>Technical Replicate Assignment <span style="font-weight:400; font-size:0.85rem; color:#6c757d;">(Optional)</span></h5>
+                <div id="dt-error-techrep" class="dt-alert dt-alert-danger hidden" style="margin-bottom:12px;"></div>
 
                 <div class="dt-file-input" style="margin-bottom:14px;">
                     <label>Upload Technical Replicate Definition <span style="color:#6c757d; font-weight:400;">(Optional)</span></label>
@@ -331,7 +331,12 @@
                 </div>
             </div>
 
-            <!-- Categorical Group Assignment -->
+            <!-- Categorical Group Assignment (sub-section) -->
+            <div style="margin-bottom:20px;">
+            <h5 style="margin-top:0;"><i class="fas fa-layer-group" style="color:#1976d2; margin-right:6px;"></i>Categorical Group Assignment</h5>
+            <p style="color:#666; margin:4px 0 12px;">Assign your abundance / biological-replicate columns to experimental groups. Group averages and statistics are computed per group.</p>
+            <div id="dt-error-groups" class="dt-alert dt-alert-danger hidden" style="margin-bottom:12px;"></div>
+
             <div class="dt-file-input" style="margin-bottom:16px;">
                 <label>Upload Group Definition <span style="color:#6c757d; font-weight:400;">(Optional)</span></label>
                 <div class="dt-dropzone" data-input="group_file" style="width:25%;">
@@ -374,8 +379,11 @@
                 </div>
                 <div id="groups-list"></div>
             </div>
+            </div>
+            <!-- /Categorical Group Assignment -->
 
             <div style="margin-top:16px; border-top:1px solid #dee2e6; padding-top:16px;">
+                <div id="dt-error-step2-actions" class="dt-alert dt-alert-danger hidden" style="margin-bottom:12px;"></div>
                 <button class="dt-btn dt-btn-secondary" id="back-to-step1-btn" style="margin-right:8px;">
                     <i class="fas fa-arrow-left"></i> Back
                 </button>
@@ -559,5 +567,5 @@
 {% endblock %}
 
 {% block 'scripts' %}
-<script src="{% static 'peptide/js/data_transformation.js' %}?v=34"></script>
+<script src="{% static 'peptide/js/data_transformation.js' %}?v=36"></script>
 {% endblock %}

@@ -43,12 +43,10 @@
 
         input.addEventListener('change', function() {
             if (!this.files.length) return;
-            if (isMulti) {
+            if (isMulti && this.files.length > 1) {
                 showMultipleFiles(this.files);
-                handlePeptidomicModeSwitch('merge');
             } else {
                 showFile(this.files[0].name);
-                if (this.id === 'peptidomic_file') handlePeptidomicModeSwitch('single');
             }
         });
 
@@ -64,42 +62,15 @@
             zone.classList.remove('dragover');
             if (e.dataTransfer.files.length) {
                 input.files = e.dataTransfer.files;
-                if (isMulti) {
+                if (isMulti && e.dataTransfer.files.length > 1) {
                     showMultipleFiles(e.dataTransfer.files);
-                    handlePeptidomicModeSwitch('merge');
                 } else {
                     showFile(e.dataTransfer.files[0].name);
-                    if (input.id === 'peptidomic_file') handlePeptidomicModeSwitch('single');
                 }
                 input.dispatchEvent(new Event('change'));
             }
         });
     });
-
-    // Mutual exclusivity: selecting single clears merge and vice-versa
-    function handlePeptidomicModeSwitch(mode) {
-        var singleInput = document.getElementById('peptidomic_file');
-        var mergeInput = document.getElementById('merge_files');
-        if (mode === 'single' && mergeInput) {
-            mergeInput.value = '';
-            var mergeZone = mergeInput.closest('.dt-dropzone');
-            if (mergeZone) {
-                mergeZone.querySelector('.drop-text').classList.remove('hidden');
-                var fn = mergeZone.querySelector('.file-name');
-                if (fn) fn.classList.add('hidden');
-                var ml = mergeZone.querySelector('.merge-file-list');
-                if (ml) { ml.innerHTML = ''; ml.classList.add('hidden'); }
-            }
-        } else if (mode === 'merge' && singleInput) {
-            singleInput.value = '';
-            var singleZone = singleInput.closest('.dt-dropzone');
-            if (singleZone) {
-                singleZone.querySelector('.drop-text').classList.remove('hidden');
-                var fn = singleZone.querySelector('.file-name');
-                if (fn) { fn.textContent = ''; fn.classList.add('hidden'); }
-            }
-        }
-    }
 
     // -----------------------------------------------------------------------
     // "Load example" links — fetch static example file and inject into input
@@ -197,10 +168,33 @@
         }
     }
 
-    function showStep2Error(msg) {
-        var el = document.getElementById('dt-error-step2');
+    // Step 2 errors are shown inline within the relevant sub-section so they
+    // stay visible no matter how far the user has scrolled. `section` is one of
+    // 'rename' | 'techrep' | 'groups' | 'actions'; omitted falls back to the
+    // section-wide banner near the top of the card.
+    var STEP2_ERROR_IDS = {
+        rename: 'dt-error-rename',
+        techrep: 'dt-error-techrep',
+        groups: 'dt-error-groups',
+        actions: 'dt-error-step2-actions'
+    };
+
+    function clearStep2Errors() {
+        ['dt-error-step2'].concat(Object.keys(STEP2_ERROR_IDS).map(function(k) {
+            return STEP2_ERROR_IDS[k];
+        })).forEach(function(id) {
+            var el = document.getElementById(id);
+            if (el) el.classList.add('hidden');
+        });
+    }
+
+    function showStep2Error(msg, section) {
+        clearStep2Errors();
+        var el = document.getElementById(STEP2_ERROR_IDS[section] || 'dt-error-step2');
+        if (!el) el = document.getElementById('dt-error-step2');
         el.textContent = msg;
         el.classList.remove('hidden');
+        el.scrollIntoView({behavior: 'smooth', block: 'nearest'});
         setTimeout(function() { el.classList.add('hidden'); }, 10000);
     }
 
@@ -234,17 +228,11 @@
 
     document.getElementById('upload-form').addEventListener('submit', function(e) {
         e.preventDefault();
-        var singleInput = document.getElementById('peptidomic_file');
-        var mergeInput = document.getElementById('merge_files');
-        var hasSingle = singleInput && singleInput.files.length > 0;
-        var hasMerge = mergeInput && mergeInput.files.length >= 2;
+        var pepInput = document.getElementById('peptidomic_file');
+        var pepFiles = pepInput ? pepInput.files : [];
 
-        if (!hasSingle && !hasMerge) {
-            if (mergeInput && mergeInput.files.length === 1) {
-                showError('Please select at least 2 files for merging, or use the Single Dataset option.');
-            } else {
-                showError('Please select a peptidomic data file (single or multiple for merging).');
-            }
+        if (!pepFiles.length) {
+            showError('Please select a peptidomic data file (add multiple files to merge them into one dataset).');
             return;
         }
 
@@ -253,12 +241,12 @@
         btn.innerHTML = '<span class="dt-spinner"></span> Uploading...';
 
         var formData = new FormData(this);
-        // For merge mode, ensure all files are appended under 'merge_files'
-        if (hasMerge) {
+        // Two or more files → merge mode: send them all under 'merge_files'.
+        // A single file is sent as 'peptidomic_file' (already in formData).
+        if (pepFiles.length >= 2) {
             formData.delete('peptidomic_file');
-            formData.delete('merge_files');
-            for (var i = 0; i < mergeInput.files.length; i++) {
-                formData.append('merge_files', mergeInput.files[i]);
+            for (var i = 0; i < pepFiles.length; i++) {
+                formData.append('merge_files', pepFiles[i]);
             }
         }
         ajax('POST', 'upload/', formData, function(resp) {
@@ -584,7 +572,7 @@
         manualRenames.forEach(function(r) { mapping[r.new] = r.original; });
         ajax('POST', 'submit-renames/', {renames: mapping}, function(resp) {
             if (onDone) onDone(resp);
-        }, function(msg) { showStep2Error(msg); });
+        }, function(msg) { showStep2Error(msg, 'rename'); });
     }
 
     document.getElementById('rename-json-input').addEventListener('change', function() {
@@ -600,16 +588,16 @@
             renderRenameOriginalSelect();
             renderRenameList();
             refreshAfterRenameChange();
-        }, function(msg) { showStep2Error(msg); });
+        }, function(msg) { showStep2Error(msg, 'rename'); });
     });
 
     document.getElementById('rn-add-btn').addEventListener('click', function() {
         var original = document.getElementById('rn-original-select').value;
         var newName = document.getElementById('rn-new-name-input').value.trim();
-        if (!original) { showStep2Error('Please select a column to rename'); return; }
-        if (!newName) { showStep2Error('Please enter a new name'); return; }
+        if (!original) { showStep2Error('Please select a column to rename', 'rename'); return; }
+        if (!newName) { showStep2Error('Please enter a new name', 'rename'); return; }
         if (manualRenames.some(function(r) { return r.new === newName; })) {
-            showStep2Error('The name "' + newName + '" is already used'); return;
+            showStep2Error('The name "' + newName + '" is already used', 'rename'); return;
         }
         manualRenames.push({new: newName, original: original});
         document.getElementById('rn-new-name-input').value = '';
@@ -737,7 +725,7 @@
             renderTrColumnPanels(document.getElementById('tr-column-search').value);
             availableColumns = computeBioRepColumns();
             renderColumnPanels(document.getElementById('column-search').value);
-        });
+        }, function(msg) { showStep2Error(msg, 'techrep'); });
     });
 
     document.getElementById('tr-column-search').addEventListener('input', function() {
@@ -746,8 +734,8 @@
 
     document.getElementById('tr-add-group-btn').addEventListener('click', function() {
         var name = document.getElementById('tr-bio-rep-name-input').value.trim();
-        if (!name) { showStep2Error('Please enter a biological replicate name'); return; }
-        if (trSelectedColumns.length < 2) { showStep2Error('Please select at least 2 columns to form a technical replicate group'); return; }
+        if (!name) { showStep2Error('Please enter a biological replicate name', 'techrep'); return; }
+        if (trSelectedColumns.length < 2) { showStep2Error('Please select at least 2 columns to form a technical replicate group', 'techrep'); return; }
         manualTechReps.push({name: name, columns: trSelectedColumns.slice()});
         document.getElementById('tr-bio-rep-name-input').value = '';
         trSelectedColumns = [];
@@ -836,13 +824,13 @@
             });
             renderGroups();
             document.getElementById('submit-groups-btn').disabled = false;
-        });
+        }, function(msg) { showStep2Error(msg, 'groups'); });
     });
 
     document.getElementById('add-group-btn').addEventListener('click', function() {
         var name = document.getElementById('group-name-input').value.trim();
-        if (!name) { showStep2Error('Please enter a group name'); return; }
-        if (!selectedColumns.length) { showStep2Error('Please select at least one column'); return; }
+        if (!name) { showStep2Error('Please enter a group name', 'groups'); return; }
+        if (!selectedColumns.length) { showStep2Error('Please select at least one column', 'groups'); return; }
         definedGroups.push({name: name, columns: selectedColumns.slice()});
         renderGroups();
         document.getElementById('group-name-input').value = '';
@@ -959,8 +947,8 @@
             ajax('POST', 'submit-groups/', {groups: definedGroups}, function() {
                 goToStep(3);
                 loadStep3();
-            }, function(msg) { btn.disabled = false; showStep2Error(msg); });
-        }, function(msg) { btn.disabled = false; showStep2Error(msg); });
+            }, function(msg) { btn.disabled = false; showStep2Error(msg, 'actions'); });
+        }, function(msg) { btn.disabled = false; showStep2Error(msg, 'actions'); });
     });
 
     // Skip Grouping: still save tech reps, then skip groups using bio rep columns
@@ -973,8 +961,8 @@
                 btn.disabled = false;
                 goToStep(3);
                 loadStep3();
-            }, function(msg) { btn.disabled = false; showStep2Error(msg); });
-        }, function(msg) { btn.disabled = false; showStep2Error(msg); });
+            }, function(msg) { btn.disabled = false; showStep2Error(msg, 'actions'); });
+        }, function(msg) { btn.disabled = false; showStep2Error(msg, 'actions'); });
     });
 
     // -----------------------------------------------------------------------
@@ -1854,8 +1842,8 @@
         var savedFiles = resp.has_saved_files || {};
 
         if (fn.merge_files && fn.merge_files.length) {
-            // Merge mode — show individual filenames in the merge dropzone
-            var mergeInput = document.getElementById('merge_files');
+            // Merge mode — show individual filenames in the peptidomic dropzone
+            var mergeInput = document.getElementById('peptidomic_file');
             if (mergeInput) {
                 var mergeZone = mergeInput.closest('.dt-dropzone');
                 if (mergeZone) {
