@@ -35,5 +35,6 @@ if not settings.configured:
         SPEC_TRANSLATE_LIST=SPEC_TRANSLATE_LIST,
         WORK_DIRECTORY='/tmp',
         USE_TZ=True,
+        DATABASE_ROUTERS=['peptiline.db_router.MBPDBReplicaRouter'],
     )
     django.setup()

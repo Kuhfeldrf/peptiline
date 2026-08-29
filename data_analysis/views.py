@@ -92,7 +92,9 @@ def upload(request):
             status=400,
         )
 
-    protein_dict = data_processor.extract_protein_dict(df)
+    # Protein-info extraction and the selector aggregates are independent passes
+    # over the peptide table — run them concurrently rather than one after another.
+    protein_dict, options = data_processor.analyze_merged_dataframe(df, group_data_dict)
 
     # Persist to session work dir
     work_dir = _get_work_dir(request)
@@ -100,7 +102,6 @@ def upload(request):
     _save_json(work_dir, 'group_data_dict', group_data_dict)
     _save_json(work_dir, 'protein_dict', protein_dict)
 
-    options = data_processor.get_selector_options(df, group_data_dict, protein_dict)
     warnings = col_warnings + ([group_warning] if group_warning else [])
 
     return JsonResponse({
@@ -144,14 +145,14 @@ def transfer_from_dt(request):
     group_data_dict, df, group_warning = data_processor.process_group_data(df)
     if not group_data_dict:
         return JsonResponse({'error': 'No group columns found in transformed data.'}, status=400)
-    protein_dict = data_processor.extract_protein_dict(df)
+
+    protein_dict, options = data_processor.analyze_merged_dataframe(df, group_data_dict)
 
     work_dir = _get_work_dir(request)
     _save_df(work_dir, 'merged_df', df)
     _save_json(work_dir, 'group_data_dict', group_data_dict)
     _save_json(work_dir, 'protein_dict', protein_dict)
 
-    options = data_processor.get_selector_options(df, group_data_dict, protein_dict)
     warnings = col_warnings + ([group_warning] if group_warning else [])
     return JsonResponse({
         'success': True,

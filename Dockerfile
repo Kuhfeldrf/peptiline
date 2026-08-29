@@ -63,9 +63,19 @@ RUN python -c "import matplotlib.pyplot"
 
 COPY . /app
 
+# mbpdb_replica.sqlite3 is the checked-in, populated snapshot the BLAST /
+# functional-annotation search reads -- it MUST arrive via `COPY . /app` above
+# (nothing loads it at deploy time). Fail the build loudly if it is missing or
+# was truncated (e.g. re-added to .dockerignore), rather than shipping an image
+# whose every database search fails at runtime. db.sqlite3, by contrast, is
+# created fresh by `migrate` on first boot.
+RUN test -s /app/mbpdb_replica.sqlite3 \
+    && [ "$(stat -c%s /app/mbpdb_replica.sqlite3)" -gt 100000 ] \
+    || (echo 'ERROR: mbpdb_replica.sqlite3 missing/empty in build context -- check .dockerignore' && exit 1)
+
 RUN chown -R celery_user:celery_user /app && \
     chmod -R 755 /app && \
-    touch /app/db.sqlite3 /app/mbpdb_replica.sqlite3 && \
+    touch /app/db.sqlite3 && \
     chown celery_user:celery_user /app/db.sqlite3 /app/mbpdb_replica.sqlite3 && \
     chmod 664 /app/db.sqlite3 /app/mbpdb_replica.sqlite3 && \
     mkdir -p /app/uploads/temp && \

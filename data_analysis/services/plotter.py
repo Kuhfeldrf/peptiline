@@ -47,21 +47,44 @@ RELATIVE_STATS_NOTE = (
 )
 
 
-def _safe_log(val):
+def _log_arr(v, base=10):
+    """Base-aware elementwise log (base 10 or 2) for array-likes / scalars."""
+    return np.log2(v) if int(base) == 2 else np.log10(v)
+
+
+def _log_sub(base):
+    """Subscript string for axis labels: 'Log<sub>10</sub>' / 'Log<sub>2</sub>'."""
+    return '2' if int(base) == 2 else '10'
+
+
+def _log_hover_line(state, abs_value):
+    """Hover fragment showing the log-transformed value when a log transform is
+    active — so the tooltip reports the value as plotted, not just raw abundance.
+    Returns '' (no extra line) when log transform is off or the value is
+    non-positive."""
+    if not getattr(state, 'log_transform', False):
+        return ''
+    lv = _safe_log(abs_value, getattr(state, 'log_base', 10))
+    if lv is None:
+        return ''
+    return f"Log<sub>{_log_sub(state.log_base)}</sub> {state.metric_name}: {lv:.2f}<br>"
+
+
+def _safe_log(val, base=10):
     try:
         v = float(val)
     except (TypeError, ValueError):
         return None
     if np.isnan(v) or v <= 0:
         return None
-    return np.log10(v)
+    return float(_log_arr(v, base))
 
 
-def _display_sem(sem, value, use_log):
+def _display_sem(sem, value, use_log, base=10):
     """Transform a raw replicate SEM so it matches the plotted y value.
 
-    Linear axis: return the SEM unchanged. Log10 axis: apply the delta-method
-    transform SEM/(value·ln10) (the same conversion the totals plot uses at
+    Linear axis: return the SEM unchanged. Log axis: apply the delta-method
+    transform SEM/(value·ln(base)) (the same conversion the totals plot uses at
     ``plot_total_peptides``). Returns 0.0 for a non-positive SEM or, under log,
     a non-positive value — which renders as no error bar.
     """
@@ -76,7 +99,7 @@ def _display_sem(sem, value, use_log):
             v = float(value)
         except (TypeError, ValueError):
             return 0.0
-        return s / (v * np.log(10)) if v > 0 else 0.0
+        return s / (v * np.log(int(base))) if v > 0 else 0.0
     return s
 
 
@@ -193,8 +216,9 @@ def plot_total_peptides(state: DataAnalysisState):
     count_sems = [data[g]['count_sem'] for g in groups]
 
     if use_log:
-        abundances = [_safe_log(v) for v in abundances]
-        counts = [_safe_log(v) for v in counts]
+        base = state.log_base
+        abundances = [_safe_log(v, base) for v in abundances]
+        counts = [_safe_log(v, base) for v in counts]
         skipped_log_zero = sum(1 for v in (abundances if not state.use_count else counts) if v is None)
         if skipped_log_zero:
             state.warnings.append(
@@ -203,16 +227,16 @@ def plot_total_peptides(state: DataAnalysisState):
                 'transform to display them.'
             )
         abundance_sems = [
-            data[g]['abundance_sem'] / (data[g]['total_Abundance'] * np.log(10))
+            data[g]['abundance_sem'] / (data[g]['total_Abundance'] * np.log(base))
             if data[g]['total_Abundance'] > 0 else 0
             for g in groups
         ]
         count_sems = [
-            data[g]['count_sem'] / (data[g]['unique_peptides'] * np.log(10))
+            data[g]['count_sem'] / (data[g]['unique_peptides'] * np.log(base))
             if data[g]['unique_peptides'] > 0 else 0
             for g in groups
         ]
-        y_prefix = 'Log<sub>10</sub> '
+        y_prefix = f'Log<sub>{_log_sub(base)}</sub> '
         tickfmt = '.2f'
     else:
         y_prefix = ''
@@ -228,8 +252,8 @@ def plot_total_peptides(state: DataAnalysisState):
                          thickness=1.5, width=4, color='#000000'),
             hovertemplate=(
                 "Group: %{x}<br>"
-                "Unique Peptides: %{y:.0f}<br>"
-                "SEM: %{error_y.array:.1f}<br>"
+                f"{y_prefix}Unique Peptides: %{{y:{'.2f' if use_log else '.0f'}}}<br>"
+                f"SEM: %{{error_y.array:{'.2f' if use_log else '.1f'}}}<br>"
                 "<extra></extra>"
             ),
         ))
@@ -268,8 +292,8 @@ def plot_total_peptides(state: DataAnalysisState):
                          thickness=1.5, width=4, color='#000000'),
             hovertemplate=(
                 "Group: %{x}<br>"
-                "Total Abundance: %{y:.2e}<br>"
-                "SEM: %{error_y.array:.2e}<br>"
+                f"{y_prefix}Total Abundance: %{{y:{'.2f' if use_log else '.2e'}}}<br>"
+                f"SEM: %{{error_y.array:{'.2f' if use_log else '.2e'}}}<br>"
                 "<extra></extra>"
             ),
         ))
@@ -583,6 +607,7 @@ def create_grouped_bar_plot(state: DataAnalysisState):
     selected_groups = state.selected_groups
     use_count = state.use_count
     use_log = state.log_transform
+    log_base = state.log_base
     metric_key = 'count' if use_count else 'abundance'
     show_sig = state.show_significance and not state.is_relative
 
@@ -633,11 +658,11 @@ def create_grouped_bar_plot(state: DataAnalysisState):
                 else:
                     v = abs_value
                     if use_log:
-                        v = _safe_log(v)
+                        v = _safe_log(v, log_base)
                         if v is None:
                             skipped_log_zero += 1
                 values.append(v)
-                disp_sem = _display_sem(sem_raw, abs_value, use_log)
+                disp_sem = _display_sem(sem_raw, abs_value, use_log, log_base)
                 sems.append(disp_sem)
                 # Record bar geometry for significance markers. By Function: each
                 # category cluster holds one bar per sample, compared within-cluster.
@@ -661,6 +686,7 @@ def create_grouped_bar_plot(state: DataAnalysisState):
                         f"{item_label}: {item}<br>"
                         f"Sample: {group}<br>"
                         f"{state.metric_name}: {abs_value:{state.num_format}}<br>"
+                        f"{_log_hover_line(state, abs_value)}"
                         f"Relative Contribution: {rel_value:.1f}%"
                     )
 
@@ -688,7 +714,7 @@ def create_grouped_bar_plot(state: DataAnalysisState):
                 'under log transform (log of zero/negative is undefined). Turn off log '
                 'transform to display them.'
             )
-        y_title = state.ylabel or ('Log<sub>10</sub> ' if use_log else '') + state.metric_name
+        y_title = state.ylabel or (f'Log<sub>{_log_sub(log_base)}</sub> ' if use_log else '') + state.metric_name
         finite_values = [v for v in all_values if v is not None]
         yaxis_fn = _build_grouped_yaxis(state, use_log, use_count, max(finite_values, default=0))
         x_lbl, legend_lbl = _orientation_axis_titles(state)
@@ -771,11 +797,11 @@ def create_grouped_bar_plot(state: DataAnalysisState):
                 else:
                     v = abs_value
                     if use_log:
-                        v = _safe_log(v)
+                        v = _safe_log(v, log_base)
                         if v is None:
                             skipped_log_zero += 1
                 values.append(v)
-                disp_sem = _display_sem(sem_raw, abs_value, use_log)
+                disp_sem = _display_sem(sem_raw, abs_value, use_log, log_base)
                 sems.append(disp_sem)
                 if show_sig and orientation == 'By Protein':
                     sig_geom[(ci_cat, group)] = {'x': x_pos[ci_cat],
@@ -795,6 +821,7 @@ def create_grouped_bar_plot(state: DataAnalysisState):
                         f"Protein: {item}<br>"
                         f"Sample: {group}<br>"
                         f"{state.metric_name}: {abs_value:{count_fmt}}<br>"
+                        f"{_log_hover_line(state, abs_value)}"
                         f"Relative Contribution: {rel_value:.1f}%"
                     )
 
@@ -821,7 +848,7 @@ def create_grouped_bar_plot(state: DataAnalysisState):
                 'under log transform (log of zero/negative is undefined). Turn off log '
                 'transform to display them.'
             )
-        y_title = state.ylabel or ('Log<sub>10</sub> ' if use_log else '') + state.metric_name
+        y_title = state.ylabel or (f'Log<sub>{_log_sub(log_base)}</sub> ' if use_log else '') + state.metric_name
         finite_values = [v for v in all_values if v is not None]
         yaxis_prot = _build_grouped_yaxis(state, use_log, use_count, max(finite_values, default=0))
         x_lbl, legend_lbl = _orientation_axis_titles(state)
@@ -945,6 +972,7 @@ def plot_stacked_bar_scaled(state: DataAnalysisState):
     selected_groups = state.selected_groups
     use_count = state.use_count
     use_log = state.log_transform
+    log_base = state.log_base
     plot_filter = state.plot_filter
     orientation = state.orientation
 
@@ -1057,7 +1085,7 @@ def plot_stacked_bar_scaled(state: DataAnalysisState):
                 if state.is_relative:
                     v = rel_value
                 elif use_log:
-                    log_total = _safe_log(total) if total > 0 else 0.0
+                    log_total = _safe_log(total, log_base) if total > 0 else 0.0
                     v = rel_value / 100.0 * log_total
                 else:
                     # Scale proportionally so bars sum to the true total
@@ -1088,7 +1116,7 @@ def plot_stacked_bar_scaled(state: DataAnalysisState):
             for g in selected_groups:
                 total = total_sums.get(g, 0)
                 if use_log and total > 0:
-                    text_vals.append(f"{np.log10(max(total, 1e-10)):.2f}")
+                    text_vals.append(f"{_log_arr(max(total, 1e-10), log_base):.2f}")
                 elif use_count:
                     text_vals.append(f"{int(total):,}")
                 else:
@@ -1097,7 +1125,7 @@ def plot_stacked_bar_scaled(state: DataAnalysisState):
             for g in selected_groups:
                 total = total_sums.get(g, 0)
                 if use_log and total > 0:
-                    y_totals.append(np.log10(max(total, 1e-10)))
+                    y_totals.append(float(_log_arr(max(total, 1e-10), log_base)))
                 else:
                     y_totals.append(total)
             fig.add_trace(go.Scatter(
@@ -1186,7 +1214,7 @@ def plot_stacked_bar_scaled(state: DataAnalysisState):
                 if state.is_relative:
                     v = rel_percentage
                 elif use_log:
-                    log_total = _safe_log(item_total) if item_total > 0 else 0.0
+                    log_total = _safe_log(item_total, log_base) if item_total > 0 else 0.0
                     v = rel_percentage / 100.0 * log_total
                 else:
                     # Equivalent to abs_value but expressed via proportional total
@@ -1223,8 +1251,8 @@ def plot_stacked_bar_scaled(state: DataAnalysisState):
                     else data.get('total_Abundance', 0.0)
                 )
                 if use_log and total > 0:
-                    text_vals.append(f"{np.log10(max(total, 1e-10)):.2f}")
-                    y_totals.append(np.log10(max(total, 1e-10)))
+                    text_vals.append(f"{_log_arr(max(total, 1e-10), log_base):.2f}")
+                    y_totals.append(float(_log_arr(max(total, 1e-10), log_base)))
                 elif use_count:
                     text_vals.append(f"{int(total):,}")
                     y_totals.append(total)
@@ -1243,7 +1271,7 @@ def plot_stacked_bar_scaled(state: DataAnalysisState):
 
     # ── Layout ─────────────────────────────────────────────────────────────────
     y_title = ('Relative ' if state.is_relative else '') + \
-               ('Log<sub>10</sub> ' if (use_log and not state.is_relative) else '') + state.metric_name
+               (f'Log<sub>{_log_sub(log_base)}</sub> ' if (use_log and not state.is_relative) else '') + state.metric_name
     yaxis_stk = _axis_style(state.font_size_ylabel, state.font_size_ytick)
     # Notebook parity (data_analysis.ipynb Plotter.plot_stacked_bar_scaled): once
     # items are stacked into layered segments, absolute/scaled tick values don't
@@ -1442,10 +1470,12 @@ def create_correlation_plot(state: DataAnalysisState):
         return None
 
     if use_log:
-        x_vals = np.log10(fdf[col1])
-        y_vals = np.log10(fdf[col2])
+        base = state.log_base
+        x_vals = _log_arr(fdf[col1], base)
+        y_vals = _log_arr(fdf[col2], base)
         tickfmt = '.0f'
-        x_label, y_label = f'Log<sub>10</sub> ({g1})', f'Log<sub>10</sub> ({g2})'
+        sub = _log_sub(base)
+        x_label, y_label = f'Log<sub>{sub}</sub> ({g1})', f'Log<sub>{sub}</sub> ({g2})'
     else:
         x_vals = fdf[col1]
         y_vals = fdf[col2]
@@ -1559,6 +1589,8 @@ def create_correlation_splom(state: DataAnalysisState):
         return None
 
     use_log = state.log_transform
+    base = state.log_base
+    sub = _log_sub(base)
     first_color = get_single_color(state.color_scheme)
     ct = state.correlation_type
 
@@ -1578,8 +1610,8 @@ def create_correlation_splom(state: DataAnalysisState):
     all_vals = []
     for g in valid_groups:
         col = f'Avg_{g}'
-        vals = np.log10(fdf[col]) if use_log else fdf[col]
-        dimensions.append(dict(values=vals, label=f'Log<sub>10</sub> ({g})' if use_log else g))
+        vals = _log_arr(fdf[col], base) if use_log else fdf[col]
+        dimensions.append(dict(values=vals, label=f'Log<sub>{sub}</sub> ({g})' if use_log else g))
         all_vals.extend(vals)
 
     id_col = 'Unique Peptide ID'
@@ -1619,8 +1651,8 @@ def create_correlation_splom(state: DataAnalysisState):
             if i >= j:
                 continue
             c1, c2 = f'Avg_{g1}', f'Avg_{g2}'
-            x_vals = np.log10(fdf[c1]) if use_log else fdf[c1]
-            y_vals = np.log10(fdf[c2]) if use_log else fdf[c2]
+            x_vals = _log_arr(fdf[c1], base) if use_log else fdf[c1]
+            y_vals = _log_arr(fdf[c2], base) if use_log else fdf[c2]
             if ct == 'Pearson':
                 corr, p = pearsonr(x_vals, y_vals)
                 sym = 'r'

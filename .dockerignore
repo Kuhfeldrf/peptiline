@@ -28,11 +28,19 @@ env
 *-checkpoint.ipynb
 *.ipynb
 
-# Build artifacts and caches -- runtime-generated DB files only.
-# mbpdb_seed.sqlite3 is NOT excluded: it's a checked-in data snapshot the
-# image needs at build time (see docs/SPLIT_PLAN.md section 3).
+# Build artifacts and caches.
+#
+# db.sqlite3 is excluded: PeptiLine's own operational DB is created fresh by
+# `migrate` on first boot (start.sh -> bootstrap), so a local copy must never
+# be baked in.
+#
+# mbpdb_replica.sqlite3 is NOT excluded: it is the checked-in, already-populated
+# snapshot of MBPDB's reference tables that the functional-annotation / BLAST
+# search reads (see docs/SPLIT_PLAN.md section 3). Nothing loads it at deploy
+# time -- the `COPY . /app` in the Dockerfile is the only path data reaches the
+# image. Excluding it here is what left the deployed replica empty and made
+# every database search fail with "Database search failed. Check server logs."
 db.sqlite3
-mbpdb_replica.sqlite3
 static_files
 *.log
 

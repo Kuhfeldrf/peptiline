@@ -81,6 +81,15 @@
     .dt-export-view-btn:hover { background: #e8f0fe; }
     .dt-export-dl-btn { padding: 5px 12px; font-size: 0.85rem; background: #1976d2; border: none; color: #fff; border-radius: 4px; cursor: pointer; }
     .dt-export-dl-btn:hover { background: #1565c0; }
+    /* Inline per-export correlation controls — kept compact so the correlation
+       rows are no taller than the other export rows: the log checkboxes stack
+       vertically in a narrow column beside the method selector. */
+    .dt-export-actions { align-items: center; }
+    .dt-corr-opts { display: flex; align-items: center; gap: 8px; margin-right: 4px; }
+    .dt-corr-opts select { font-size: 0.78rem; padding: 2px 4px; border: 1px solid #ced4da; border-radius: 4px; }
+    .dt-corr-logs { display: flex; flex-direction: column; gap: 0; line-height: 1.15; }
+    .dt-corr-logs label { display: flex; align-items: center; gap: 4px; font-size: 0.72rem; color: #555; white-space: nowrap; }
+    .dt-corr-logs input { margin: 0; }
     /* Viewer */
     .dt-viewer-tabs { display: flex; flex-wrap: wrap; gap: 2px; margin-bottom: -1px; }
     .dt-viewer-tab { padding: 5px 14px; border: 1px solid #dee2e6; border-bottom: none; border-radius: 4px 4px 0 0; cursor: pointer; background: #f8f9fa; font-size: 0.88rem; }
@@ -105,8 +114,6 @@
     .dt-group-drag-handle:active { cursor: grabbing; }
     .dt-group-item.dt-group-dragging { opacity: 0.4; }
     .dt-group-item.dt-group-drag-over { outline: 2px dashed #1976d2; background: #e8f0fe; }
-    #correlation-options { margin-top: 12px; padding: 12px; background: #f8f9fa; border-radius: 4px; }
-    #correlation-options label { margin-right: 16px; }
     .dt-resume-btn { padding: 5px 12px; font-size: 0.82rem; background: #fff; border: 1px solid #1976d2; color: #1976d2; border-radius: 4px; cursor: pointer; white-space: nowrap; }
     .dt-resume-btn:hover { background: #e8f0fe; }
     .dt-resume-btn-reset { border-color: #dc3545; color: #dc3545; }
@@ -494,16 +501,10 @@
             <h4>Results</h4>
             <div id="process-summary" style="margin-bottom: 16px;"></div>
 
-            <div id="correlation-options">
-                <label><strong>Correlation Method:</strong></label>
-                <select id="correlation-type" class="form-control" style="width: 200px; display: inline-block;">
-                    <option value="Pearson">Pearson</option>
-                    <option value="Spearman">Spearman</option>
-                </select>
-                <label style="margin-left: 16px;">
-                    <input type="checkbox" id="log-transform" checked> Log10 Transform
-                </label>
-            </div>
+            <p id="correlation-options-note" style="font-size:0.8rem; color:#888; margin:4px 0 0;">
+                Correlation method and log transform apply <em>only</em> to the three
+                correlation exports below — each carries its own controls.
+            </p>
 
             <div style="display:flex; align-items:center; justify-content:space-between; margin-top:16px; margin-bottom:4px;">
                 <strong style="font-size:0.95rem; color:#555;">Individual Downloads</strong>

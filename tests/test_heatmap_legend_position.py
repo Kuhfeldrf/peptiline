@@ -286,5 +286,47 @@ class TestStackedFigures(unittest.TestCase):
             self.assertEqual({round(leg.x, 6) for leg in legends.values()}, {0.5})
 
 
+class TestLogTransform(unittest.TestCase):
+    """Log transform scales the plotted abundance DATA (line heights), not just
+    the axis labels, and log10 vs log2 are distinct."""
+
+    def _fig(self, orientation, log_base):
+        import matplotlib.pyplot as plt
+        R.max_count, R.num_colors = 8, 6
+        return R.visualize_sequence_heatmap_interactive(
+            _vars(), orientation, 'Beta-casein Sequence', '',
+            LEGEND_TITLES, plt.get_cmap('RdYlGn_r'), plt.get_cmap('Dark2'), 'Set3',
+            [], [], 'yes', 'no', 'all-peptides', True, Y_TICKS, log_base=log_base,
+        )
+
+    def _line_y(self, fig):
+        for t in fig.data:
+            if t.type == 'scatter' and t.y is not None and any(v is not None for v in t.y):
+                return [v for v in t.y if v is not None]
+        return []
+
+    def test_axis_is_linear_over_transformed_values(self):
+        fig = self._fig('Landscape', 10)
+        ax = fig.layout.yaxis
+        self.assertEqual(ax.type, 'linear')
+        # ticks read as log10 values (~4-6), never raw abundance (1e4-1e6)
+        self.assertEqual(list(ax.ticktext), ['4.00', '5.70', '6.00'])
+
+    def test_log2_scales_data_relative_to_log10(self):
+        y10 = self._line_y(self._fig('Landscape', 10))
+        y2 = self._line_y(self._fig('Landscape', 2))
+        self.assertTrue(y10 and len(y10) == len(y2))
+        for a, b in zip(y10, y2):
+            self.assertAlmostEqual(b / a, 1.0 / np.log10(2), places=3)
+
+    def test_axis_title_carries_base(self):
+        ann10 = [a.text for a in self._fig('Portrait', 10).layout.annotations
+                 if 'Abundance' in (a.text or '')]
+        ann2 = [a.text for a in self._fig('Portrait', 2).layout.annotations
+                if 'Abundance' in (a.text or '')]
+        self.assertIn('Log<sub>10</sub> Averaged Peptide Abundance', ann10)
+        self.assertIn('Log<sub>2</sub> Averaged Peptide Abundance', ann2)
+
+
 if __name__ == '__main__':
     unittest.main()

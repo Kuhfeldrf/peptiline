@@ -9,6 +9,8 @@ import traceback
 import numpy as np
 import pandas as pd
 
+from utils.parallel import run_tasks
+
 
 # Protein-name display cleaning, shared verbatim with the Heatmap app
 # (heatmap_viz/services/data_processor._clean_protein_name) so the "Strip protein
@@ -50,9 +52,14 @@ def _split_protein_ids(value) -> list:
     return [p for p in _PROTEIN_DELIM_RE.split(str(value)) if p]
 
 
-def _compute_protein_abundance(df: pd.DataFrame, avg_columns: list) -> dict:
+def _compute_protein_abundance(df: pd.DataFrame, avg_columns: list, parts=None) -> dict:
     """
     Total abundance per protein ID, vectorized.
+
+    ``parts`` optionally supplies a precomputed ``df['Protein'].map(_split_protein_ids)``
+    Series so the (Python-bound) id-splitting pass is shared with
+    :func:`extract_protein_dict` rather than run twice — see
+    :func:`analyze_merged_dataframe`.
 
     Mirrors the old row-by-row version (each peptide's abundance split evenly
     across the protein IDs on its row) without an `iterrows()` pass: the
@@ -65,7 +72,8 @@ def _compute_protein_abundance(df: pd.DataFrame, avg_columns: list) -> dict:
         return {}
 
     total_ab = df[avg_columns].apply(pd.to_numeric, errors='coerce').fillna(0).sum(axis=1)
-    parts = df['Protein'].map(_split_protein_ids)
+    if parts is None:
+        parts = df['Protein'].map(_split_protein_ids)
     n_parts = parts.map(len)
 
     has_parts = n_parts > 0
@@ -181,8 +189,11 @@ def load_file(file_obj, filename: str):
         # pandas' "mixed types" DtypeWarning — and every downstream iterrows()/
         # apply() pass over the dataframe then wastes time on rows with no data.
         # Same fix already used by the Data Transformation loader (data_loader.py).
+        # The blank-string check is column-wise (df.apply over columns, each a
+        # vectorised .str.strip()) — a row-wise .apply(axis=1) here spent ~4.5 s
+        # of a 5 s load on the 40k-row case-study export.
         df = df.dropna(how='all')
-        df = df[~df.astype(str).apply(lambda row: row.str.strip().eq('').all(), axis=1)]
+        df = df[~df.apply(lambda col: col.astype(str).str.strip()).eq('').all(axis=1)]
         return df, None
     except Exception as exc:
         return None, str(exc)
@@ -236,8 +247,13 @@ def process_group_data(df: pd.DataFrame):
 # Protein info extraction
 # ---------------------------------------------------------------------------
 
-def extract_protein_dict(df: pd.DataFrame) -> dict:
+def extract_protein_dict(df: pd.DataFrame, parts=None) -> dict:
     """Build {protein_id: {name, species, description}} from DataFrame.
+
+    ``parts`` optionally supplies a precomputed
+    ``df['Protein'].map(_split_protein_ids)`` Series so the id-splitting pass can
+    be shared with :func:`_compute_protein_abundance` (see
+    :func:`analyze_merged_dataframe`).
 
     Vectorized: called unconditionally on every upload/transfer (same as
     get_selector_options), so this used to be a second full iterrows() pass
@@ -254,7 +270,8 @@ def extract_protein_dict(df: pd.DataFrame) -> dict:
     # (not a joined string) for multi-protein peptides -- _split_protein_ids
     # handles both that and the delimited-string case from a directly
     # uploaded CSV (see its docstring for why str()-ing a list would mangle it).
-    parts = df['Protein'].map(_split_protein_ids)
+    if parts is None:
+        parts = df['Protein'].map(_split_protein_ids)
     has_parts = parts.map(len) > 0
     if not has_parts.any():
         return protein_dict
@@ -328,16 +345,17 @@ def validate_columns(df: pd.DataFrame) -> tuple[pd.DataFrame, list]:
 # Selector options for the UI
 # ---------------------------------------------------------------------------
 
-def get_selector_options(merged_df: pd.DataFrame, group_data_dict: dict, protein_dict: dict) -> dict:
-    """
-    Compute options for the frontend selectors.
-    Returns dict with groups, proteins, functions, has_functions.
+def _assemble_selector_options(merged_df, group_data_dict, protein_dict,
+                               protein_abundance, function_totals,
+                               has_functions, avg_columns) -> dict:
+    """Build the selector-options payload from already-computed aggregates.
+
+    Split out from :func:`get_selector_options` so the three heavy inputs
+    (``protein_dict``, ``protein_abundance``, ``function_totals``) can be
+    produced concurrently by :func:`analyze_merged_dataframe` and then assembled
+    here — the assembly itself is cheap dict/sort work.
     """
     groups = list(group_data_dict.keys())
-    avg_columns = [col for col in merged_df.columns if col.startswith('Avg_')]
-
-    # Proteins – sorted by total abundance
-    protein_abundance = _compute_protein_abundance(merged_df, avg_columns)
 
     all_proteins_sorted = sorted(
         protein_dict.keys(),
@@ -349,12 +367,6 @@ def get_selector_options(merged_df: pd.DataFrame, group_data_dict: dict, protein
         for pid in all_proteins_sorted
     ]
 
-    # Functions
-    has_functions = (
-        'function' in merged_df.columns
-        and not merged_df['function'].isna().all()
-    )
-    function_totals = _compute_function_counts(merged_df) if has_functions else {}
     functions = [f for f, _ in sorted(function_totals.items(), key=lambda x: x[1], reverse=True)]
 
     # Which groups carry replicate-level ('Grouped:') columns. In this module a
@@ -378,6 +390,74 @@ def get_selector_options(merged_df: pd.DataFrame, group_data_dict: dict, protein
         'var_replicates': var_replicates,
         'has_replicates': has_replicates,
     }
+
+
+def get_selector_options(merged_df: pd.DataFrame, group_data_dict: dict, protein_dict: dict) -> dict:
+    """Compute options for the frontend selectors.
+
+    The two expensive aggregates (per-protein abundance totals and per-function
+    peptide counts) are independent, so they run concurrently — see
+    :func:`analyze_merged_dataframe` for the full parallel upload path.
+    """
+    avg_columns = [col for col in merged_df.columns if col.startswith('Avg_')]
+    has_functions = (
+        'function' in merged_df.columns
+        and not merged_df['function'].isna().all()
+    )
+
+    aggregates = run_tasks({
+        'protein_abundance': lambda: _compute_protein_abundance(merged_df, avg_columns),
+        'function_totals': lambda: _compute_function_counts(merged_df) if has_functions else {},
+    })
+
+    return _assemble_selector_options(
+        merged_df, group_data_dict, protein_dict,
+        aggregates['protein_abundance'], aggregates['function_totals'],
+        has_functions, avg_columns,
+    )
+
+
+def analyze_merged_dataframe(merged_df: pd.DataFrame, group_data_dict: dict):
+    """Post-load analysis of a finalised merged dataframe, run in parallel.
+
+    Once the dataframe is ready (columns validated, ``Grouped:`` columns renamed)
+    the remaining heavy work is three independent passes over the peptide table:
+
+      * ``extract_protein_dict``   — protein id → name / species
+      * per-protein abundance totals (drives the protein-selector ordering)
+      * per-function peptide counts (drives the function selector)
+
+    They share no state, so they execute concurrently instead of sequentially —
+    on large uploads this chain is the bulk of the wait. The cheap assembly of
+    the selector payload happens afterwards on the main thread.
+
+    Returns ``(protein_dict, selector_options)``.
+    """
+    avg_columns = [col for col in merged_df.columns if col.startswith('Avg_')]
+    has_functions = (
+        'function' in merged_df.columns
+        and not merged_df['function'].isna().all()
+    )
+
+    # Split the 'Protein' cells into id lists ONCE — both extract_protein_dict and
+    # _compute_protein_abundance need it and it's the costliest Python-bound step;
+    # doing it twice (once per task) was most of the sequential cost.
+    parts = (merged_df['Protein'].map(_split_protein_ids)
+             if 'Protein' in merged_df.columns else None)
+
+    results = run_tasks({
+        'protein_dict': lambda: extract_protein_dict(merged_df, parts=parts),
+        'protein_abundance': lambda: _compute_protein_abundance(merged_df, avg_columns, parts=parts),
+        'function_totals': lambda: _compute_function_counts(merged_df) if has_functions else {},
+    })
+
+    protein_dict = results['protein_dict']
+    options = _assemble_selector_options(
+        merged_df, group_data_dict, protein_dict,
+        results['protein_abundance'], results['function_totals'],
+        has_functions, avg_columns,
+    )
+    return protein_dict, options
 
 
 # ---------------------------------------------------------------------------
@@ -523,6 +603,9 @@ class DataAnalysisState:
         self.metric_type: str = params.get('metric_type', 'Absolute')
         self.orientation: str = params.get('orientation', 'By Sample')
         self.log_transform: bool = params.get('log_transform', False)
+        # Base for the y-axis log transform: 10 (default) or 2. Mutually
+        # exclusive with each other in the UI; ignored when log_transform is off.
+        self.log_base: int = 2 if str(params.get('log_base', 10)) == '2' else 10
         self.plot_minor: bool = params.get('plot_minor', False)
         # Overlay group-comparison significance markers on bar charts.
         self.show_significance: bool = params.get('show_significance', False)

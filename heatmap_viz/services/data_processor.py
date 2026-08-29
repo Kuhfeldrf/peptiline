@@ -12,6 +12,8 @@ import numpy as np
 import pandas as pd
 from django.conf import settings
 
+from utils.parallel import run_tasks
+
 # heatmap_renderer, fasta_utils, and uniprot_client now live alongside this
 # file in heatmap_viz/services/ — no sys.path manipulation needed.
 
@@ -109,8 +111,10 @@ def load_merged_file(file_obj, filename: str) -> tuple:
     # pandas' "mixed types" DtypeWarning — and every downstream iterrows()/
     # apply() pass over the dataframe then wastes time on rows with no data.
     # Same fix used by Data Transformation's loader and Data Analysis's load_file.
+    # Column-wise (vectorised per column), never a row-wise .apply(axis=1) — that
+    # cost ~4.5 s of a 5 s load on the 40k-row case-study export.
     df = df.dropna(how='all')
-    df = df[~df.astype(str).apply(lambda row: row.str.strip().eq('').all(), axis=1)]
+    df = df[~df.apply(lambda col: col.astype(str).str.strip()).eq('').all(axis=1)]
 
     df.columns = df.columns.str.strip()
 
@@ -123,11 +127,21 @@ def load_merged_file(file_obj, filename: str) -> tuple:
     if 'Protein' not in df.columns:
         return None, {}, {}, [], "Missing required column 'Protein'."
 
-    # Parse the replicate-column framework (renames "'Grouped: (…)'" columns to
-    # their base names) so each group can carry the per-replicate columns the
-    # differential-comparison track needs for a pooled SD. Absent it the map is
-    # empty and comparison is simply unavailable.
-    df, replicates_by_group = _parse_grouped_replicates(df)
+    # Two independent passes over the validated frame:
+    #   * _parse_grouped_replicates — renames "'Grouped: (…)'" columns to their
+    #     base names and maps each group to its per-replicate columns (needed for
+    #     the differential-comparison track's pooled SD).
+    #   * _build_protein_dict_from_df — protein id → name/species, a groupby over
+    #     the whole peptide table and the heavier of the two.
+    # The replicate rename only touches "'Grouped:'" columns, never the Protein /
+    # protein_name / protein_species columns the protein dict reads, so building
+    # it from the pre-rename frame gives an identical result — run them together.
+    parsed = run_tasks({
+        'replicates': lambda: _parse_grouped_replicates(df),
+        'protein_dict': lambda: _build_protein_dict_from_df(df),
+    })
+    df, replicates_by_group = parsed['replicates']
+    protein_dict = parsed['protein_dict']
 
     # Build group_data_dict from Avg_ columns
     avg_columns = [col for col in df.columns if col.startswith('Avg_')]
@@ -143,9 +157,6 @@ def load_merged_file(file_obj, filename: str) -> tuple:
             'abundance_columns': [col],
             'replicate_columns': replicates_by_group.get(group_name, []),
         }
-
-    # Build protein_dict from data
-    protein_dict = _build_protein_dict_from_df(df)
 
     return df, group_data_dict, protein_dict, col_order, None
 
@@ -899,6 +910,7 @@ def generate_heatmap(
             # filter_type and fell through every branch in process_available_data.
             filter_type=pp.get('filter_type', 'all-peptides'),
             log_transform=pp.get('log_transform', False),
+            log_base=2 if str(pp.get('log_base', 10)) == '2' else 10,
             manual_y_axis=pp.get('manual_y_axis', False),
             y_min_manual=pp.get('y_min', 0.0),
             y_max_manual=pp.get('y_max', 1.0),
