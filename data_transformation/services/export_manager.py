@@ -39,11 +39,38 @@ def calculate_correlation(x, y, correlation_type='Pearson'):
     return corr, p_str
 
 
-def prepare_data(data, log_transform=True):
-    """Prepare data based on log transform setting."""
+def prepare_data(data, log_transform=True, log_base=10):
+    """Prepare data based on log transform setting.
+
+    ``log_base`` selects the logarithm base when ``log_transform`` is truthy
+    (10 or 2). Log10 and Log2 are mutually exclusive in the UI.
+    """
     if log_transform:
-        return np.log10(data)
+        return np.log2(data) if int(log_base) == 2 else np.log10(data)
     return data
+
+
+def log_label(log_transform, log_base=10):
+    """Human-readable name of the active transform, for export annotations."""
+    if not log_transform:
+        return 'None'
+    return 'Log2' if int(log_base) == 2 else 'Log10'
+
+
+def _write_summary_with_transform(writer, summary_df, transform_label,
+                                  correlation_type, sheet_name='Summary'):
+    """Write a correlation Summary sheet, prefaced with the parameters used.
+
+    Records the correlation method and the log transform (Log10 / Log2 / None)
+    that produced the correlations so the export is self-documenting.
+    """
+    meta = pd.DataFrame({
+        'Parameter': ['Correlation Method', 'Log Transform'],
+        'Value': [correlation_type, transform_label],
+    })
+    meta.to_excel(writer, sheet_name=sheet_name, index=False, startrow=0)
+    summary_df.to_excel(writer, sheet_name=sheet_name, index=False,
+                        startrow=len(meta) + 2)
 
 
 def _convert_group_data_dict(merged_df, group_data):
@@ -693,7 +720,8 @@ def export_summed_function_data(merged_df, group_data):
 # ---------------------------------------------------------------------------
 
 def export_tech_rep_correlation(pd_results_df, tech_dup_mapping,
-                                correlation_type='Pearson', log_transform=True):
+                                correlation_type='Pearson', log_transform=True,
+                                log_base=10):
     """
     Calculate and export pairwise correlations between technical replicates.
 
@@ -730,7 +758,7 @@ def export_tech_rep_correlation(pd_results_df, tech_dup_mapping,
         if len(data) < 2:
             continue
 
-        data = prepare_data(data, log_transform)
+        data = prepare_data(data, log_transform, log_base)
         pairs, correlations, p_values = [], [], []
 
         for i in range(len(valid_cols)):
@@ -782,7 +810,9 @@ def export_tech_rep_correlation(pd_results_df, tech_dup_mapping,
                 'Max Correlation': round(valid_corrs.max(), 3) if not valid_corrs.empty else np.nan,
                 'N Comparisons': len(valid_corrs),
             })
-        pd.DataFrame(summary_list).to_excel(writer, sheet_name='Summary', index=False)
+        _write_summary_with_transform(
+            writer, pd.DataFrame(summary_list),
+            log_label(log_transform, log_base), correlation_type)
 
         # One sheet per biological replicate
         for bio_rep, df_corr in within_rep_correlations.items():
@@ -797,7 +827,7 @@ def export_tech_rep_correlation(pd_results_df, tech_dup_mapping,
 # ---------------------------------------------------------------------------
 
 def export_group_correlation(merged_df, group_data, correlation_type='Pearson',
-                             log_transform=True):
+                             log_transform=True, log_base=10):
     """
     Calculate and export cross-group correlation analysis to Excel bytes.
     """
@@ -814,8 +844,8 @@ def export_group_correlation(merged_df, group_data, correlation_type='Pearson',
         for (group1, col1), (group2, col2) in combinations(avg_columns.items(), 2):
             mask = (df[col1] > 0) & (df[col2] > 0)
             if mask.sum() > 1:
-                values1 = prepare_data(df.loc[mask, col1], log_transform)
-                values2 = prepare_data(df.loc[mask, col2], log_transform)
+                values1 = prepare_data(df.loc[mask, col1], log_transform, log_base)
+                values2 = prepare_data(df.loc[mask, col2], log_transform, log_base)
                 correlation, p_value = calculate_correlation(values1, values2, correlation_type)
                 correlation_results.append({
                     'Group 1': group1,
@@ -835,7 +865,9 @@ def export_group_correlation(merged_df, group_data, correlation_type='Pearson',
                 'Max Correlation': round(max([r['Correlation'] for r in correlation_results]), 3),
                 'Total Comparisons': len(correlation_results)
             }
-            pd.DataFrame([summary_stats]).to_excel(writer, sheet_name='Summary', index=False)
+            _write_summary_with_transform(
+                writer, pd.DataFrame([summary_stats]),
+                log_label(log_transform, log_base), correlation_type)
         else:
             pd.DataFrame({'Message': ['No valid group pairs for correlation']}).to_excel(
                 writer, sheet_name='Summary', index=False
@@ -849,7 +881,7 @@ def export_group_correlation(merged_df, group_data, correlation_type='Pearson',
 # ---------------------------------------------------------------------------
 
 def export_replicate_correlation(merged_df, group_data, correlation_type='Pearson',
-                                  log_transform=True):
+                                  log_transform=True, log_base=10):
     """
     Calculate and export within-group replicate correlation analysis to Excel bytes.
     """
@@ -864,7 +896,7 @@ def export_replicate_correlation(merged_df, group_data, correlation_type='Pearso
         data = data[data.gt(0).all(axis=1)]
 
         if len(data) > 1:
-            data = prepare_data(data, log_transform)
+            data = prepare_data(data, log_transform, log_base)
             pairs = []
             correlations = []
             p_values = []
@@ -925,7 +957,9 @@ def export_replicate_correlation(merged_df, group_data, correlation_type='Pearso
             summary_df = pd.DataFrame(summary_list)
 
             combined_correlation_df.to_excel(writer, sheet_name='All Correlations', index=False)
-            summary_df.to_excel(writer, sheet_name='Summary', index=False)
+            _write_summary_with_transform(
+                writer, summary_df, log_label(log_transform, log_base),
+                correlation_type)
 
             for key, value in group_data_clean.items():
                 grouping_variable = value['grouping_variable']

@@ -347,6 +347,9 @@ select.multi-select:disabled { background: #f8f9fa; color: #aaa; }
                         <input type="checkbox" id="log-transform" disabled> Log&#x2081;&#x2080; Transform
                     </label>
                     <label class="checkbox-row">
+                        <input type="checkbox" id="log2-transform" disabled> Log&#x2082; Transform
+                    </label>
+                    <label class="checkbox-row">
                         <input type="checkbox" id="manual-y-axis" disabled> Manual Y-Axis
                     </label>
                     <label class="checkbox-row" title="Print the amino-acid letter on each sample's tiles (instead of the shared strip) — useful for comparing proteins or variants.">
@@ -694,6 +697,7 @@ function toggleComparisonControls() {
     ctrl.classList.toggle('hidden', !on);
     if (on) refreshComparisonSeries();
     syncManualYAxisDefaults();
+    _updateLogTransformState();
 
     // The differential track is only drawn on the Landscape / Portrait line
     // panel, so grey out + deactivate the Compact orientation while comparison
@@ -1262,6 +1266,32 @@ document.querySelectorAll('input[name="comparison-metric"]').forEach(function(r)
     r.addEventListener('change', syncManualYAxisDefaults);
 });
 
+// Log10 / Log2 transforms are mutually exclusive; "neither" is allowed.
+(function wireLogExclusivity() {
+    var l10 = document.getElementById('log-transform');
+    var l2  = document.getElementById('log2-transform');
+    l10.addEventListener('change', function() { if (l10.checked) l2.checked = false; });
+    l2.addEventListener('change', function() { if (l2.checked) l10.checked = false; });
+})();
+
+// The differential-comparison track is a signed effect size (SMD / log2 fold
+// change) — an abundance log transform makes no sense on top of it, so while
+// "Plot Differential Comparison" is on, Log10 / Log2 are unchecked and greyed
+// out. Unchecking the comparison toggle brings them back.
+function _updateLogTransformState() {
+    var step2Active = !document.getElementById('step2-card').classList.contains('step-disabled');
+    var cmp = document.getElementById('comparison-mode');
+    var comparisonOn = cmp && cmp.checked && !cmp.disabled;
+    var enabled = step2Active && !comparisonOn;
+    ['log-transform', 'log2-transform'].forEach(function(id) {
+        var cb = document.getElementById(id);
+        if (!cb) return;
+        setControlEnabled(cb, enabled, {
+            row: cb.closest('.checkbox-row'), clearOnDisable: true,
+        });
+    });
+}
+
 document.getElementById('strip-start-sequence').addEventListener('change', _updateStripStartState);
 
 document.querySelectorAll('#y-scale-seg .seg-btn').forEach(function(btn) {
@@ -1471,7 +1501,9 @@ async function generateHeatmap() {
         plot_landscape_interactive:   orientation === 'Landscape',
         plot_portrait_interactive:    orientation === 'Portrait',
         filter_type:          filterType,
-        log_transform:        document.getElementById('log-transform').checked,
+        log_transform:        document.getElementById('log-transform').checked
+                                  || document.getElementById('log2-transform').checked,
+        log_base:             document.getElementById('log2-transform').checked ? 2 : 10,
         manual_y_axis:        document.getElementById('manual-y-axis').checked,
         y_min:                resolveYValue(document.getElementById('y-min').value),
         y_max:                resolveYValue(document.getElementById('y-max').value) || 1,

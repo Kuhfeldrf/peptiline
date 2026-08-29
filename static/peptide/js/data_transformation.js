@@ -338,11 +338,11 @@
                         r.count + '</strong> matches.</div>';
                     document.getElementById('blast-continue').classList.remove('hidden');
                 });
-            }, function() {
+            }, function(errMsg) {
                 document.getElementById('blast-progress').classList.add('hidden');
                 document.getElementById('functional-actions').classList.remove('hidden');
                 btn.disabled = false;
-                showError('Database search failed. Check server logs.');
+                showError(errMsg || 'Database search failed. Check server logs.');
             });
         }, function(msg) {
             btn.disabled = false;
@@ -380,7 +380,7 @@
                     onComplete();
                 } else if (resp.status === 'failed') {
                     clearInterval(interval);
-                    if (onFail) onFail();
+                    if (onFail) onFail(resp.error || '');
                 }
             });
         }, 2000);
@@ -1551,16 +1551,16 @@
              title: 'Reusable key mapping instrument-generated column names to your simplified sample names'},
             {key: 'tech_rep_key', icon: 'fa-key', label: 'Technical Replicate Key',
              title: 'Reusable key mapping each biological replicate to its technical replicate columns'},
-            {key: 'tech_rep_correlation', icon: 'fa-vials', label: 'Within-Sample Correlations (Technical Replicates)',
+            {key: 'tech_rep_correlation', icon: 'fa-vials', label: 'Within-Sample Correlations (Technical Replicates)', corr: true,
              title: 'Within one sample: agreement between its technical replicate runs'},
             {key: 'group_definitions', icon: 'fa-layer-group', label: 'Group Definitions',
              title: 'Study-variable group assignments for each abundance column'},
-            {key: 'replicate_correlation', icon: 'fa-chart-area', label: 'Within-Group Correlations (Biological Replicates)',
+            {key: 'replicate_correlation', icon: 'fa-chart-area', label: 'Within-Group Correlations (Biological Replicates)', corr: true,
              title: 'Within one group: agreement between its biological replicate samples'},
             {key: 'protein_map', icon: 'fa-file-export', label: 'Protein Mapping Key',
              download_url: 'download-protein-map/',
              title: 'Reusable key recording peptide-to-protein mapping and any merge/rename decisions'},
-            {key: 'group_correlation', icon: 'fa-chart-line', label: 'Between-Group Correlations (Group Averages)',
+            {key: 'group_correlation', icon: 'fa-chart-line', label: 'Between-Group Correlations (Group Averages)', corr: true,
              title: 'Across groups: agreement between each pair of group averages'},
             {key: 'protein_analysis', icon: 'fa-dna', label: 'Protein Analysis',
              title: 'Protein-level abundance and peptide-count distributions across groups'},
@@ -1584,6 +1584,10 @@
             if (enabled) {
                 var actions = document.createElement('div');
                 actions.className = 'dt-export-actions';
+
+                if (item.corr) {
+                    actions.appendChild(buildCorrOpts(item.key));
+                }
 
                 if (!item.no_view) {
                     var viewBtn = document.createElement('button');
@@ -1621,11 +1625,65 @@
         });
     }
 
+    // The three correlation exports each carry their own Correlation Method +
+    // Log10/Log2 controls (built inline per row in renderExportButtons), making
+    // it explicit that the log transform is scoped to that correlation file and
+    // is not applied to any other export.
+    var CORR_EXPORTS = ['tech_rep_correlation', 'replicate_correlation', 'group_correlation'];
+
+    // Build the compact inline controls for one correlation export row.
+    function buildCorrOpts(key) {
+        var wrap = document.createElement('div');
+        wrap.className = 'dt-corr-opts';
+
+        var sel = document.createElement('select');
+        sel.id = 'ct--' + key;
+        ['Pearson', 'Spearman'].forEach(function(m) {
+            var o = document.createElement('option');
+            o.value = m; o.textContent = m;
+            sel.appendChild(o);
+        });
+
+        var logs = document.createElement('div');
+        logs.className = 'dt-corr-logs';
+        var l10 = _mkLogChk('l10--' + key, 'Log₁₀');
+        var l2 = _mkLogChk('l2--' + key, 'Log₂');
+        // Log10 / Log2 are mutually exclusive; "neither" is allowed.
+        l10.input.addEventListener('change', function() { if (l10.input.checked) l2.input.checked = false; });
+        l2.input.addEventListener('change', function() { if (l2.input.checked) l10.input.checked = false; });
+        logs.appendChild(l10.label);
+        logs.appendChild(l2.label);
+
+        wrap.appendChild(sel);
+        wrap.appendChild(logs);
+        return wrap;
+    }
+
+    function _mkLogChk(id, text) {
+        var label = document.createElement('label');
+        var input = document.createElement('input');
+        input.type = 'checkbox';
+        input.id = id;
+        label.appendChild(input);
+        label.appendChild(document.createTextNode(' ' + text));
+        return { label: label, input: input };
+    }
+
+    // Query fragment for a correlation export, read from its own inline controls.
+    // Returns '' for non-correlation exports (they take no correlation params).
+    function corrParams(key) {
+        if (CORR_EXPORTS.indexOf(key) === -1) return '';
+        var sel = document.getElementById('ct--' + key);
+        var l2 = document.getElementById('l2--' + key);
+        var l10 = document.getElementById('l10--' + key);
+        if (!sel) return '';
+        var base = l2 && l2.checked ? '2' : (l10 && l10.checked ? '10' : '');
+        return '&correlation_type=' + encodeURIComponent(sel.value) +
+               '&log_transform=' + (base !== '') + '&log_base=' + base;
+    }
+
     function downloadExport(type) {
-        var corrType = document.getElementById('correlation-type').value;
-        var logTrans = document.getElementById('log-transform').checked;
-        var url = 'download/' + type + '/?correlation_type=' + corrType +
-            '&log_transform=' + logTrans;
+        var url = 'download/' + type + '/?_=' + Date.now() + corrParams(type);
         var iframe = document.createElement('iframe');
         iframe.style.display = 'none';
         iframe.src = url;
@@ -1634,9 +1692,19 @@
     }
 
     document.getElementById('download-all-btn').addEventListener('click', function() {
-        var corrType = document.getElementById('correlation-type').value;
-        var logTrans = document.getElementById('log-transform').checked;
-        var url = 'download-all/?correlation_type=' + corrType + '&log_transform=' + logTrans;
+        // Each correlation export's controls are passed namespaced by key so the
+        // bundle honours the per-row selections.
+        var url = 'download-all/?_=' + Date.now();
+        CORR_EXPORTS.forEach(function(key) {
+            var sel = document.getElementById('ct--' + key);
+            if (!sel) return;
+            var l2 = document.getElementById('l2--' + key);
+            var l10 = document.getElementById('l10--' + key);
+            var base = l2 && l2.checked ? '2' : (l10 && l10.checked ? '10' : '');
+            url += '&' + key + '_correlation_type=' + encodeURIComponent(sel.value) +
+                   '&' + key + '_log_transform=' + (base !== '') +
+                   '&' + key + '_log_base=' + base;
+        });
         var iframe = document.createElement('iframe');
         iframe.style.display = 'none';
         iframe.src = url;
@@ -1645,10 +1713,7 @@
     });
 
     function viewExport(type, label) {
-        var corrType = document.getElementById('correlation-type').value;
-        var logTrans = document.getElementById('log-transform').checked;
-        var url = 'view/' + type + '/?correlation_type=' + corrType +
-            '&log_transform=' + logTrans;
+        var url = 'view/' + type + '/?_=' + Date.now() + corrParams(type);
 
         var panel = document.getElementById('dt-viewer-panel');
         var content = document.getElementById('dt-viewer-content');

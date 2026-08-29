@@ -266,7 +266,10 @@ select.multi-select:disabled { background: #f8f9fa; color: #aaa; }
                 <!-- Checkboxes under Visualization Settings -->
                 <div style="margin-top:6px; display:flex; flex-direction:column; gap:4px;">
                     <label class="checkbox-row">
-                        <input type="checkbox" id="log-transform" checked disabled> Log&#x2081;&#x2080; transform y-axis
+                        <input type="checkbox" id="log-transform" disabled> Log&#x2081;&#x2080; transformation
+                    </label>
+                    <label class="checkbox-row">
+                        <input type="checkbox" id="log2-transform" disabled> Log&#x2082; transformation
                     </label>
                     <label class="checkbox-row">
                         <input type="checkbox" id="plot-minor" disabled> Group Unselected Proteins or Functions
@@ -605,6 +608,8 @@ function applyPlotTypeGreying() {
     const step2Active = !document.getElementById('step2-card').classList.contains('step-disabled');
     const logChk  = document.getElementById('log-transform');
     const logLabel = logChk.closest('label');
+    const log2Chk  = document.getElementById('log2-transform');
+    const log2Label = log2Chk.closest('label');
 
     // Pie Charts and Corr. Scatter Plots → force Absolute metric, grey out Relative
     const lockAbsolute = plotType === 'Pie Charts' || plotType === 'Corr. Scatter Plots';
@@ -616,9 +621,18 @@ function applyPlotTypeGreying() {
     // Grey out log transform when Pie, or when metric is Relative
     const isRelative = getRadioValue('metric-type') === 'Relative';
     const isPie = plotType === 'Pie Charts';
-    setControlEnabled(logChk, !(isPie || isRelative) && step2Active,
-                      { row: logLabel, clearOnDisable: true });
+    const logEnabled = !(isPie || isRelative) && step2Active;
+    setControlEnabled(logChk, logEnabled, { row: logLabel, clearOnDisable: true });
+    setControlEnabled(log2Chk, logEnabled, { row: log2Label, clearOnDisable: true });
 }
+
+// Log10 / Log2 y-axis transforms are mutually exclusive; "neither" is allowed.
+(function wireLogExclusivity() {
+    const l10 = document.getElementById('log-transform');
+    const l2  = document.getElementById('log2-transform');
+    l10.addEventListener('change', function() { if (l10.checked) l2.checked = false; });
+    l2.addEventListener('change', function() { if (l2.checked) l10.checked = false; });
+})();
 document.getElementById('rg-plot-type').addEventListener('click', applyPlotTypeGreying);
 
 // ── Item 13: Relative metric → uncheck and grey log transform ────
@@ -738,7 +752,9 @@ async function generatePlot() {
         abs_or_count:     getRadioValue('abs-or-count'),
         metric_type:      getRadioValue('metric-type'),
         color_scheme:     document.getElementById('color-scheme').value,
-        log_transform:    document.getElementById('log-transform').checked,
+        log_transform:    document.getElementById('log-transform').checked
+                              || document.getElementById('log2-transform').checked,
+        log_base:         document.getElementById('log2-transform').checked ? 2 : 10,
         plot_minor:       document.getElementById('plot-minor').checked,
         show_significance: document.getElementById('show-significance').checked,
         significance_method: document.getElementById('significance-method').value,

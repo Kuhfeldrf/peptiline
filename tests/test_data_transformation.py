@@ -1096,6 +1096,16 @@ class TestPrepareData(unittest.TestCase):
         result = export_manager.prepare_data(data, log_transform=False)
         np.testing.assert_array_equal(result.values, data.values)
 
+    def test_log2_transform(self):
+        data = pd.Series([2.0, 8.0, 1024.0])
+        result = export_manager.prepare_data(data, log_transform=True, log_base=2)
+        np.testing.assert_allclose(result.values, [1.0, 3.0, 10.0])
+
+    def test_log_label(self):
+        self.assertEqual(export_manager.log_label(True, 2), 'Log2')
+        self.assertEqual(export_manager.log_label(True, 10), 'Log10')
+        self.assertEqual(export_manager.log_label(False), 'None')
+
 
 # ---------------------------------------------------------------------------
 # Notebook parity checks

@@ -358,6 +358,20 @@ class TestAxisAndScaleFeatures(unittest.TestCase):
         # Values are pre-log-transformed onto a linear axis; the title says Log10.
         self.assertIn('Log', fig.layout.yaxis.title.text)
 
+    def test_log2_transform_labels_and_scales_axis(self):
+        # Log2 is mutually exclusive with Log10; when selected the axis title
+        # carries the base-2 subscript and the plotted values are log2, not log10.
+        st10 = self._state(base_scale=100.0, log_transform=True, log_base=10)
+        st2 = self._state(base_scale=100.0, log_transform=True, log_base=2)
+        fig10 = plotter.plot_total_peptides(st10)
+        fig2 = plotter.plot_total_peptides(st2)
+        self.assertIn('Log<sub>2</sub>', fig2.layout.yaxis.title.text)
+        self.assertIn('Log<sub>10</sub>', fig10.layout.yaxis.title.text)
+        y10 = max(v for v in fig10.data[0].y if v is not None)
+        y2 = max(v for v in fig2.data[0].y if v is not None)
+        # log2(x) == log10(x) / log10(2)  ->  ratio ~3.3219
+        self.assertAlmostEqual(y2 / y10, 1.0 / np.log10(2), places=3)
+
     def test_task4_orientation_axis_titles(self):
         cases = {
             ('By Function', 'Selected Function(s)'): ('Functions', 'Samples'),

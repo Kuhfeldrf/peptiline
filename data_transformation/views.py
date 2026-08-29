@@ -83,6 +83,12 @@ def _delete_json(work_dir, name):
         os.remove(path)
 
 
+def _parse_log_base(request):
+    """Log base for correlation transforms: 10 (default) or 2. Log10 and Log2
+    are mutually exclusive in the UI."""
+    return 2 if str(request.GET.get('log_base', '10')).strip() == '2' else 10
+
+
 # State derived from a specific peptidomic dataset. A fresh peptidomic upload
 # invalidates all of it, so upload_files() clears these before repopulating —
 # otherwise stale column renames / groups / protein mappings from a previous
@@ -1549,14 +1555,15 @@ def view_export(request, export_type):
                 return JsonResponse({'error': 'No data available'}, status=404)
             correlation_type = request.GET.get('correlation_type', 'Pearson')
             log_transform = request.GET.get('log_transform', 'true').lower() == 'true'
+            log_base = _parse_log_base(request)
             if export_type == 'summed_function':
                 content = export_manager.export_summed_function_data(merged_df, group_data)
             elif export_type == 'group_correlation':
                 content = export_manager.export_group_correlation(
-                    merged_df, group_data, correlation_type, log_transform)
+                    merged_df, group_data, correlation_type, log_transform, log_base)
             else:
                 content = export_manager.export_replicate_correlation(
-                    merged_df, group_data, correlation_type, log_transform)
+                    merged_df, group_data, correlation_type, log_transform, log_base)
             if content is None:
                 return JsonResponse({'error': 'No data available'}, status=404)
             import openpyxl
@@ -1584,7 +1591,8 @@ def view_export(request, export_type):
             correlation_type = request.GET.get('correlation_type', 'Pearson')
             log_transform = request.GET.get('log_transform', 'true').lower() == 'true'
             content = export_manager.export_tech_rep_correlation(
-                pd_results, tech_dup_mapping, correlation_type, log_transform)
+                pd_results, tech_dup_mapping, correlation_type, log_transform,
+                _parse_log_base(request))
             if content is None:
                 return JsonResponse({'error': 'No valid technical replicate pairs'}, status=404)
             import openpyxl
@@ -1703,6 +1711,8 @@ def download_export(request, export_type):
 
     correlation_type = request.GET.get('correlation_type', 'Pearson')
     log_transform = request.GET.get('log_transform', 'true').lower() == 'true'
+    log_base = _parse_log_base(request)
+    log_suffix = f'_log{log_base}' if log_transform else ''
 
     content = None
     filename = ''
@@ -1745,16 +1755,16 @@ def download_export(request, export_type):
 
     elif export_type == 'group_correlation':
         content = export_manager.export_group_correlation(
-            merged_df, group_data, correlation_type, log_transform
+            merged_df, group_data, correlation_type, log_transform, log_base
         )
-        filename = f'group_correlations_{correlation_type.lower()}.xlsx'
+        filename = f'group_correlations_{correlation_type.lower()}{log_suffix}.xlsx'
         content_type = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
 
     elif export_type == 'replicate_correlation':
         content = export_manager.export_replicate_correlation(
-            merged_df, group_data, correlation_type, log_transform
+            merged_df, group_data, correlation_type, log_transform, log_base
         )
-        filename = f'replicate_correlations_{correlation_type.lower()}.xlsx'
+        filename = f'replicate_correlations_{correlation_type.lower()}{log_suffix}.xlsx'
         content_type = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
 
     elif export_type == 'tech_rep_key':
@@ -1775,9 +1785,9 @@ def download_export(request, export_type):
         pd_results = _load_df(work_dir, 'pd_results')
         tech_dup_mapping = _load_json(work_dir, 'tech_dup_mapping')
         content = export_manager.export_tech_rep_correlation(
-            pd_results, tech_dup_mapping, correlation_type, log_transform
+            pd_results, tech_dup_mapping, correlation_type, log_transform, log_base
         )
-        filename = f'tech_rep_correlations_{correlation_type.lower()}.xlsx'
+        filename = f'tech_rep_correlations_{correlation_type.lower()}{log_suffix}.xlsx'
         content_type = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
 
     if content is None:
@@ -1836,8 +1846,19 @@ def download_all_exports(request):
     tech_dup_mapping = _load_json(work_dir, 'tech_dup_mapping')
     pd_results = _load_df(work_dir, 'pd_results')
 
-    correlation_type = request.GET.get('correlation_type', 'Pearson')
-    log_transform = request.GET.get('log_transform', 'true').lower() == 'true'
+    # Each correlation export carries its own inline controls on the page, passed
+    # here namespaced by export key. Fall back to the shared params for callers
+    # (tests, scripts) that still send a single set.
+    def _corr_opts(key):
+        ct = (request.GET.get(f'{key}_correlation_type')
+              or request.GET.get('correlation_type', 'Pearson'))
+        lt_raw = request.GET.get(f'{key}_log_transform',
+                                 request.GET.get('log_transform', 'true'))
+        lt = str(lt_raw).lower() == 'true'
+        lb_raw = request.GET.get(f'{key}_log_base', request.GET.get('log_base', '10'))
+        lb = 2 if str(lb_raw).strip() == '2' else 10
+        suffix = f'_log{lb}' if lt else ''
+        return ct, lt, lb, suffix
 
     has_mbpdb = mbpdb_results is not None and not mbpdb_results.empty
     has_groups = bool(group_data and len(group_data) > 0)
@@ -1871,17 +1892,20 @@ def download_all_exports(request):
                 _add('functional_analysis.xlsx',
                      export_manager.export_summed_function_data(merged_df, group_data))
 
-            _add(f'group_correlations_{correlation_type.lower()}.xlsx',
+            g_ct, g_lt, g_lb, g_sfx = _corr_opts('group_correlation')
+            r_ct, r_lt, r_lb, r_sfx = _corr_opts('replicate_correlation')
+            _add(f'group_correlations_{g_ct.lower()}{g_sfx}.xlsx',
                  export_manager.export_group_correlation(
-                     merged_df, group_data, correlation_type, log_transform))
-            _add(f'replicate_correlations_{correlation_type.lower()}.xlsx',
+                     merged_df, group_data, g_ct, g_lt, g_lb))
+            _add(f'replicate_correlations_{r_ct.lower()}{r_sfx}.xlsx',
                  export_manager.export_replicate_correlation(
-                     merged_df, group_data, correlation_type, log_transform))
+                     merged_df, group_data, r_ct, r_lt, r_lb))
 
         if has_tech_rep and pd_results is not None:
-            _add(f'tech_rep_correlations_{correlation_type.lower()}.xlsx',
+            t_ct, t_lt, t_lb, t_sfx = _corr_opts('tech_rep_correlation')
+            _add(f'tech_rep_correlations_{t_ct.lower()}{t_sfx}.xlsx',
                  export_manager.export_tech_rep_correlation(
-                     pd_results, tech_dup_mapping, correlation_type, log_transform))
+                     pd_results, tech_dup_mapping, t_ct, t_lt, t_lb))
 
         if tech_dup_mapping:
             _add('technical_replicate_key.json',

@@ -682,7 +682,10 @@ def load_and_validate_file(file_content, filename, file_type, protein_dict=None)
         df.columns = df.columns.str.strip()
         df = _normalize_duplicate_column_names(df)
         df = df.dropna(how='all')
-        df = df[~df.astype(str).apply(lambda row: row.str.strip().eq('').all(), axis=1)]
+        # Column-wise blank-string check (vectorised per column). A row-wise
+        # .apply(axis=1) here cost seconds on large exports (≈4.5 s of a 5 s load
+        # on a 40k-row file).
+        df = df[~df.apply(lambda col: col.astype(str).str.strip()).eq('').all(axis=1)]
 
         if file_type == 'MBPDB':
             return _validate_mbpdb_file(df, filename)

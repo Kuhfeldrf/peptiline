@@ -31,13 +31,20 @@ def create_work_directory(base_dir=None):
     return path
 
 
-def cleanup_work_directories(work_directory=None, keep=25, max_age_hours=24):
-    """Clean up old work directories.
+def cleanup_work_directories(work_directory=None, keep=12, max_age_hours=8):
+    """Clean up old wizard work directories.
 
-    Removes any directory older than ``max_age_hours`` (regardless of count),
-    then enforces the ``keep`` cap on the remaining most-recent directories.
-    Aligns disk cleanup with the 4-hour session timeout — anything past a
-    day is guaranteed orphaned.
+    Two rules, applied in order:
+
+    * age — anything older than ``max_age_hours`` is removed unconditionally.
+      Sessions time out at 4 h, so 8 h is a orphaned-for-certain cutoff and
+      keeps the temp dir from growing without bound between deploys.
+    * count — of what remains, only the ``keep`` most-recent survive.
+
+    The per-search BLAST scratch (replica FASTA, makeblastdb index, query file,
+    tabular output) is *not* covered here: run_blast_search removes its own
+    ``_blast_scratch`` directory in a ``finally`` the moment the search ends, so
+    those never accumulate inside a live session dir in the first place.
     """
     if work_directory is None:
         work_directory = settings.WORK_DIRECTORY
@@ -72,11 +79,20 @@ def make_blast_db(library_fasta_path):
 def run_blast_search(peptides, similarity_threshold=100, work_dir=None,
                      progress_callback=None):
     """
-    Search peptides against the MBPDB database using BLAST.
+    Search peptides against the MBPDB replica.
 
-    All peptides requiring BLAST (i.e. threshold < 100 and len >= 4) are
-    batched into a single blastp call rather than one call per peptide.
-    This is dramatically faster for large datasets.
+    Two passes:
+
+    * Exact match (threshold 100, or peptides shorter than the BLAST word size)
+      -- a SINGLE ``peptide__in=[...]`` query with ``functions__references``
+      prefetched, instead of one query per peptide plus a Function/Reference
+      N+1. No BLAST database is built for this pass.
+    * BLAST (threshold < 100) -- all remaining peptides go through one batched
+      ``blastp`` call; every subject hit across every query is then resolved in a
+      SINGLE ``id__in=[...]`` query. All BLAST scratch (the replica FASTA, the
+      makeblastdb index, the query file, the tabular output) is written under a
+      per-search ``_blast_scratch`` directory and removed in a ``finally`` so it
+      never accumulates.
 
     Args:
         peptides: list of peptide sequences
@@ -90,82 +106,118 @@ def run_blast_search(peptides, similarity_threshold=100, work_dir=None,
     if work_dir is None:
         work_dir = create_work_directory()
 
-    fasta_db_path = os.path.join(work_dir, "db.fasta")
+    total = len(peptides)
     results = []
 
-    # Build BLAST database from all peptides in the database using Django ORM
-    db_peptides = PeptideInfo.objects.values_list('id', 'peptide')
-
-    with open(fasta_db_path, 'w') as f:
-        for pep_id, pep_seq in db_peptides:
-            f.write(f">{pep_id}\n{pep_seq}\n")
-
-    make_blast_db(fasta_db_path)
-
-    total = len(peptides)
-
-    # Partition into exact-match vs BLAST peptides
-    exact_peptides = []   # (original_index, peptide)
-    blast_peptides = []   # (original_index, peptide)
+    # Partition into exact-match vs BLAST peptides.
+    exact_seqs = set()
+    blast_peptides = []          # [(original_index, peptide)]
     for idx, peptide in enumerate(peptides):
         if similarity_threshold == 100 or len(peptide) < 4:
-            exact_peptides.append((idx, peptide))
+            exact_seqs.add(peptide)
         else:
             blast_peptides.append((idx, peptide))
 
-    # --- Exact match pass (ORM lookups, fast) ---
-    for i, (idx, peptide) in enumerate(exact_peptides):
+    # --- Exact-match pass: ONE query for every distinct exact sequence ---
+    if exact_seqs:
         if progress_callback:
-            progress_callback(i, total, f"Exact match {i+1}/{len(exact_peptides)}")
-        df = _fetch_exact_match(peptide)
-        if not df.empty:
-            results.append(df)
+            progress_callback(0, total, f"Exact match ({len(exact_seqs)} sequences)")
+        exact_qs = (PeptideInfo.objects
+                    .filter(peptide__in=exact_seqs)
+                    .select_related('protein')
+                    .prefetch_related('functions__references'))
+        exact_rows = []
+        for p in exact_qs:
+            exact_rows.extend(_peptide_rows(p, p.peptide))
+        if exact_rows:
+            results.append(pd.DataFrame(exact_rows))
 
-    # --- BLAST pass: single subprocess call for all remaining peptides ---
+    # --- BLAST pass: one subprocess for all peptides; scratch removed after ---
     if blast_peptides:
-        if progress_callback:
-            progress_callback(len(exact_peptides), total,
-                              f"Running BLAST on {len(blast_peptides)} peptides...")
-
-        # Build multi-query FASTA; query IDs are "q0", "q1", ... so we can
-        # map results back to the original peptide sequence.
-        query_path = os.path.join(work_dir, "query.fasta")
-        query_id_to_peptide = {}
-        with open(query_path, 'w') as qf:
-            for i, (orig_idx, peptide) in enumerate(blast_peptides):
-                query_id = f"q{i}"
-                query_id_to_peptide[query_id] = peptide
-                qf.write(f">{query_id}\n{peptide}\n")
-
-        output_path = os.path.join(work_dir, "blastp_short.out")
-        blast_args = [
-            "blastp",
-            "-query", query_path,
-            "-db", fasta_db_path,
-            "-outfmt", "6 std ppos qcovs qlen slen positive",
-            "-evalue", "1000",
-            "-word_size", "2",
-            "-matrix", "IDENTITY",
-            "-threshold", "1",
-            "-task", "blastp-short",
-            "-out", output_path,
-        ]
-
+        blast_dir = os.path.join(work_dir, '_blast_scratch')
+        os.makedirs(blast_dir, exist_ok=True)
         try:
-            subprocess.check_output(blast_args, stderr=subprocess.STDOUT)
-        except subprocess.CalledProcessError:
-            pass  # No hits or BLAST error — continue with whatever results we have
-        else:
-            # query_hits[query_id][subject_id] = extra_info list
-            query_hits = _process_blast_results_multi(output_path, similarity_threshold)
+            if progress_callback:
+                progress_callback(len(exact_seqs), total,
+                                  f"Running BLAST on {len(blast_peptides)} peptides...")
 
-            for query_id, peptide in query_id_to_peptide.items():
-                hits = query_hits.get(query_id, {})
-                if hits:
-                    df = _fetch_peptide_data_by_ids(peptide, list(hits.keys()))
-                    _add_blast_details(df, hits)
-                    if not df.empty:
-                        results.append(df)
+            # Replica FASTA + makeblastdb index -- only built when BLAST is
+            # actually needed (a pure exact-match search skips this entirely).
+            fasta_db_path = os.path.join(blast_dir, "db.fasta")
+            db_rows = 0
+            with open(fasta_db_path, 'w') as f:
+                for pep_id, pep_seq in PeptideInfo.objects.values_list('id', 'peptide').iterator():
+                    f.write(f">{pep_id}\n{pep_seq}\n")
+                    db_rows += 1
+
+            if db_rows == 0:
+                # An empty replica -- almost always mbpdb_replica.sqlite3 not
+                # shipped in the deploy image (it's excluded from .dockerignore's
+                # copy, or a stale build). makeblastdb on an empty FASTA would
+                # otherwise raise a cryptic CalledProcessError; surface the real
+                # cause instead.
+                raise RuntimeError(
+                    "The MBPDB reference database (mbpdb_replica) is empty -- no "
+                    "peptides to search against. The bundled snapshot is likely "
+                    "missing from this deployment. Upload a functional annotation "
+                    "file instead, or contact the site administrator."
+                )
+
+            make_blast_db(fasta_db_path)
+
+            # Multi-query FASTA; query IDs "q0", "q1", ... map hits back to peptides.
+            query_path = os.path.join(blast_dir, "query.fasta")
+            query_id_to_peptide = {}
+            with open(query_path, 'w') as qf:
+                for i, (_orig_idx, peptide) in enumerate(blast_peptides):
+                    query_id = f"q{i}"
+                    query_id_to_peptide[query_id] = peptide
+                    qf.write(f">{query_id}\n{peptide}\n")
+
+            output_path = os.path.join(blast_dir, "blastp_short.out")
+            blast_args = [
+                "blastp",
+                "-query", query_path,
+                "-db", fasta_db_path,
+                "-outfmt", "6 std ppos qcovs qlen slen positive",
+                "-evalue", "1000",
+                "-word_size", "2",
+                "-matrix", "IDENTITY",
+                "-threshold", "1",
+                "-task", "blastp-short",
+                "-out", output_path,
+            ]
+            try:
+                subprocess.check_output(blast_args, stderr=subprocess.STDOUT)
+            except subprocess.CalledProcessError:
+                query_hits = {}     # no hits / BLAST error -- keep exact results
+            else:
+                query_hits = _process_blast_results_multi(output_path, similarity_threshold)
+
+            if query_hits:
+                # ONE query for every subject hit across ALL query peptides
+                # (was one query per hitting peptide, each with its own N+1).
+                all_subject_ids = set()
+                for hits in query_hits.values():
+                    all_subject_ids.update(hits)
+                int_ids = [i for i in (_as_int(s) for s in all_subject_ids) if i is not None]
+                subj_by_id = {
+                    p.id: p
+                    for p in (PeptideInfo.objects
+                              .filter(id__in=int_ids)
+                              .select_related('protein')
+                              .prefetch_related('functions__references'))
+                }
+                for query_id, peptide in query_id_to_peptide.items():
+                    rows = []
+                    for sid, detail in query_hits.get(query_id, {}).items():
+                        p = subj_by_id.get(_as_int(sid))
+                        if p is not None:
+                            rows.extend(_peptide_rows(p, peptide, blast_detail=detail))
+                    if rows:
+                        results.append(pd.DataFrame(rows))
+        finally:
+            shutil.rmtree(blast_dir, ignore_errors=True)
 
     if progress_callback:
         progress_callback(total, total, "Search complete")
@@ -175,93 +227,76 @@ def run_blast_search(peptides, similarity_threshold=100, work_dir=None,
     return _combine_results(results)
 
 
-def _fetch_exact_match(peptide):
-    """Fetch exact match results using Django ORM."""
-    pep_infos = PeptideInfo.objects.filter(peptide=peptide).select_related('protein')
+def _as_int(value):
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return None
+
+
+# BLAST tabular detail columns, in the order _process_blast_results_multi packs them.
+_BLAST_DETAIL_COLS = (
+    '% Alignment', 'Query start', 'Query end', 'Subject start', 'Subject end',
+    'e-value', 'Alignment length', 'Mismatches', 'Gap opens',
+)
+
+# The MBPDB-shaped columns every result row carries.
+_MBPDB_COLUMNS = [
+    'search_peptide', 'protein_id', 'peptide', 'protein_description',
+    'species', 'intervals', 'function', 'additional_details', 'ic50',
+    'inhibition_type', 'inhibited_microorganisms', 'ptm', 'title',
+    'authors', 'abstract', 'doi', 'search_type', 'scoring_matrix',
+]
+
+
+def _peptide_rows(pep_info, search_peptide, blast_detail=None):
+    """Result rows for one ``PeptideInfo`` -- one per (function, reference), or a
+    single ``function=None`` row when the peptide has no functions.
+
+    ``pep_info`` must come from a queryset with ``select_related('protein')`` and
+    ``prefetch_related('functions__references')`` so this makes no DB queries.
+    ``blast_detail`` (optional) is the list from _process_blast_results_multi,
+    merged in as the BLAST tabular columns.
+    """
+    base = {
+        'search_peptide': search_peptide,
+        'protein_id': pep_info.protein.pid,
+        'peptide_id': pep_info.id,
+        'peptide': pep_info.peptide,
+        'protein_description': pep_info.protein.desc,
+        'species': pep_info.protein.species,
+        'intervals': pep_info.intervals,
+        'search_type': 'sequence',
+        'scoring_matrix': 'IDENTITY',
+    }
+    if blast_detail is not None:
+        base.update(dict(zip(_BLAST_DETAIL_COLS, blast_detail)))
+
+    funcs = list(pep_info.functions.all())
+    if not funcs:
+        return [{
+            **base, 'function': None, 'additional_details': None, 'ic50': None,
+            'inhibition_type': None, 'inhibited_microorganisms': None, 'ptm': None,
+            'title': None, 'authors': None, 'abstract': None, 'doi': None,
+        }]
 
     rows = []
-    for p in pep_infos:
-        functions = Function.objects.filter(pep=p).prefetch_related('references')
-        if functions.exists():
-            for func in functions:
-                for ref in func.references.all():
-                    rows.append({
-                        'search_peptide': peptide,
-                        'protein_id': p.protein.pid,
-                        'peptide_id': p.id,
-                        'peptide': p.peptide,
-                        'protein_description': p.protein.desc,
-                        'species': p.protein.species,
-                        'intervals': p.intervals,
-                        'function': func.function,
-                        'additional_details': ref.additional_details,
-                        'ic50': ref.ic50,
-                        'inhibition_type': ref.inhibition_type,
-                        'inhibited_microorganisms': ref.inhibited_microorganisms,
-                        'ptm': ref.ptm,
-                        'title': ref.title,
-                        'authors': ref.authors,
-                        'abstract': ref.abstract,
-                        'doi': ref.doi,
-                        'search_type': 'sequence',
-                        'scoring_matrix': 'IDENTITY',
-                    })
-        else:
+    for func in funcs:
+        for ref in func.references.all():
             rows.append({
-                'search_peptide': peptide,
-                'protein_id': p.protein.pid,
-                'peptide_id': p.id,
-                'peptide': p.peptide,
-                'protein_description': p.protein.desc,
-                'species': p.protein.species,
-                'intervals': p.intervals,
-                'function': None,
-                'additional_details': None,
-                'ic50': None,
-                'inhibition_type': None,
-                'inhibited_microorganisms': None,
-                'ptm': None,
-                'title': None,
-                'authors': None,
-                'abstract': None,
-                'doi': None,
-                'search_type': 'sequence',
-                'scoring_matrix': 'IDENTITY',
+                **base,
+                'function': func.function,
+                'additional_details': ref.additional_details,
+                'ic50': ref.ic50,
+                'inhibition_type': ref.inhibition_type,
+                'inhibited_microorganisms': ref.inhibited_microorganisms,
+                'ptm': ref.ptm,
+                'title': ref.title,
+                'authors': ref.authors,
+                'abstract': ref.abstract,
+                'doi': ref.doi,
             })
-
-    return pd.DataFrame(rows)
-
-
-def _process_blast_results(output_path, similarity_threshold, extra_info):
-    """Process BLAST results and collect search IDs."""
-    search_ids = []
-    csv.register_dialect('blast_dialect', delimiter='\t')
-
-    try:
-        with open(output_path, "r") as output_file:
-            blast_data = csv.DictReader(
-                output_file,
-                fieldnames=['query', 'subject', 'percid', 'align_len', 'mismatches',
-                            'gaps', 'qstart', 'qend', 'sstart', 'send', 'evalue',
-                            'bitscore', 'ppos', 'qcov', 'qlen', 'slen', 'numpos'],
-                dialect='blast_dialect'
-            )
-
-            for row in blast_data:
-                tlen = max(float(row['slen']), float(row['qlen']))
-                simcalc = 100 * ((float(row['numpos']) - float(row['gaps'])) / tlen)
-
-                if simcalc >= similarity_threshold:
-                    search_ids.append(row['subject'])
-                    extra_info[row['subject']] = [
-                        f"{simcalc:.2f}", row['qstart'], row['qend'], row['sstart'],
-                        row['send'], row['evalue'], row['align_len'], row['mismatches'],
-                        row['gaps']
-                    ]
-    except FileNotFoundError:
-        pass
-
-    return search_ids
+    return rows
 
 
 def _process_blast_results_multi(output_path, similarity_threshold):
@@ -299,96 +334,10 @@ def _process_blast_results_multi(output_path, similarity_threshold):
     return query_hits
 
 
-def _fetch_peptide_data_by_ids(peptide, search_ids):
-    """Fetch peptide data by IDs using Django ORM."""
-    int_ids = []
-    for sid in search_ids:
-        try:
-            int_ids.append(int(sid))
-        except (ValueError, TypeError):
-            continue
-
-    pep_infos = PeptideInfo.objects.filter(id__in=int_ids).select_related('protein')
-
-    rows = []
-    for p in pep_infos:
-        functions = Function.objects.filter(pep=p).prefetch_related('references')
-        if functions.exists():
-            for func in functions:
-                for ref in func.references.all():
-                    rows.append({
-                        'search_peptide': peptide,
-                        'protein_id': p.protein.pid,
-                        'peptide_id': p.id,
-                        'peptide': p.peptide,
-                        'protein_description': p.protein.desc,
-                        'species': p.protein.species,
-                        'intervals': p.intervals,
-                        'function': func.function,
-                        'additional_details': ref.additional_details,
-                        'ic50': ref.ic50,
-                        'inhibition_type': ref.inhibition_type,
-                        'inhibited_microorganisms': ref.inhibited_microorganisms,
-                        'ptm': ref.ptm,
-                        'title': ref.title,
-                        'authors': ref.authors,
-                        'abstract': ref.abstract,
-                        'doi': ref.doi,
-                        'search_type': 'sequence',
-                        'scoring_matrix': 'IDENTITY',
-                    })
-        else:
-            rows.append({
-                'search_peptide': peptide,
-                'protein_id': p.protein.pid,
-                'peptide_id': p.id,
-                'peptide': p.peptide,
-                'protein_description': p.protein.desc,
-                'species': p.protein.species,
-                'intervals': p.intervals,
-                'function': None,
-                'additional_details': None,
-                'ic50': None,
-                'inhibition_type': None,
-                'inhibited_microorganisms': None,
-                'ptm': None,
-                'title': None,
-                'authors': None,
-                'abstract': None,
-                'doi': None,
-                'search_type': 'sequence',
-                'scoring_matrix': 'IDENTITY',
-            })
-
-    return pd.DataFrame(rows)
-
-
-def _add_blast_details(df, extra_info):
-    """Add BLAST details to DataFrame."""
-    for idx, row in df.iterrows():
-        if str(row.get('peptide_id', '')) in extra_info:
-            blast_details = extra_info[str(row['peptide_id'])]
-            df.at[idx, '% Alignment'] = blast_details[0]
-            df.at[idx, 'Query start'] = blast_details[1]
-            df.at[idx, 'Query end'] = blast_details[2]
-            df.at[idx, 'Subject start'] = blast_details[3]
-            df.at[idx, 'Subject end'] = blast_details[4]
-            df.at[idx, 'e-value'] = blast_details[5]
-            df.at[idx, 'Alignment length'] = blast_details[6]
-            df.at[idx, 'Mismatches'] = blast_details[7]
-            df.at[idx, 'Gap opens'] = blast_details[8]
-
-
 def _combine_results(results):
     """Combine and format final results."""
     if not results:
-        mbpdb_columns = [
-            'search_peptide', 'protein_id', 'peptide', 'protein_description',
-            'species', 'intervals', 'function', 'additional_details', 'ic50',
-            'inhibition_type', 'inhibited_microorganisms', 'ptm', 'title',
-            'authors', 'abstract', 'doi', 'search_type', 'scoring_matrix'
-        ]
-        return pd.DataFrame(columns=mbpdb_columns)
+        return pd.DataFrame(columns=_MBPDB_COLUMNS)
 
     final_results = pd.concat(results, ignore_index=True)
 

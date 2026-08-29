@@ -401,6 +401,32 @@ def get_interval_start(peptide_label):
 """-----------------Export_Function---------------------------------"""
 
 
+def _log_base_fn(log_base):
+    """Return the numpy log function for base 10 (default) or 2."""
+    return np.log2 if int(log_base) == 2 else np.log10
+
+
+def _log_sub(log_base):
+    """Subscript for axis/legend labels: '10' or '2'."""
+    return '2' if int(log_base) == 2 else '10'
+
+
+def _log_value(v, log_base):
+    """Base-aware scalar log for the abundance line plot.
+
+    Returns ``None`` for non-positive / non-finite input so Plotly renders a gap
+    (log of zero/negative is undefined), matching how the line plot already
+    treats missing positions.
+    """
+    try:
+        v = float(v)
+    except (TypeError, ValueError):
+        return None
+    if not np.isfinite(v) or v <= 0:
+        return None
+    return float(_log_base_fn(log_base)(v))
+
+
 def round_sig(x, sig=2):
     if x == 0:
         return 0
@@ -426,10 +452,14 @@ def round_sig_floor(x, sig=2):
 
 
 # Function to calculate y-ticks based on the min and max values of datasets
-def calculate_y_ticks(min_values, max_values, log_transform):
+def calculate_y_ticks(min_values, max_values, log_transform, log_base=10):
     """
-    Calculate y-ticks with proper handling of zero/negative values
+    Calculate y-ticks with proper handling of zero/negative values.
+
+    ``log_base`` (10 or 2) selects the base for the log-scale tick anchors so
+    the axis ladders on powers of 2 when Log2 is chosen, powers of 10 otherwise.
     """
+    base = 2 if int(log_base) == 2 else 10
     # Check for empty lists or all zeros
     if not min_values or not max_values:
         return [0, 1, 10]  # Default scale if no data
@@ -452,13 +482,14 @@ def calculate_y_ticks(min_values, max_values, log_transform):
         if log_transform:
             if overall_min <= 0 or overall_max <= 0:
                 return [0, 1, 10]
-            # Apply log transformation for log scale
-            min_power = 10 ** np.floor(np.log10(overall_min))
-            max_power = 10 ** np.ceil(np.log10(overall_max))
+            # Apply log transformation for log scale (base 10 or 2)
+            log_b = np.log10 if base == 10 else np.log2
+            min_power = base ** np.floor(log_b(overall_min))
+            max_power = base ** np.ceil(log_b(overall_max))
 
             # Calculate midpoint in log space
             mid_point = np.sqrt(min_power * max_power)
-            mid_point_rounded = 10 ** np.round(np.log10(mid_point))
+            mid_point_rounded = base ** np.round(log_b(mid_point))
 
             return [min_power, mid_point_rounded, max_power]
         else:
@@ -936,7 +967,7 @@ def export_heatmap_data_to_dict(protein_id, group_key, group_info, protein_seque
 
     return heatmap_data
 
-def process_available_data(available_data_variables_dict, filter_type, selected_functions, selected_peptides, bio_or_pep, log_transform, manual_y_axis=False, y_min_manual=None, y_max_manual=None):
+def process_available_data(available_data_variables_dict, filter_type, selected_functions, selected_peptides, bio_or_pep, log_transform, manual_y_axis=False, y_min_manual=None, y_max_manual=None, log_base=10):
     """
     Process data for visualization when update_plot is called
     Returns: dict with data and 'errors' key containing list of error messages
@@ -1087,7 +1118,7 @@ def process_available_data(available_data_variables_dict, filter_type, selected_
         max_values = [y_max_manual]
     # Calculate global values
     if min_values and max_values:
-        y_ticks = calculate_y_ticks(min_values, max_values, log_transform)
+        y_ticks = calculate_y_ticks(min_values, max_values, log_transform, log_base)
         y_ticks_str = ', '.join(f'{tick:.2e}' for tick in y_ticks)
         y_ticks_html = f'<b>Max/Min of MS data (y-ticks):</b> {y_ticks_str}'
     else:
@@ -1160,7 +1191,7 @@ def update_plot(available_data_variables_dict, ms_average_choice, bio_or_pep, se
                 hm_selected_color, lp_selected_color, avglp_selected_color,
                 xaxis_label, yaxis_label, yaxis_position, legend_title_input_1, legend_title_input_2,
                 legend_title_input_3, filter_type, log_transform,
-                manual_y_axis, y_min_manual, y_max_manual, plot_compact=False,
+                manual_y_axis, y_min_manual, y_max_manual, log_base=10, plot_compact=False,
                 plot_landscape_interactive=False, plot_portrait_interactive=False,
                 plot_title='', aa_on_tiles=False,
                 comparison_mode=False, series_a=None, series_b=None,
@@ -1186,7 +1217,7 @@ def update_plot(available_data_variables_dict, ms_average_choice, bio_or_pep, se
     if not (xaxis_label or '').strip():
         xaxis_label = _derive_xaxis_label(available_data_variables_dict)
 
-    result = process_available_data(available_data_variables_dict, filter_type, selected_functions,  selected_peptides, bio_or_pep, log_transform, manual_y_axis, y_min_manual, y_max_manual)
+    result = process_available_data(available_data_variables_dict, filter_type, selected_functions,  selected_peptides, bio_or_pep, log_transform, manual_y_axis, y_min_manual, y_max_manual, log_base=log_base)
     # Interactive Plotly returns (compact / portrait / landscape). The two
     # leading None slots preserve the historical 7-tuple shape (they used to
     # carry the matplotlib portrait/landscape figures, now always None).
@@ -1343,6 +1374,7 @@ def update_plot(available_data_variables_dict, ms_average_choice, bio_or_pep, se
                 bio_or_pep       = bio_or_pep,
                 filter_type      = filter_type,
                 log_transform    = log_transform,
+                log_base         = log_base,
                 y_ticks          = y_ticks,
                 plot_title       = plot_title,
                 aa_on_tiles      = aa_on_tiles,
@@ -1402,6 +1434,7 @@ def update_plot(available_data_variables_dict, ms_average_choice, bio_or_pep, se
                             cmap,
                             y_ticks,
                             log_transform,
+                            log_base,
                             plot_title=plot_title,
                             font_size_xaxis_label=font_size_xaxis_label,
                             font_size_yaxis_label=font_size_yaxis_label,
@@ -1788,6 +1821,7 @@ def visualize_sequence_heatmap_interactive(
     filter_type,
     log_transform,
     y_ticks,
+    log_base=10,          # base for the abundance log transform (10 or 2)
     plot_title='',        # optional user figure title; blank → no title
     aa_on_tiles=False,    # print the AA letter on each sample's colored tile
                           # (instead of the shared grey sequence strip) — lets you
@@ -2297,19 +2331,51 @@ def visualize_sequence_heatmap_interactive(
         row_heights=row_heights_frac,
     )
 
-    # y-axis tick label formatter (3 sig-fig scientific, shown on each line row)
+    # ── abundance log transform ──────────────────────────────────────────────
+    # When the user asks for a log transform, transform the plotted abundance
+    # DATA (line heights) — not just relabel a log-scaled axis — so the bars /
+    # lines scale with the transform and log10 vs log2 are visibly different.
+    # The axis is then plain linear over the transformed values and the ticks
+    # read as log10 / log2 values, never raw abundance.
+    _do_log = bool(log_transform) and not contrast_is_active and tick1 > 0
+    _log_sub_str = _log_sub(log_base)
+
+    if _do_log:
+        for spec in line_specs:
+            new_y, new_h = [], []
+            for yi, hi in zip(spec['y'], spec['hover']):
+                ly = _log_value(yi, log_base)
+                new_y.append(ly)
+                if isinstance(hi, str):
+                    tag = (f"<br>Log<sub>{_log_sub_str}</sub> Abundance: {ly:.2f}"
+                           if ly is not None else
+                           f"<br>Log<sub>{_log_sub_str}</sub> Abundance: n/a")
+                    new_h.append(hi + tag)
+                else:
+                    new_h.append(hi)
+            spec['y'] = new_y
+            spec['hover'] = new_h
+        _lt1, _lt2, _lt3 = (_log_value(tick1, log_base),
+                            _log_value(tick2, log_base),
+                            _log_value(tick3, log_base))
+
+    # y-axis tick label formatter (3 sig-fig scientific for raw abundance; the
+    # transformed-value case is formatted inline below).
     def _fmt_tick(v):
         if v == 0:
             return '0'
         return f"{v:.3g}"
 
-    if log_transform and tick1 > 0:
-        import math
-        lp_range = [math.log10(tick1), math.log10(tick3)]
-        lp_type  = 'log'
+    if _do_log:
+        lp_range     = [_lt1, _lt3]
+        lp_type      = 'linear'
+        lp_tick_vals = [_lt1, _lt2, _lt3]
+        lp_tick_text = [f"{v:.2f}" if v is not None else '' for v in lp_tick_vals]
     else:
-        lp_range = [tick1, tick3]
-        lp_type  = 'linear'
+        lp_range     = [tick1, tick3]
+        lp_type      = 'linear'
+        lp_tick_vals = [tick1, tick2, tick3]
+        lp_tick_text = [_fmt_tick(tick1), _fmt_tick(tick2), _fmt_tick(tick3)]
 
     x_label_str      = xaxis_label or 'Protein Sequence Position'
     legend_names_shown = set()   # show each legend entry once, figure-wide
@@ -2395,8 +2461,8 @@ def visualize_sequence_heatmap_interactive(
             # matching fixedrange on the tile rows below.
             fixedrange=True,
             showgrid=True, gridwidth=1, gridcolor='rgba(200,200,200,0.5)',
-            tickvals=[tick1, tick2, tick3],
-            ticktext=[_fmt_tick(tick1), _fmt_tick(tick2), _fmt_tick(tick3)],
+            tickvals=lp_tick_vals,
+            ticktext=lp_tick_text,
             showticklabels=_show_yticklabels,
             ticks='outside' if _show_yticklabels else '',
             ticklen=6, tickwidth=2,
@@ -2565,6 +2631,8 @@ def visualize_sequence_heatmap_interactive(
         _ytitle = ('Standardized Mean Difference (Cohen’s d)'
                    if comparison_track.get('metric') == 'smd'
                    else 'log₂ Fold Change')
+    elif _do_log:
+        _ytitle = f'Log<sub>{_log_sub_str}</sub> Averaged Peptide Abundance'
     else:
         _ytitle = 'Averaged Peptide Abundance'
     fig.add_annotation(
@@ -2607,14 +2675,16 @@ def visualize_sequence_heatmap_interactive(
             f"{_ytitle}:" if contrast_is_active
             else (legend_title[2] if len(legend_title) > 2 else 'Average Abundance:')
         )
-        for tick_val, tick_lbl in zip([tick1, tick2, tick3], ['Min', 'Mid', 'Max']):
+        if _do_log and not contrast_is_active:
+            _abun_legend_title = f"Log<sub>{_log_sub_str}</sub> {_abun_legend_title}"
+        for tick_disp, tick_lbl in zip(lp_tick_text, ['Min', 'Mid', 'Max']):
             fig.add_trace(go.Scatter(
                 x=[None], y=[None], mode='markers',
                 marker=dict(size=10, symbol='line-ew', color='black', line=dict(width=2)),
-                name=f"{tick_lbl}: {_fmt_tick(tick_val)}",
+                name=f"{tick_lbl}: {tick_disp}",
                 showlegend=True,
                 **_legend_kwargs(_abun_legend_title, 'abundance_ticks',
-                                 entry=f"{tick_lbl}: {_fmt_tick(tick_val)}"),
+                                 entry=f"{tick_lbl}: {tick_disp}"),
             ))
 
     # ── overall layout ────────────────────────────────────────────────────────
@@ -2707,6 +2777,7 @@ def visualize_sequence_heatmap_compact(
     cmap,
     y_ticks,
     log_transform,
+    log_base=10,          # base for the abundance log transform (10 or 2)
     plot_title='',        # optional user figure title; blank → no title
     font_size_xaxis_label=14, font_size_yaxis_label=14,
     font_size_legend=14,
@@ -2747,15 +2818,26 @@ def visualize_sequence_heatmap_compact(
     tick2 = float(y_ticks[1]) if len(y_ticks) > 1 else (tick1 + (float(y_ticks[-1]) if y_ticks else 1.0)) / 2
     tick3 = float(y_ticks[-1]) if y_ticks else 1.0
 
-    # Pre-compute shared y-axis scale (identical for every subplot row)
-    if log_transform and tick1 > 0:
-        import math as _math
-        _y_range   = [_math.log10(max(tick1, 1e-300)), _math.log10(max(tick3, 1e-300))]
-        _axis_type = 'log'
+    # Pre-compute shared y-axis scale (identical for every subplot row). A log
+    # transform transforms the plotted bar HEIGHTS (below) and the axis is then
+    # plain linear over log10 / log2 values — the ticks read as log values, not
+    # raw abundance, so log10 vs log2 are visibly distinct.
+    _do_log = bool(log_transform) and tick1 > 0
+    _lsub = _log_sub(log_base)
+    if _do_log:
+        _lb_fn = _log_base_fn(log_base)
+        _lt1, _lt2, _lt3 = (float(_lb_fn(max(tick1, 1e-300))),
+                            float(_lb_fn(max(tick2, 1e-300))),
+                            float(_lb_fn(max(tick3, 1e-300))))
+        _y_range   = [_lt1, _lt3]
+        _axis_type = 'linear'
+        _tick_vals = [_lt1, _lt2, _lt3]
+        _tick_text = [f"{v:.2f}" for v in _tick_vals]
     else:
         _y_range   = [tick1, tick3]
         _axis_type = 'linear'
-    _tick_vals = [tick1, tick2, tick3]
+        _tick_vals = [tick1, tick2, tick3]
+        _tick_text = [f"{v:.3g}" for v in _tick_vals]
 
     # ── build subplots ─────────────────────────────────────────────────────────
     # Plotly caps vertical_spacing at 1/(rows-1), so a fixed 0.03 fails once
@@ -2809,10 +2891,20 @@ def visualize_sequence_heatmap_compact(
 
         # bar heights — keep a tiny floor so log scale stays happy
         min_height = max(tick1 * 0.01, 1e-12) if tick1 > 0 else 1e-10
-        heights = [
+        raw_heights = [
             max(float(ms), min_height) if (ms and float(ms) > 0) else min_height
             for ms in ms_data
         ]
+        if _do_log:
+            # Transform the plotted heights; sub-floor values sit at the bottom
+            # of the shared range so they read as ~zero, same as the linear view.
+            heights = [
+                (_log_value(rh, log_base) if rh > min_height else _y_range[0])
+                for rh in raw_heights
+            ]
+            heights = [h if h is not None else _y_range[0] for h in heights]
+        else:
+            heights = raw_heights
 
         fig.add_trace(
             go.Bar(
@@ -2824,8 +2916,9 @@ def visualize_sequence_heatmap_compact(
                 hoverinfo='text',
                 hovertext=[
                     f"Position: {pos}<br>Amino Acid: {aa}<br>"
-                    f"Peptide Count: {cnt}<br>Averaged Abundance: {h:.3e}"
-                    for pos, aa, cnt, h in zip(positions, aa_list, counts_list, heights)
+                    f"Peptide Count: {cnt}<br>Averaged Abundance: {rh:.3e}"
+                    + (f"<br>Log<sub>{_lsub}</sub> Abundance: {h:.2f}" if _do_log else "")
+                    for pos, aa, cnt, rh, h in zip(positions, aa_list, counts_list, raw_heights, heights)
                 ],
                 showlegend=False,
                 name=label,
@@ -2871,6 +2964,8 @@ def visualize_sequence_heatmap_compact(
     # landscape renderer and the Data Analysis legend-title convention.
     legend_title_pep  = legend_title[1] if len(legend_title) > 1 else 'Peptide Counts:'
     legend_title_abun = legend_title[2] if len(legend_title) > 2 else 'Average Abundance:'
+    if _do_log:
+        legend_title_abun = f'Log<sub>{_lsub}</sub> {legend_title_abun}'
 
     # Legend placement — 'right' keeps one combined legend beside the plot,
     # 'below' gives each group its own unit under the x-axis, one per row.
@@ -2897,14 +2992,14 @@ def visualize_sequence_heatmap_compact(
         ))
 
     # ── legend: abundance y-range reference ───────────────────────────────────
-    for tick_val, tick_lbl in zip([tick1, tick2, tick3], ['Min', 'Mid', 'Max']):
+    for tick_disp, tick_lbl in zip(_tick_text, ['Min', 'Mid', 'Max']):
         fig.add_trace(go.Scatter(
             x=[None], y=[None], mode='markers',
             marker=dict(size=10, symbol='line-ew', color='black', line=dict(width=2)),
-            name=f"{tick_lbl}: {tick_val:.3g}",
+            name=f"{tick_lbl}: {tick_disp}",
             showlegend=True,
             **_legend_kwargs(legend_title_abun, 'abundance_ticks',
-                                     entry=f"{tick_lbl}: {tick_val:.3g}"),
+                                     entry=f"{tick_lbl}: {tick_disp}"),
         ))
 
     # ── x-axes ────────────────────────────────────────────────────────────────
