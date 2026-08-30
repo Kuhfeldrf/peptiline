@@ -1035,6 +1035,45 @@ def _build_merge_key(df):
     return seq + '||' + mods
 
 
+def _shared_abundance_column_conflicts(left_series, right_series):
+    """Return a boolean mask of rows where an abundance column present in two
+    merged datasets carries *conflicting* values — both sides non-null and
+    unequal (numeric comparison with a small relative tolerance, falling back
+    to string equality).
+
+    When there are no conflicts the two same-named columns describe the same
+    sample measured once (the common case: one export split across files, or
+    complementary peptide lists from the same run) and can be coalesced into a
+    single column. Only genuinely disagreeing values mean the datasets are
+    distinct measurements that must be kept side by side with a ``_dsN`` suffix.
+    """
+    both = left_series.notna() & right_series.notna()
+    if not both.any():
+        return both  # all False
+
+    left_num = pd.to_numeric(left_series, errors='coerce')
+    right_num = pd.to_numeric(right_series, errors='coerce')
+    numeric_both = both & left_num.notna() & right_num.notna()
+
+    conflict = pd.Series(False, index=left_series.index)
+
+    # Numeric cells: compare with tolerance
+    if numeric_both.any():
+        l = left_num[numeric_both]
+        r = right_num[numeric_both]
+        close = np.isclose(l, r, rtol=1e-6, atol=1e-9, equal_nan=True)
+        conflict.loc[numeric_both] = ~close
+
+    # Non-numeric cells that are non-null on both sides: string compare
+    string_both = both & ~numeric_both
+    if string_both.any():
+        l = left_series[string_both].astype(str).str.strip()
+        r = right_series[string_both].astype(str).str.strip()
+        conflict.loc[string_both] = l.values != r.values
+
+    return conflict
+
+
 def merge_peptidomic_datasets(dataframes):
     """Merge multiple peptidomic DataFrames on a composite peptide key.
 
@@ -1077,6 +1116,12 @@ def merge_peptidomic_datasets(dataframes):
         'Confidence by Search Engine', 'q-Value by Search Engine',
         'XCorr by Search Engine', 'PEP', 'q-Value', 'RT in min',
         'Precursor', 'Precursor Charge', 'Precursor Mz',
+        # Per-protein descriptor columns some engines (e.g. Skyline) report one
+        # row per (peptide, protein): these legitimately differ across a
+        # peptide's protein rows and should be '; '-joined, not treated as a
+        # conflicting measurement needing a _dsN split.
+        'Protein Name', 'Protein Description', 'Protein Accession',
+        'Leading razor protein',
     }
 
     def _normalize_val(val):
@@ -1207,6 +1252,21 @@ def merge_peptidomic_datasets(dataframes):
 
         merged = merged.merge(right_renamed, on=KEY_COL, how='outer',
                               suffixes=('', '_right'))
+
+        # Shared abundance columns: if the two datasets never disagree on a
+        # value for the same peptide, they describe the same sample (one
+        # export split across files, or complementary peptide lists from the
+        # same run) — coalesce back into a single column instead of leaving a
+        # half-empty `<name>` / `<name>_dsN` pair that corrupts downstream
+        # averaging. Only keep the suffixed split when values genuinely
+        # conflict (distinct measurements sharing a sample name).
+        for col in data_overlap:
+            right_col = rename_map[col]
+            if col in merged.columns and right_col in merged.columns:
+                if not _shared_abundance_column_conflicts(
+                        merged[col], merged[right_col]).any():
+                    merged[col] = merged[col].combine_first(merged[right_col])
+                    merged.drop(columns=[right_col], inplace=True)
 
         # Coalesce identity columns (prefer left, fill from right)
         for col in id_overlap:

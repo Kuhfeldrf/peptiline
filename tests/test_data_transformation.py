@@ -1963,5 +1963,49 @@ class TestMergeGroupsAsDecisions(unittest.TestCase):
         self.assertEqual(protein_handler.extract_merge_groups(None), ({}, []))
 
 
+class TestMergePeptidomicDatasets(unittest.TestCase):
+    """merge_peptidomic_datasets: shared abundance columns across datasets
+    must be coalesced into one column when they never disagree (e.g. one
+    export split across two files), and only kept as a ``_dsN`` split when
+    values genuinely conflict."""
+
+    def _pd_frame(self):
+        return pd.DataFrame({
+            'Sequence': ['AAAA', 'CCCC', 'DDDD', 'EEEE'],
+            'Master Protein Accessions': ['P1', 'P2', 'P3', 'P4'],
+            'Positions in Proteins': ['P1 [1-4]', 'P2 [5-8]', 'P3 [1-4]', 'P4 [2-5]'],
+            'Modifications': ['', '', '', ''],
+            'Abundance S1': [10.0, 20.0, 30.0, 40.0],
+            'Abundance S2': [11.0, 21.0, 31.0, 41.0],
+        })
+
+    def test_split_export_recombines_into_single_columns(self):
+        df = self._pd_frame()
+        top, bottom = df.iloc[:2].copy(), df.iloc[2:].copy()
+        merged = data_loader.merge_peptidomic_datasets([('a.csv', top), ('b.csv', bottom)])
+
+        self.assertNotIn('Abundance S1_ds2', merged.columns)
+        self.assertNotIn('Abundance S2_ds2', merged.columns)
+        self.assertEqual(len(merged), 4)
+        got = merged.set_index('Sequence')['Abundance S1'].to_dict()
+        self.assertEqual(got, {'AAAA': 10.0, 'CCCC': 20.0, 'DDDD': 30.0, 'EEEE': 40.0})
+
+    def test_conflicting_values_keep_dsN_split(self):
+        a = self._pd_frame()
+        b = self._pd_frame()
+        b.loc[0, 'Abundance S1'] = 999.0  # same peptide, different measurement
+        merged = data_loader.merge_peptidomic_datasets([('a.csv', a), ('b.csv', b)])
+        self.assertIn('Abundance S1_ds2', merged.columns)
+        # non-conflicting S2 still coalesces
+        self.assertNotIn('Abundance S2_ds2', merged.columns)
+
+    def test_complementary_peptide_lists_same_run(self):
+        a = self._pd_frame().iloc[[0, 1, 2]].copy()
+        b = self._pd_frame().iloc[[1, 2, 3]].copy()  # overlap on CCCC/DDDD, equal values
+        merged = data_loader.merge_peptidomic_datasets([('a.csv', a), ('b.csv', b)])
+        self.assertNotIn('Abundance S1_ds2', merged.columns)
+        self.assertEqual(sorted(merged['Sequence']), ['AAAA', 'CCCC', 'DDDD', 'EEEE'])
+
+
 if __name__ == '__main__':
     unittest.main()
