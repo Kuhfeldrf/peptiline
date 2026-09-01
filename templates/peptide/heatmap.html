@@ -4,6 +4,7 @@
 {% block 'head' %}
 <title>Sequence Heatmap Dashboard – PeptiLine</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="{% static 'peptide/css/reorder_rename_panel.css' %}">
 <script src="https://cdn.plot.ly/plotly-2.35.2.min.js" charset="utf-8"></script>
 <style>
 .hm-page { padding: 10px 20px 80px; }
@@ -232,17 +233,34 @@ select.multi-select:disabled { background: #f8f9fa; color: #aaa; }
             Select Proteins &amp; Variables
         </div>
 
-        <!-- Selectors -->
-        <div class="selector-grid" style="margin-bottom:14px;">
-            <div class="selector-block">
-                <label><i class="fas fa-dna"></i> Proteins</label>
-                <select id="protein-selector" class="multi-select" multiple size="6" disabled></select>
-                <small class="text-muted">Hold Ctrl/Cmd to select multiple</small>
+        <!-- Selectors — each a [ picker | arrange & rename ] row -->
+        <div style="display:flex; flex-direction:column; gap:16px; margin-bottom:14px;">
+            <div class="rr-selector-row">
+                <div class="selector-block">
+                    <label><i class="fas fa-dna"></i> Proteins</label>
+                    <div class="rr-filter">
+                        <i class="fas fa-magnifying-glass"></i>
+                        <input type="text" id="protein-filter" placeholder="Filter proteins…" disabled>
+                    </div>
+                    <select id="protein-selector" class="multi-select" multiple size="8" disabled></select>
+                    <small class="text-muted">Hold Ctrl/Cmd to select multiple</small>
+                    <label class="checkbox-row" style="margin-top:6px;" title="Drop trailing UniProt descriptors (e.g. ' OS=Bos taurus GN=CSN2 …') and a leading entry-name token from the protein name. Uncheck to show the full name. The names in the panel update live so you can see what each protein will be called on the figure before renaming.">
+                        <input type="checkbox" id="strip-protein-name" checked disabled> Strip protein name
+                    </label>
+                </div>
+                <div id="protein-order-panel"></div>
             </div>
-            <div class="selector-block">
-                <label><i class="fas fa-layer-group"></i> Sample Groups</label>
-                <select id="varkey-selector" class="multi-select" multiple size="6" disabled></select>
-                <small class="text-muted">Hold Ctrl/Cmd to select multiple</small>
+            <div class="rr-selector-row">
+                <div class="selector-block">
+                    <label><i class="fas fa-layer-group"></i> Sample Groups</label>
+                    <div class="rr-filter">
+                        <i class="fas fa-magnifying-glass"></i>
+                        <input type="text" id="varkey-filter" placeholder="Filter sample groups…" disabled>
+                    </div>
+                    <select id="varkey-selector" class="multi-select" multiple size="8" disabled></select>
+                    <small class="text-muted">Hold Ctrl/Cmd to select multiple</small>
+                </div>
+                <div id="varkey-order-panel"></div>
             </div>
         </div>
 
@@ -522,10 +540,6 @@ select.multi-select:disabled { background: #f8f9fa; color: #aaa; }
                                style="width:44px; flex-shrink:0; min-width:0; border:1px solid #ced4da; border-radius:4px; padding:4px 4px; font-size:.92rem;">
                     </div>
 
-                    <label class="checkbox-row" style="margin-top:2px;" title="Drop trailing UniProt descriptors (e.g. ' OS=Bos taurus GN=CSN2 …') from the protein name used in the axis label and title, leaving the short name. Uncheck to show the full protein name.">
-                        <input type="checkbox" id="strip-protein-name" checked disabled> Strip protein name
-                    </label>
-
                 </div>
             </div>
 
@@ -593,6 +607,7 @@ select.multi-select:disabled { background: #f8f9fa; color: #aaa; }
 </div>
 
 <script src="{% static 'peptide/js/form_controls.js' %}?v=1"></script>
+<script src="{% static 'peptide/js/reorder_rename_panel.js' %}?v=1"></script>
 <script>
 (function() {
 'use strict';
@@ -994,10 +1009,15 @@ function populateSelectors(data) {
     hmDataLoaded = true;
     const protSel = document.getElementById('protein-selector');
     protSel.innerHTML = '';
+    hmProteinNames = {};
     data.proteins.forEach((p, i) => {
+        hmProteinNames[p.id] = {
+            stripped: p.name_stripped || p.label,
+            raw: p.name_raw || p.name_stripped || p.label,
+        };
         // Default-select the first protein so the page has a usable selection
         // out of the box.
-        const opt = new Option(p.label, p.id, i === 0, i === 0);
+        const opt = new Option(hmProteinOptionText(p.id), p.id, i === 0, i === 0);
         if (!p.has_sequence) opt.dataset.hasSequence = 'false';
         protSel.add(opt);
     });
@@ -1005,6 +1025,75 @@ function populateSelectors(data) {
     varSel.innerHTML = '';
     // Default-select the first sample group only.
     data.var_keys.forEach((v, i) => varSel.add(new Option(v, v, i === 0, i === 0)));
+
+    ['protein-filter', 'varkey-filter'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+    });
+    resetOrderPanels();
+}
+
+// ── Arrange & rename panels ──────────────────────────────────────
+// The <select>s stay the pickers; these companion panels own the order the
+// proteins / sample groups plot in and any display-name overrides.
+let hmProteinPanel = null, hmVarkeyPanel = null;
+let hmProteinNames = {};   // { pid: {stripped, raw} } — from the upload response
+
+// The canonical name for a protein given the "Strip protein name" toggle —
+// exactly what the figure's axis label / title will use (before a manual rename).
+function hmProteinDisplayName(pid) {
+    const n = hmProteinNames[pid];
+    if (!n) return pid;
+    return document.getElementById('strip-protein-name').checked ? n.stripped : n.raw;
+}
+function hmProteinOptionText(pid) {
+    return hmProteinNames[pid] ? `${pid} – ${hmProteinDisplayName(pid)}` : pid;
+}
+function applyStripToProteins() {
+    const sel = document.getElementById('protein-selector');
+    Array.from(sel.options).forEach(o => {
+        if (hmProteinNames[o.value]) o.text = hmProteinOptionText(o.value);
+    });
+    if (hmProteinPanel) hmProteinPanel.refresh();
+    if (typeof refreshComparisonSeries === 'function') refreshComparisonSeries();
+}
+document.getElementById('strip-protein-name').addEventListener('change', applyStripToProteins);
+
+function initOrderPanels() {
+    hmProteinPanel = new ReorderRenamePanel(document.getElementById('protein-order-panel'), {
+        selectEl: document.getElementById('protein-selector'),
+        noun: 'protein',
+        originalLabelFor: v => hmProteinNames[v] ? hmProteinDisplayName(v) : null,
+    });
+    hmVarkeyPanel = new ReorderRenamePanel(document.getElementById('varkey-order-panel'), {
+        selectEl: document.getElementById('varkey-selector'),
+        noun: 'sample group',
+    });
+    ReorderRenamePanel.filterSelect(document.getElementById('protein-filter'), document.getElementById('protein-selector'));
+    ReorderRenamePanel.filterSelect(document.getElementById('varkey-filter'), document.getElementById('varkey-selector'));
+}
+
+function resetOrderPanels() {
+    if (!hmProteinPanel) { initOrderPanels(); return; }
+    hmProteinPanel.reset();
+    hmVarkeyPanel.reset();
+}
+
+// Selected proteins / sample groups in the panel's chosen order, falling back
+// to raw <select> order before the panels exist.
+function hmSelectedProteins() {
+    return hmProteinPanel ? hmProteinPanel.getOrder()
+        : getMultiSelectValues(document.getElementById('protein-selector'));
+}
+function hmSelectedVarKeys() {
+    return hmVarkeyPanel ? hmVarkeyPanel.getOrder()
+        : getMultiSelectValues(document.getElementById('varkey-selector'));
+}
+function hmLabelOverrides() {
+    return {
+        proteins:      hmProteinPanel ? hmProteinPanel.getLabelOverrides() : {},
+        sample_groups: hmVarkeyPanel ? hmVarkeyPanel.getLabelOverrides() : {},
+    };
 }
 
 // ── Auto-fetch sequences for a list of protein IDs ────────────────
@@ -1069,8 +1158,8 @@ async function loadItemsSelector(mode, includeAllOption) {
     sel.innerHTML = '';
     spin.classList.remove('hidden');
 
-    const selectedProteins = getMultiSelectValues(document.getElementById('protein-selector'));
-    const selectedVarKeys  = getMultiSelectValues(document.getElementById('varkey-selector'));
+    const selectedProteins = hmSelectedProteins();
+    const selectedVarKeys  = hmSelectedVarKeys();
     const bioOrPep         = mode === 'pep' ? '1' : '2';
 
     try {
@@ -1401,8 +1490,8 @@ async function generateHeatmap() {
     spinner.classList.remove('hidden');
     msgs.innerHTML = '';
 
-    const selectedProteins = getMultiSelectValues(document.getElementById('protein-selector'));
-    const selectedVarKeys  = getMultiSelectValues(document.getElementById('varkey-selector'));
+    const selectedProteins = hmSelectedProteins();
+    const selectedVarKeys  = hmSelectedVarKeys();
 
     if (!selectedProteins.length || !selectedVarKeys.length) {
         appendStatus(msgs, 'Please select at least one protein and one variable.', 'error');
@@ -1522,6 +1611,10 @@ async function generateHeatmap() {
         series_a:             seriesA,
         series_b:             seriesB,
         comparison_metric:    getRadioValue('comparison-metric') || 'smd',
+        // Display-name overrides from the "arrange & rename" panels, keyed by the
+        // original protein id / sample-group name. Applied display-only in
+        // generate_heatmap() so row identity, colours and lookups are unchanged.
+        label_overrides:      hmLabelOverrides(),
     };
 
     let resp;

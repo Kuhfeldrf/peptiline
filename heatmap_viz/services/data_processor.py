@@ -493,9 +493,15 @@ def get_selector_options(merged_df: pd.DataFrame, group_data_dict: dict, protein
 
     protein_options = []
     for pid in sorted_proteins:
-        name = protein_dict.get(pid, {}).get('name', pid)
-        has_seq = bool(protein_dict.get(pid, {}).get('sequence', ''))
-        protein_options.append({'id': pid, 'label': f"{pid} – {name}", 'has_sequence': has_seq})
+        info = protein_dict.get(pid, {})
+        name = info.get('name', pid)            # already stripped at load time
+        raw = info.get('name_raw', name)
+        has_seq = bool(info.get('sequence', ''))
+        protein_options.append({
+            'id': pid, 'label': f"{pid} – {name}",
+            'name_stripped': name, 'name_raw': raw,
+            'has_sequence': has_seq,
+        })
 
     # Variable keys (grouping variables)
     var_key_options = col_order if col_order else [
@@ -848,6 +854,34 @@ def build_available_data_variables(
 # Generate heatmap plot
 # ---------------------------------------------------------------------------
 
+def _apply_label_overrides(available: dict, overrides) -> None:
+    """Rewrite the display fields (``protein_name`` / ``var_label`` / ``label``)
+    of each entry from the "arrange & rename" panel overrides.
+
+    ``overrides`` is ``{'proteins': {id_or_name: new}, 'sample_groups': {name: new}}``,
+    keyed by the ORIGINAL value. Entry keys (``combo_key``) and the
+    ``protein_id`` / ``var_key`` fields are left alone so every downstream lookup,
+    the row ordering and the value-based colour scales are unaffected.
+    """
+    if not overrides:
+        return
+    sg = overrides.get('sample_groups') or {}
+    pr = overrides.get('proteins') or {}
+    if not sg and not pr:
+        return
+
+    multi_protein = len({vd.get('protein_id') for vd in available.values()}) > 1
+    for vd in available.values():
+        orig_var = vd.get('var_label')
+        var_disp = sg.get(orig_var, orig_var)
+        prot_disp = (pr.get(vd.get('protein_id'))
+                     or pr.get(vd.get('protein_name'))
+                     or vd.get('protein_name'))
+        vd['var_label'] = var_disp
+        vd['protein_name'] = prot_disp
+        vd['label'] = f"{prot_disp} {var_disp}" if multi_protein else var_disp
+
+
 def generate_heatmap(
     available_data_variables_dict: dict,
     plot_params: dict,
@@ -881,6 +915,14 @@ def generate_heatmap(
             raw = vd.get('protein_name_raw')
             if raw:
                 vd['protein_name'] = raw
+
+    # "Arrange & rename" panel overrides, keyed by the ORIGINAL protein id /
+    # sample-group name. Applied display-only, after the strip toggle above, over
+    # the fields every render path reads (protein_name / var_label / label). The
+    # dict key (combo_key), protein_id and var_key are left untouched, so row
+    # identity, ordering, colour scales and the differential-comparison lookups
+    # all stay keyed by the real name.
+    _apply_label_overrides(available_data_variables_dict, pp.get('label_overrides'))
 
     # Auto-derive the x-axis label from protein name(s) when the user has left
     # the field blank — mirrors the notebook's `protein_name_short + " Sequence"` logic.

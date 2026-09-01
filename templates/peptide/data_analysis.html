@@ -4,6 +4,7 @@
 {% block 'head' %}
 <title>Data Analysis Dashboard – PeptiLine</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="{% static 'peptide/css/reorder_rename_panel.css' %}">
 <script src="https://cdn.plot.ly/plotly-2.35.2.min.js" charset="utf-8"></script>
 <style>
 .da-page { padding: 10px 20px 80px; }
@@ -178,24 +179,50 @@ select.multi-select:disabled { background: #f8f9fa; color: #aaa; }
             Select Variables &amp; Settings
         </div>
 
-        <!-- Sample Groups + Proteins + Functions (shared grid) -->
-        <div class="selector-grid" style="margin-bottom:14px;">
-            <div class="selector-block" style="grid-row:1; grid-column:1;">
-                <label><i class="fas fa-layer-group"></i> Sample Groups</label>
-                <select id="group-selector" class="multi-select" multiple size="5" disabled></select>
-                <small class="text-muted">Hold Ctrl/Cmd to select multiple</small>
+        <!-- Sample Groups / Proteins / Functions — each a [ picker | arrange & rename ] row -->
+        <div style="display:flex; flex-direction:column; gap:16px; margin-bottom:14px;">
+            <div class="rr-selector-row">
+                <div class="selector-block">
+                    <label><i class="fas fa-layer-group"></i> Sample Groups</label>
+                    <div class="rr-filter">
+                        <i class="fas fa-magnifying-glass"></i>
+                        <input type="text" id="group-filter" placeholder="Filter sample groups…" disabled>
+                    </div>
+                    <select id="group-selector" class="multi-select" multiple size="6" disabled></select>
+                    <small class="text-muted">Hold Ctrl/Cmd to select multiple</small>
+                </div>
+                <div id="group-order-panel"></div>
             </div>
-            <div class="selector-block" style="grid-row:2; grid-column:1;">
-                <label><i class="fas fa-dna"></i> Proteins <small class="text-muted">(sorted by abundance)</small></label>
-                <select id="protein-selector" class="multi-select" multiple size="6" disabled></select>
-                <small class="text-muted">Hold Ctrl/Cmd to select multiple &middot; leave on
-                  <em>None</em> for no protein filter</small>
+
+            <div class="rr-selector-row">
+                <div class="selector-block">
+                    <label><i class="fas fa-dna"></i> Proteins <small class="text-muted">(sorted by abundance)</small></label>
+                    <div class="rr-filter">
+                        <i class="fas fa-magnifying-glass"></i>
+                        <input type="text" id="protein-filter" placeholder="Filter proteins…" disabled>
+                    </div>
+                    <select id="protein-selector" class="multi-select" multiple size="8" disabled></select>
+                    <small class="text-muted" style="display:block;">Hold Ctrl/Cmd to select multiple</small>
+                    <small class="text-muted" style="display:block;">Leave on <em>None</em> for no protein filter</small>
+                    <label class="checkbox-row" style="margin-top:6px;" title="Drop trailing UniProt descriptors (e.g. ' OS=Bos taurus GN=CSN2 …') and a leading entry-name token from protein names. Uncheck to show the full name. The names in the panel update live so you can see what each protein will be called on the figure before renaming.">
+                        <input type="checkbox" id="strip-protein-name" checked disabled> Strip protein name
+                    </label>
+                </div>
+                <div id="protein-order-panel"></div>
             </div>
-            <div class="selector-block" id="function-selector-block" style="grid-row:2; grid-column:2; display:none;">
-                <label><i class="fas fa-flask"></i> Functions</label>
-                <select id="function-selector" class="multi-select" multiple size="6" disabled></select>
-                <small class="text-muted">Hold Ctrl/Cmd to select multiple &middot; leave on
-                    <em>None</em> for no function breakdown</small>
+
+            <div class="rr-selector-row" id="function-selector-block" style="display:none;">
+                <div class="selector-block">
+                    <label><i class="fas fa-flask"></i> Functions</label>
+                    <div class="rr-filter">
+                        <i class="fas fa-magnifying-glass"></i>
+                        <input type="text" id="function-filter" placeholder="Filter functions…" disabled>
+                    </div>
+                    <select id="function-selector" class="multi-select" multiple size="8" disabled></select>
+                    <small class="text-muted" style="display:block;">Hold Ctrl/Cmd to select multiple</small>
+                    <small class="text-muted" style="display:block;">Leave on <em>None</em> for no function breakdown</small>
+                </div>
+                <div id="function-order-panel"></div>
             </div>
         </div>
 
@@ -386,9 +413,6 @@ select.multi-select:disabled { background: #f8f9fa; color: #aaa; }
                         </select>
                         <div class="color-swatch" id="color-scheme-swatch"></div>
                     </div>
-                    <label class="checkbox-row" style="margin-top:2px;" title="Drop trailing UniProt descriptors (e.g. ' OS=Bos taurus GN=CSN2 …') from protein labels, leaving the short name. Uncheck to show the full protein name.">
-                        <input type="checkbox" id="strip-protein-name" checked disabled> Strip protein name
-                    </label>
                 </div>
             </div>
 
@@ -437,6 +461,7 @@ select.multi-select:disabled { background: #f8f9fa; color: #aaa; }
 </div>
 
 <script src="{% static 'peptide/js/form_controls.js' %}?v=1"></script>
+<script src="{% static 'peptide/js/reorder_rename_panel.js' %}?v=1"></script>
 <script>
 (function() {
 'use strict';
@@ -575,7 +600,11 @@ function populateSelectors(data) {
     protSel.innerHTML = '';
     protSel.add(new Option('None — no protein filter', NO_PROTEIN_FILTER, true, true));
     protSel.add(new Option('All Proteins (broken out individually)', 'All Proteins (No Filter)', false, false));
-    data.proteins.forEach(p => protSel.add(new Option(p.label, p.id, false, false)));
+    proteinNames = {};
+    data.proteins.forEach(p => {
+        proteinNames[p.id] = { stripped: p.name_stripped || p.label, raw: p.name_raw || p.label };
+        protSel.add(new Option(proteinDisplayName(p.id), p.id, false, false));
+    });
 
     const fnBlock = document.getElementById('function-selector-block');
     const fnSel   = document.getElementById('function-selector');
@@ -593,6 +622,13 @@ function populateSelectors(data) {
         fnSel.innerHTML = '';
         fnSel.add(new Option('None — no function filter', NO_FUNCTION_FILTER, true, true));
     }
+
+    // Clear any filter text and re-sync the arrange/rename panels to the fresh options.
+    ['group-filter', 'protein-filter', 'function-filter'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+    });
+    resetOrderPanels();
 }
 
 // ── Dynamic UI: plot type changes (correlation block + metric/log greying) ─
@@ -716,6 +752,64 @@ function applySelectionRules() {
     document.getElementById(id).addEventListener('change', applySelectionRules);
 });
 
+// ── Arrange & rename panels ──────────────────────────────────────
+// The <select>s stay the pickers; these companion panels own the order the
+// items plot in and any display-name overrides. Created once, then reset()
+// whenever a new file repopulates the selectors.
+let groupPanel = null, proteinPanel = null, functionPanel = null;
+let proteinNames = {};   // { pid: {stripped, raw} } — from the upload response
+
+const NON_REAL_PROTEIN = new Set([NO_PROTEIN_FILTER, 'All Proteins (No Filter)']);
+const NON_REAL_FUNCTION = new Set([NO_FUNCTION_FILTER, 'All Functional Peptides', 'Non-Functional Peptides']);
+
+// The canonical name for a protein given the "Strip protein name" toggle —
+// this is exactly what the figure will call it (before any manual rename).
+function proteinDisplayName(pid) {
+    const n = proteinNames[pid];
+    if (!n) return pid;
+    return document.getElementById('strip-protein-name').checked ? n.stripped : n.raw;
+}
+
+// Re-label the protein <option>s + refresh the panel when the toggle flips.
+function applyStripToProteins() {
+    const sel = document.getElementById('protein-selector');
+    Array.from(sel.options).forEach(o => {
+        if (proteinNames[o.value]) o.text = proteinDisplayName(o.value);
+    });
+    if (proteinPanel) proteinPanel.refresh();
+}
+document.getElementById('strip-protein-name').addEventListener('change', applyStripToProteins);
+
+function initOrderPanels() {
+    groupPanel = new ReorderRenamePanel(document.getElementById('group-order-panel'), {
+        selectEl: document.getElementById('group-selector'),
+        noun: 'sample group',
+    });
+    proteinPanel = new ReorderRenamePanel(document.getElementById('protein-order-panel'), {
+        selectEl: document.getElementById('protein-selector'),
+        noun: 'protein',
+        isRealValue: v => !NON_REAL_PROTEIN.has(v),
+        originalLabelFor: v => proteinNames[v] ? proteinDisplayName(v) : null,
+        onChange: applySelectionRules,
+    });
+    functionPanel = new ReorderRenamePanel(document.getElementById('function-order-panel'), {
+        selectEl: document.getElementById('function-selector'),
+        noun: 'function',
+        isRealValue: v => !NON_REAL_FUNCTION.has(v),
+        onChange: applySelectionRules,
+    });
+    ReorderRenamePanel.filterSelect(document.getElementById('group-filter'), document.getElementById('group-selector'));
+    ReorderRenamePanel.filterSelect(document.getElementById('protein-filter'), document.getElementById('protein-selector'));
+    ReorderRenamePanel.filterSelect(document.getElementById('function-filter'), document.getElementById('function-selector'));
+}
+
+function resetOrderPanels() {
+    if (!groupPanel) { initOrderPanels(); return; }
+    groupPanel.reset();
+    proteinPanel.reset();
+    functionPanel.reset();
+}
+
 // ── Generate Plot ─────────────────────────────────────────────────
 document.getElementById('generate-btn').addEventListener('click', generatePlot);
 document.getElementById('download-btn').addEventListener('click', downloadPlot);
@@ -748,14 +842,25 @@ async function generatePlot() {
         btn.disabled = false; spinner.style.display = 'none'; return;
     }
 
-    const selectedGroups    = getMultiSelectValues(document.getElementById('group-selector'));
-    const selectedProteins  = getMultiSelectValues(document.getElementById('protein-selector'));
-    const selectedFunctions = getMultiSelectValues(document.getElementById('function-selector'));
+    // The panels own the plot order (and any renames). Sentinel selections
+    // ("None"/"All Proteins"/…) aren't in the panels, so append whichever are
+    // still ticked in the <select> — the server's filter derivation needs them.
+    const stillSelectedIn = (id, keep) =>
+        getMultiSelectValues(document.getElementById(id)).filter(v => keep.has(v));
+
+    const selectedGroups    = groupPanel.getOrder();
+    const selectedProteins  = [...proteinPanel.getOrder(),  ...stillSelectedIn('protein-selector',  NON_REAL_PROTEIN)];
+    const selectedFunctions = [...functionPanel.getOrder(), ...stillSelectedIn('function-selector', NON_REAL_FUNCTION)];
 
     const params = {
         selected_groups:    selectedGroups,
         selected_proteins:  selectedProteins,
         selected_functions: selectedFunctions,
+        label_overrides: {
+            sample_groups: groupPanel.getLabelOverrides(),
+            proteins:      proteinPanel.getLabelOverrides(),
+            functions:     functionPanel.getLabelOverrides(),
+        },
         plot_type:        getRadioValue('plot-type'),
         orientation:      getRadioValue('plot-orientation'),
         abs_or_count:     getRadioValue('abs-or-count'),

@@ -362,10 +362,15 @@ def _assemble_selector_options(merged_df, group_data_dict, protein_dict,
         key=lambda p: protein_abundance.get(p, 0),
         reverse=True,
     )
-    protein_options = [
-        {'id': pid, 'label': protein_dict[pid].get('name', pid)}
-        for pid in all_proteins_sorted
-    ]
+    protein_options = []
+    for pid in all_proteins_sorted:
+        raw = protein_dict[pid].get('name', pid)
+        stripped = _clean_protein_name(raw) or pid
+        # `label` kept for back-compat; the UI reads name_raw / name_stripped so
+        # the "Strip protein name" toggle can preview both without a round-trip.
+        protein_options.append(
+            {'id': pid, 'label': stripped, 'name_raw': raw, 'name_stripped': stripped}
+        )
 
     functions = [f for f, _ in sorted(function_totals.items(), key=lambda x: x[1], reverse=True)]
 
@@ -636,6 +641,14 @@ class DataAnalysisState:
         self.font_size_value_label: int = _coerce_font_size(params.get('font_size_value_label'), 12)
         self.font_size_plot_title: int = _coerce_font_size(params.get('font_size_plot_title'), 18)
         self.correlation_type: str = params.get('correlation_type', 'Pearson')
+
+        # Display-name overrides from the "arrange & rename" panels, keyed by the
+        # ORIGINAL selection value:
+        #   {'sample_groups': {...}, 'proteins': {pid_or_name: new}, 'functions': {...}}
+        # Applied display-only, after the figure is built (see
+        # build_display_overrides + plotter.apply_label_overrides), so colours,
+        # data lookups and stats stay keyed by the real name.
+        self.label_overrides: dict = params.get('label_overrides', {}) or {}
 
         # Derived
         self.avg_columns = [c for c in self.merged_df.columns if c.startswith('Avg_')]
@@ -1148,6 +1161,19 @@ class DataAnalysisState:
         exploded['_pid'] = exploded['_pid'].str.strip()
         exploded = exploded[exploded['_pid'] != '']
 
+        # filter_dataframe() keeps a peptide row when ANY of its semicolon-listed
+        # proteins is selected, so a peptide shared between a selected protein
+        # and an unselected one drags the unselected partner in here (casein
+        # isoforms share many peptides). When the user picked specific proteins,
+        # restrict protein_df to exactly those — the figure iterates its rows
+        # directly. plot_minor deliberately keeps the rest (pooled into "Other
+        # Proteins"); "All Proteins" / no-protein-filter modes want everything.
+        if (self.plot_filter in ('Selected Protein(s)', 'Both')
+                and self.protein_filter_active
+                and not self.plot_minor
+                and ALL_PROTEINS not in self.selected_proteins_raw):
+            exploded = exploded[exploded['_pid'].isin(set(self.selected_proteins))]
+
         protein_data = {}
         if not exploded.empty:
             for pid, g in exploded.groupby('_pid', sort=False):
@@ -1381,6 +1407,44 @@ class DataAnalysisState:
                 fdd[fn]['values'] = fdd[fn]['Abundance']
 
         self.function_distribution_dict = fdd
+
+    # ------------------------------------------------------------------
+    # Display-name overrides
+    # ------------------------------------------------------------------
+
+    def build_display_overrides(self) -> dict:
+        """Flatten ``label_overrides`` into one ``{original_string: new_label}``
+        map for :func:`plotter.apply_label_overrides`.
+
+        Each key is registered in every form the figure might print it in: the
+        raw value, its length-redacted form (see :func:`redact_string_descriptions`),
+        and — for proteins given as an accession — the resolved display name and
+        its cleaned variant, since protein series are labelled by name downstream.
+        """
+        lo = self.label_overrides or {}
+        flat: dict = {}
+
+        def _register(key, new):
+            if not key or not new:
+                return
+            key = str(key)
+            flat[key] = new
+            red = redact_string_descriptions(key)
+            if red != key:
+                flat[red] = new
+
+        for key, new in (lo.get('sample_groups') or {}).items():
+            _register(key, new)
+        for key, new in (lo.get('functions') or {}).items():
+            _register(key, new)
+        for key, new in (lo.get('proteins') or {}).items():
+            _register(key, new)
+            info = (self.protein_dict or {}).get(key)
+            if info:
+                name = info.get('name') or key
+                _register(name, new)
+                _register(_clean_protein_name(name), new)
+        return flat
 
     # ------------------------------------------------------------------
     # Run full pipeline

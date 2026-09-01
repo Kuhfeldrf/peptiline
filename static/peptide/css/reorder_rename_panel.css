@@ -1,0 +1,149 @@
+/*
+ * reorder_rename_panel.css — styling for the ReorderRenamePanel companion list
+ * used next to the <select multiple> pickers on the plotting dashboards.
+ * Matches the dashboard design system (#1976d2, 6px radius, system/Inter font).
+ */
+
+/* Two-column [ picker | panel ] split for one selector row. */
+.rr-selector-row {
+    display: grid;
+    grid-template-columns: minmax(220px, 320px) 1fr;
+    gap: 16px;
+    align-items: start;
+}
+@media (max-width: 820px) {
+    .rr-selector-row { grid-template-columns: 1fr; }
+}
+
+/* Filter box above a picker's <select>. */
+.rr-filter {
+    position: relative;
+    margin-bottom: 6px;
+}
+.rr-filter input {
+    width: 100%;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    padding: 5px 8px 5px 28px;
+    font-size: .84rem;
+}
+.rr-filter .fa-magnifying-glass {
+    position: absolute;
+    left: 9px;
+    top: 8px;
+    color: #b6bfc9;
+    font-size: .8rem;
+}
+
+/* Panel container. */
+.rr-panel { min-width: 0; }
+
+.rr-head {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 8px;
+    font-size: .8rem;
+}
+.rr-head-label {
+    color: #64748b;
+    font-weight: 600;
+}
+.rr-head-links {
+    margin-left: auto;
+    display: flex;
+    gap: 10px;
+    flex-shrink: 0;
+}
+.rr-head-links a { color: #1976d2; text-decoration: none; }
+.rr-head-links a:hover { text-decoration: underline; }
+.rr-head-links a.rr-link-off { color: #b6bfc9; pointer-events: none; }
+
+.rr-rows {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.rr-row {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    background: #fff;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    padding: 7px 10px;
+    font-size: .88rem;
+}
+.rr-grip { color: #c2cad3; cursor: grab; }
+.rr-idx {
+    width: 19px;
+    height: 19px;
+    border-radius: 4px;
+    background: #f0f7ff;
+    color: #1976d2;
+    font-size: .72rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.rr-names {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    flex: 1;
+}
+.rr-disp {
+    cursor: text;
+    border-radius: 3px;
+    padding: 1px 3px;
+    margin: -1px -3px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.rr-disp:hover { background: #fff7e0; }
+.rr-was { font-size: .7rem; color: #64748b; }
+.rr-rename {
+    font: inherit;
+    font-size: .88rem;
+    border: 1px solid #1976d2;
+    border-radius: 3px;
+    padding: 1px 4px;
+    width: 100%;
+    outline: none;
+}
+.rr-badge {
+    font-size: .62rem;
+    background: #fff3cd;
+    color: #7a5b00;
+    border-radius: 3px;
+    padding: 1px 5px;
+    flex-shrink: 0;
+}
+.rr-drop { margin-left: 4px; color: #c9d0d8; cursor: pointer; flex-shrink: 0; }
+.rr-drop:hover { color: #c62828; }
+
+.rr-row.rr-dragging { opacity: .4; }
+.rr-row.rr-drop-target {
+    border-color: #1976d2;
+    box-shadow: 0 0 0 2px rgba(25, 118, 210, .15);
+}
+
+.rr-empty {
+    color: #b0b7c0;
+    font-size: .84rem;
+    border: 1px dashed #dee2e6;
+    border-radius: 6px;
+    padding: 18px;
+    text-align: center;
+}
+
+/* Greyed with the rest of Step 2 before a file is loaded. */
+.step-disabled .rr-panel,
+.step-disabled .rr-filter { opacity: .55; }

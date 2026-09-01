@@ -1841,6 +1841,89 @@ def _orientation_axis_titles(state: DataAnalysisState):
 
 
 # ---------------------------------------------------------------------------
+# Display-name overrides (from the "arrange & rename" panels)
+# ---------------------------------------------------------------------------
+
+def apply_label_overrides(fig, overrides: dict) -> None:
+    """Display-only relabel pass over a finished figure.
+
+    ``overrides`` maps an original label — in any form it appears, raw or
+    length-redacted — to its replacement. Only reader-facing text is touched:
+    axis tick text / category arrays, legend and trace names, hover text, pie
+    labels and SPLOM dimension labels. Bar/box positions are NOT moved
+    (significance brackets and letters are placed by numeric category index, so
+    they stay aligned), and colours are untouched because every colour map is
+    keyed by the original name upstream of this call.
+    """
+    if not overrides:
+        return
+
+    def _sub(text):
+        """Swap whole original labels embedded in a hand-built string."""
+        if not isinstance(text, str):
+            return text
+        for orig, new in overrides.items():
+            if orig and orig in text:
+                text = text.replace(orig, new)
+        return text
+
+    def _scalar(v):
+        return overrides.get(v, v) if isinstance(v, str) else v
+
+    def _seq(seq):
+        return None if seq is None else [_scalar(v) for v in seq]
+
+    # ── Traces ──────────────────────────────────────────────────────────────
+    for tr in fig.data:
+        for attr in ('x', 'y', 'labels'):
+            if getattr(tr, attr, None) is not None:
+                try:
+                    tr[attr] = _seq(list(tr[attr]))
+                except (ValueError, TypeError):
+                    pass
+        if getattr(tr, 'name', None):
+            tr.name = _scalar(tr.name)
+        ht = getattr(tr, 'hovertext', None)
+        if isinstance(ht, str):
+            tr.hovertext = _sub(ht)
+        elif ht is not None:
+            try:
+                tr.hovertext = [_sub(t) for t in ht]
+            except TypeError:
+                pass
+        if getattr(tr, 'hovertemplate', None):
+            tr.hovertemplate = _sub(tr.hovertemplate)
+        for d in (getattr(tr, 'dimensions', None) or []):
+            if getattr(d, 'label', None):
+                d.label = _sub(d.label)
+
+    # ── Layout: axes, annotations, shapes ──────────────────────────────────
+    layout = fig.layout
+    for key in layout.to_plotly_json():
+        if not str(key).startswith(('xaxis', 'yaxis')):
+            continue
+        ax = layout[key]
+        if getattr(ax, 'categoryarray', None) is not None:
+            ax.categoryarray = _seq(list(ax.categoryarray))
+        if getattr(ax, 'ticktext', None) is not None:
+            ax.ticktext = _seq(list(ax.ticktext))
+
+    for ann in (layout.annotations or []):
+        if getattr(ann, 'text', None):
+            ann.text = _sub(ann.text)
+        if isinstance(getattr(ann, 'x', None), str):
+            ann.x = _scalar(ann.x)
+        if isinstance(getattr(ann, 'y', None), str):
+            ann.y = _scalar(ann.y)
+
+    for shp in (layout.shapes or []):
+        for coord in ('x0', 'x1', 'y0', 'y1'):
+            v = getattr(shp, coord, None)
+            if isinstance(v, str):
+                setattr(shp, coord, _scalar(v))
+
+
+# ---------------------------------------------------------------------------
 # Main entry point
 # ---------------------------------------------------------------------------
 
@@ -1895,5 +1978,10 @@ def generate_plot(merged_df: pd.DataFrame, group_data_dict: dict, protein_dict: 
     if fig is None:
         warnings.append('No plot generated. Please check your selections and data.')
         return None, warnings
+
+    try:
+        apply_label_overrides(fig, state.build_display_overrides())
+    except Exception:
+        warnings.append('Could not apply label overrides: ' + traceback.format_exc())
 
     return fig.to_json(), warnings
