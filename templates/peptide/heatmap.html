@@ -278,6 +278,11 @@ select.multi-select:disabled { background: #f8f9fa; color: #aaa; }
 
         <hr style="margin:14px 0;">
 
+        <div class="step-title" style="margin-top:4px;">
+            <span class="step-badge">3</span>
+            Plotting Options
+        </div>
+
         <!-- 2-column settings layout -->
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px;">
 
@@ -528,7 +533,7 @@ select.multi-select:disabled { background: #f8f9fa; color: #aaa; }
 
         <div style="margin-top:16px; display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
             <button class="btn-generate" id="generate-btn" disabled>
-                <i class="fas fa-image"></i> Generate Heatmap
+                <i class="fas fa-image"></i> Generate / Update Heatmap
             </button>
             <span id="generate-spinner" class="hidden">
                 <i class="fas fa-circle-notch spin" style="color:#1976d2;"></i>
@@ -540,9 +545,9 @@ select.multi-select:disabled { background: #f8f9fa; color: #aaa; }
 </div><!-- end .page-box -->
 
     <!-- ── Step 3: Output ────────────────────────────────────────── -->
-    <div class="step-card" id="step3-card">
+    <div class="step-card step-disabled" id="step3-card">
         <div class="step-title">
-            <span class="step-badge">3</span>
+            <span class="step-badge">4</span>
             Heatmap Output
         </div>
 
@@ -989,14 +994,17 @@ function populateSelectors(data) {
     hmDataLoaded = true;
     const protSel = document.getElementById('protein-selector');
     protSel.innerHTML = '';
-    data.proteins.forEach(p => {
-        const opt = new Option(p.label, p.id);
+    data.proteins.forEach((p, i) => {
+        // Default-select the first protein so the page has a usable selection
+        // out of the box.
+        const opt = new Option(p.label, p.id, i === 0, i === 0);
         if (!p.has_sequence) opt.dataset.hasSequence = 'false';
         protSel.add(opt);
     });
     const varSel = document.getElementById('varkey-selector');
     varSel.innerHTML = '';
-    data.var_keys.forEach(v => varSel.add(new Option(v, v, true, true)));
+    // Default-select the first sample group only.
+    data.var_keys.forEach((v, i) => varSel.add(new Option(v, v, i === 0, i === 0)));
 }
 
 // ── Auto-fetch sequences for a list of protein IDs ────────────────
@@ -1535,6 +1543,9 @@ async function generateHeatmap() {
 
     const data = await resp.json();
     btn.disabled = false; spinner.classList.add('hidden');
+
+    // Un-grey the output card now that there is a result (or an error) to show.
+    document.getElementById('step3-card').classList.remove('step-disabled');
 
     document.getElementById('heatmap-placeholder').classList.add('hidden');
 

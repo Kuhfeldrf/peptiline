@@ -224,6 +224,25 @@
         document.getElementById('skip-blast-btn').disabled = false;
         var note = document.getElementById('functional-gate-note');
         if (note) note.classList.add('hidden');
+        // Drop the "why is this greyed out" hover text now that the buttons work.
+        var tip = document.getElementById('functional-gate-tip');
+        if (tip) tip.removeAttribute('title');
+    }
+
+    // Enable/disable the Step 2 "Save and Continue" button and keep the
+    // explanatory hover text on its wrapper in sync (a disabled <button>
+    // does not show its own title tooltip).
+    var GROUPS_GATE_MSG = 'Assign at least one categorical group first: in the ' +
+        'step 3 "Categorical Group Assignment" section above, enter a Group Name, select ' +
+        'its abundance columns, and click Add Group (or upload a Group Definition JSON).';
+    function setSubmitGroupsEnabled(enabled) {
+        var btn = document.getElementById('submit-groups-btn');
+        if (btn) btn.disabled = !enabled;
+        var tip = document.getElementById('submit-groups-tip');
+        if (tip) {
+            if (enabled) tip.removeAttribute('title');
+            else tip.setAttribute('title', GROUPS_GATE_MSG);
+        }
     }
 
     document.getElementById('upload-form').addEventListener('submit', function(e) {
@@ -279,9 +298,9 @@
                         resp.mbpdb_rows + '</strong> records. Skipping database search.</div>' +
                         '<div class="dt-alert dt-alert-info"><i class="fas fa-database"></i> ' +
                         blastResp.message + ' (' + blastResp.count + ' records)</div>' +
-                        '<div style="margin-top:12px;"><button class="dt-btn dt-btn-primary" ' +
-                        'id="goto-step2-btn-embedded">Continue to Study Variables ' +
-                        '<i class="fas fa-arrow-right"></i></button></div>';
+                        '<div style="margin-top:12px;"><button class="dt-btn dt-btn-success" ' +
+                        'id="goto-step2-btn-embedded"><i class="fas fa-arrow-right"></i> ' +
+                        'Continue to Study Variables</button></div>';
                     document.getElementById('goto-step2-btn-embedded')
                         .addEventListener('click', function() { goToStep(2); loadStep2(); });
                 });
@@ -485,7 +504,7 @@
             renderDefinedTechReps();
             renderGroups();
             renderColumnPanels('');
-            document.getElementById('submit-groups-btn').disabled = (definedGroups.length === 0);
+            setSubmitGroupsEnabled(definedGroups.length > 0);
         });
     }
 
@@ -823,7 +842,7 @@
                 definedGroups.push({name: name, columns: resp.groups[name] || []});
             });
             renderGroups();
-            document.getElementById('submit-groups-btn').disabled = false;
+            setSubmitGroupsEnabled(true);
         }, function(msg) { showStep2Error(msg, 'groups'); });
     });
 
@@ -836,7 +855,7 @@
         document.getElementById('group-name-input').value = '';
         selectedColumns = [];
         renderColumnPanels(document.getElementById('column-search').value);
-        document.getElementById('submit-groups-btn').disabled = false;
+        setSubmitGroupsEnabled(true);
     });
 
     function renderGroups() {
@@ -891,7 +910,7 @@
             el.addEventListener('click', function() {
                 definedGroups.splice(parseInt(this.getAttribute('data-idx')), 1);
                 renderGroups();
-                if (!definedGroups.length) document.getElementById('submit-groups-btn').disabled = true;
+                if (!definedGroups.length) setSubmitGroupsEnabled(false);
             });
         });
     }
@@ -929,7 +948,7 @@
         document.getElementById('column-search').value = '';
         renderGroups();
         renderColumnPanels('');
-        document.getElementById('submit-groups-btn').disabled = true;
+        setSubmitGroupsEnabled(false);
 
         // Clear the uploaded group-definition file input + its dropzone display
         clearDropzone('group-json-input');
@@ -947,8 +966,8 @@
             ajax('POST', 'submit-groups/', {groups: definedGroups}, function() {
                 goToStep(3);
                 loadStep3();
-            }, function(msg) { btn.disabled = false; showStep2Error(msg, 'actions'); });
-        }, function(msg) { btn.disabled = false; showStep2Error(msg, 'actions'); });
+            }, function(msg) { setSubmitGroupsEnabled(true); showStep2Error(msg, 'actions'); });
+        }, function(msg) { setSubmitGroupsEnabled(true); showStep2Error(msg, 'actions'); });
     });
 
     // Skip Grouping: still save tech reps, then skip groups using bio rep columns
@@ -1502,7 +1521,7 @@
                 'Result: <strong>' + resp.rows + '</strong> rows, <strong>' +
                 resp.columns + '</strong> columns.</div>';
 
-            renderExportButtons(resp.exports);
+            renderExportButtons(resp.exports, resp.export_reasons || {});
             document.getElementById('viz-links-section').classList.remove('hidden');
         }, function(msg, resp) {
             btn.disabled = false;
@@ -1524,7 +1543,8 @@
 
     var currentViewerSheets = [];
 
-    function renderExportButtons(exports) {
+    function renderExportButtons(exports, exportReasons) {
+        exportReasons = exportReasons || {};
         var container = document.getElementById('export-buttons');
         container.innerHTML = '';
 
@@ -1562,10 +1582,15 @@
             var enabled = exports[item.key];
             var row = document.createElement('div');
             row.className = 'dt-export-row' + (enabled ? '' : ' disabled');
+            if (!enabled) {
+                // Explain on hover why this export is greyed out.
+                row.title = exportReasons[item.key] ||
+                    'Not available for this dataset — the inputs this export needs were not provided in the earlier steps.';
+            }
 
             var lbl = document.createElement('span');
             lbl.className = 'dt-export-label';
-            lbl.title = item.title || '';
+            lbl.title = enabled ? (item.title || '') : (row.title || item.title || '');
             lbl.innerHTML = '<i class="fas ' + item.icon + '"></i> ' + item.label;
             row.appendChild(lbl);
 

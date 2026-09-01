@@ -703,6 +703,16 @@ def upload_group_json(request):
     group_data, error = group_processing.parse_group_json(content, columns)
 
     if error:
+        # A common mistake: loading the group-definition example (which uses
+        # simplified sample names) before uploading/defining the column rename
+        # key, so none of those names exist in the raw instrument columns yet.
+        if not column_renames and 'not present in the current dataset' in error:
+            error += (
+                '\n\nIt appears you uploaded the group definitions with simplified / '
+                'renamed columns before renaming the columns in step 1, "Rename '
+                'Abundance Columns", above. Define your column renames there first, '
+                'then load the group example again.'
+            )
         return JsonResponse({'error': error}, status=400)
 
     _save_json(work_dir, 'group_data', group_data)
@@ -1401,10 +1411,53 @@ def process_data(request):
             any(len(v) >= 2 for v in tech_dup_mapping.values())
         )
 
+        # Human-readable reason each unavailable export is greyed out, surfaced
+        # as hover text on the disabled row in Step 4.
+        export_reasons = {}
+        no_groups_msg = (
+            'No categorical groups were assigned in Step 2 (Study Variables), so '
+            'per-group results cannot be computed. Go back to Step 2 and add at '
+            'least one group.'
+        )
+        if not has_groups:
+            for _k in ('group_definitions', 'sequence_list', 'summed_peptide',
+                       'protein_analysis', 'group_correlation', 'replicate_correlation'):
+                export_reasons[_k] = no_groups_msg
+        if not has_mbpdb:
+            export_reasons['mbpdb_results'] = (
+                'No functional annotation data was provided or found. In Step 1, '
+                'upload a functional data file or run the functional database search.'
+            )
+        if not (has_function and has_groups):
+            export_reasons['summed_function'] = (
+                no_groups_msg if (has_function and not has_groups) else
+                'No functional annotation data is present in the processed dataset, '
+                'so abundance cannot be summed by functional category. Provide '
+                'functional data in Step 1.'
+            )
+        if not has_tech_rep_correlation:
+            export_reasons['tech_rep_correlation'] = (
+                'No technical replicate groups were defined in Step 2, so '
+                'within-sample (technical replicate) correlations cannot be '
+                'computed. Define technical replicates in the Step 2 '
+                '"Technical Replicate Assignment" section.'
+            )
+        if not tech_dup_mapping:
+            export_reasons['tech_rep_key'] = (
+                'No technical replicate groups were defined in Step 2, so there '
+                'is no technical replicate key to export.'
+            )
+        if not column_renames:
+            export_reasons['column_rename_key'] = (
+                'No abundance columns were renamed in Step 2, so there is no '
+                'column rename key to export.'
+            )
+
         return JsonResponse({
             'success': True,
             'rows': int(len(final_df)),
             'columns': int(len(final_df.columns)),
+            'export_reasons': export_reasons,
             'exports': {
                 'mbpdb_results': has_mbpdb,
                 'group_definitions': has_groups,

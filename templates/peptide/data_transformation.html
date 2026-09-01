@@ -24,6 +24,20 @@
     .dt-btn-secondary { background: #6c757d; color: #fff; }
     .dt-btn-secondary:hover { background: #5a6268; }
     .dt-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    /* Wrapper that carries a tooltip for a disabled button — a disabled
+       <button> swallows its own title in most browsers, so the explanation
+       lives on this span and shows when the pointer is over the greyed button. */
+    /* Circular step number for the Study Variables sub-sections (matches the
+       Data Analysis page's .step-badge). */
+    .dt-step-badge {
+        display: inline-flex; align-items: center; justify-content: center;
+        width: 24px; height: 24px; border-radius: 50%; background: #1976d2;
+        color: #fff; font-size: 0.9rem; font-weight: 700; flex-shrink: 0;
+        margin-right: 8px; vertical-align: middle;
+    }
+    .dt-tip-wrap { display: inline-block; }
+    .dt-tip-wrap[title] { cursor: not-allowed; }
+    .dt-export-row.disabled { cursor: help; }
     .dt-progress { width: 100%; height: 24px; border-radius: 4px; background: #e9ecef; margin: 12px 0; overflow: hidden; }
     .dt-progress-bar { height: 100%; background: #1976d2; transition: width 0.3s; border-radius: 4px; }
     .dt-alert { padding: 12px 16px; border-radius: 4px; margin-bottom: 12px; }
@@ -31,6 +45,9 @@
     .dt-alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
     .dt-alert-info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
     .dt-alert-warning { background: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
+    /* Step 2 inline errors may carry a follow-up hint on its own line. */
+    #dt-error-rename, #dt-error-techrep, #dt-error-groups,
+    #dt-error-step2, #dt-error-step2-actions { white-space: pre-line; }
     .dt-file-input { margin-bottom: 16px; }
     .dt-file-input label { display: block; font-weight: 600; margin-bottom: 4px; }
     .dt-file-input .help-text { font-size: 0.85rem; color: #666; margin-top: 2px; }
@@ -150,7 +167,7 @@
 
             <!-- Peptidomic data (sub-section) -->
             <div style="margin-bottom:20px; padding-bottom:20px; border-bottom:2px solid #dee2e6;">
-            <h5 style="margin-top:0;"><i class="fas fa-file-import" style="color:#1976d2; margin-right:6px;"></i>Upload Peptidomic Data</h5>
+            <h5 style="margin-top:0;"><span class="dt-step-badge">1</span>Upload Peptidomic Data</h5>
             <form id="upload-form" enctype="multipart/form-data">
                 {% csrf_token %}
                 <span style="display:block; font-weight:600; margin-bottom:4px;">Peptidomic Data File(s) <span style="color: #dc3545;">*</span></span>
@@ -175,7 +192,7 @@
 
             <!-- Functional annotation (sub-section) -->
             <div id="functional-card" style="margin-bottom:20px;">
-            <h5 style="margin-top:0;"><i class="fas fa-tags" style="color:#1976d2; margin-right:6px;"></i>Functional Annotation <span style="font-weight:400; font-size:0.85rem; color:#6c757d;">(Optional)</span></h5>
+            <h5 style="margin-top:0;"><span class="dt-step-badge">2</span>Functional Annotation <span style="font-weight:400; font-size:0.85rem; color:#6c757d;">(Optional)</span></h5>
             <p style="color:#666; margin:4px 0 12px;">Upload a pre-computed functional annotation table, or search a functional database by sequence similarity.</p>
             <!-- Pre-computed functional data OR live database search (source + threshold) -->
             <div class="dt-or-row">
@@ -213,12 +230,14 @@
                 </div>
             </div>
             <div id="functional-actions" style="margin-top: 12px;">
-                <button class="dt-btn dt-btn-primary" id="start-blast-btn" style="margin-right: 8px;" disabled>
-                    <i class="fas fa-tags"></i> Run Functional Annotation
-                </button>
-                <button class="dt-btn dt-btn-secondary" id="skip-blast-btn" disabled>
-                    Skip <i class="fas fa-forward"></i>
-                </button>
+                <span class="dt-tip-wrap" id="functional-gate-tip" title="Upload your peptidomic data first: this stays greyed out until you select your peptidomic data file(s) in the section above and click the blue Upload button. Everything else in this Functional Annotation section is optional.">
+                    <button class="dt-btn dt-btn-primary" id="start-blast-btn" style="margin-right: 8px;" disabled>
+                        <i class="fas fa-tags"></i> Run Functional Annotation
+                    </button>
+                    <button class="dt-btn dt-btn-secondary" id="skip-blast-btn" disabled>
+                        Skip <i class="fas fa-forward"></i>
+                    </button>
+                </span>
                 <div class="help-text" id="functional-gate-note" style="margin-top:6px;">
                     <i class="fas fa-circle-info"></i> Upload your peptidomic data above first.
                 </div>
@@ -229,7 +248,7 @@
             </div>
             <div id="blast-summary" style="margin-top:12px;"></div>
             <div id="blast-continue" class="hidden" style="margin-top:12px;">
-                <button class="dt-btn dt-btn-primary" id="goto-step2-btn">Continue to Study Variables <i class="fas fa-arrow-right"></i></button>
+                <button class="dt-btn dt-btn-success" id="goto-step2-btn"><i class="fas fa-arrow-right"></i> Continue to Study Variables</button>
             </div>
             </div>
             <!-- /Functional annotation -->
@@ -255,7 +274,7 @@
 
             <!-- Rename Abundance Columns (optional sub-section) -->
             <div style="margin-bottom:20px; padding-bottom:20px; border-bottom:2px solid #dee2e6;">
-                <h5 style="margin-top:0;"><i class="fas fa-pen-to-square" style="color:#1976d2; margin-right:6px;"></i>Rename Abundance Columns <span style="font-weight:400; font-size:0.85rem; color:#6c757d;">(Optional)</span></h5>
+                <h5 style="margin-top:0;"><span class="dt-step-badge">1</span>Rename Abundance Columns <span style="font-weight:400; font-size:0.85rem; color:#6c757d;">(Optional)</span></h5>
                 <p style="color:#666; margin:4px 0 12px;">Instrument exports often use long sample names (e.g. <em>Abundance F1 Sample Threshold</em>). Map them to shorter labels here first — the simplified names are used throughout the technical-replicate and grouping steps below.</p>
                 <div id="dt-error-rename" class="dt-alert dt-alert-danger hidden" style="margin-bottom:12px;"></div>
 
@@ -290,7 +309,7 @@
 
             <!-- Technical Replicate Assignment (optional sub-section) -->
             <div style="margin-bottom:20px; padding-bottom:20px; border-bottom:2px solid #dee2e6;">
-                <h5 style="margin-top:0;"><i class="fas fa-vials" style="color:#1976d2; margin-right:6px;"></i>Technical Replicate Assignment <span style="font-weight:400; font-size:0.85rem; color:#6c757d;">(Optional)</span></h5>
+                <h5 style="margin-top:0;"><span class="dt-step-badge">2</span>Technical Replicate Assignment <span style="font-weight:400; font-size:0.85rem; color:#6c757d;">(Optional)</span></h5>
                 <div id="dt-error-techrep" class="dt-alert dt-alert-danger hidden" style="margin-bottom:12px;"></div>
 
                 <div class="dt-file-input" style="margin-bottom:14px;">
@@ -333,7 +352,7 @@
 
             <!-- Categorical Group Assignment (sub-section) -->
             <div style="margin-bottom:20px;">
-            <h5 style="margin-top:0;"><i class="fas fa-layer-group" style="color:#1976d2; margin-right:6px;"></i>Categorical Group Assignment</h5>
+            <h5 style="margin-top:0;"><span class="dt-step-badge">3</span>Categorical Group Assignment</h5>
             <p style="color:#666; margin:4px 0 12px;">Assign your abundance / biological-replicate columns to experimental groups. Group averages and statistics are computed per group.</p>
             <div id="dt-error-groups" class="dt-alert dt-alert-danger hidden" style="margin-bottom:12px;"></div>
 
@@ -387,9 +406,11 @@
                 <button class="dt-btn dt-btn-secondary" id="back-to-step1-btn" style="margin-right:8px;">
                     <i class="fas fa-arrow-left"></i> Back
                 </button>
-                <button class="dt-btn dt-btn-success" id="submit-groups-btn" disabled>
-                    <i class="fas fa-save"></i> Save and Continue <i class="fas fa-arrow-right"></i>
-                </button>
+                <span class="dt-tip-wrap" id="submit-groups-tip" title="Assign at least one categorical group first: in the step 3 &quot;Categorical Group Assignment&quot; section above, enter a Group Name, select its abundance columns, and click Add Group (or upload a Group Definition JSON).">
+                    <button class="dt-btn dt-btn-success" id="submit-groups-btn" disabled>
+                        <i class="fas fa-save"></i> Save and Continue <i class="fas fa-arrow-right"></i>
+                    </button>
+                </span>
                 <button class="dt-btn dt-btn-secondary" id="skip-groups-btn" style="margin-left:8px;">
                     Skip Grouping <i class="fas fa-forward"></i>
                 </button>
@@ -407,7 +428,7 @@
 
             <!-- Protein identifier resolution: custom FASTA, UniProt fetch, or a saved mapping key -->
             <div style="margin-bottom:20px; padding-bottom:20px; border-bottom:2px solid #dee2e6;">
-                <h5 style="margin-top:0;"><i class="fas fa-dna" style="color:#1976d2; margin-right:6px;"></i>Map Protein Identifiers</h5>
+                <h5 style="margin-top:0;"><span class="dt-step-badge">1</span>Map Protein Identifiers</h5>
                 <p style="color:#666; margin:4px 0 12px;">Resolve ambiguous protein mapping from search engines. Then, if your data has unknown protein names, you can provide your own FASTA file or fetch from UniProt.</p>
 
                 <div class="dt-or-row">
@@ -454,15 +475,15 @@
             </div>
 
             <!-- Combined (multi-protein) peptides -->
-            <div id="protein-combinations" class="hidden" style="margin: 12px 0;">
-                <h5>Combined Proteins <span style="color:#6c757d; font-weight:400;">(multi-protein peptides)</span></h5>
+            <div id="protein-combinations" class="hidden" style="margin: 20px 0 0; padding-top: 20px; border-top: 2px solid #dee2e6;">
+                <h5 style="margin-top:0;"><span class="dt-step-badge">2</span>Combined Proteins <span style="color:#6c757d; font-weight:400;">(multi-protein peptides)</span></h5>
                 <p style="color: #666;">Select which protein ID to use for rows where a peptide maps to more than one protein.</p>
                 <div id="combinations-list"></div>
             </div>
 
             <!-- Merge / rename protein sources -->
-            <div id="source-renames" class="hidden" style="margin: 16px 0; padding-top: 12px; border-top: 1px solid #e0e0e0;">
-                <h5>Merge / Rename Protein Sources</h5>
+            <div id="source-renames" class="hidden" style="margin: 20px 0 0; padding-top: 20px; border-top: 2px solid #dee2e6;">
+                <h5 style="margin-top:0;"><span class="dt-step-badge">3</span>Merge / Rename Protein Sources</h5>
                 <p style="color: #666;">
                     Fold several protein accessions (including single-protein ones the section above can't reach,
                     e.g. &beta;-casein variants <code>P02666A1</code> and <code>P02666A2</code>) into one canonical protein,
@@ -475,7 +496,7 @@
                 </button>
             </div>
 
-            <div style="margin-top: 16px;">
+            <div style="margin-top: 16px; border-top: 1px solid #dee2e6; padding-top: 16px;">
                 <button class="dt-btn dt-btn-secondary" id="back-to-step2-btn" style="margin-right: 8px;">
                     <i class="fas fa-arrow-left"></i> Back
                 </button>
@@ -495,7 +516,7 @@
     <!-- Step 4: Process & Export -->
     <div class="dt-step-content" data-step="4">
         <div class="dt-card">
-            <h4>Process Data</h4>
+            <h4><span class="dt-step-badge">1</span>Process Data</h4>
             <p style="color: #666;">Merge all data, calculate group averages, and extract bioactive peptides.</p>
             <button class="dt-btn dt-btn-primary" id="process-btn">
                 <i class="fas fa-cogs"></i> Process Data
@@ -506,7 +527,7 @@
         </div>
 
         <div id="export-section" class="dt-card hidden">
-            <h4>Results</h4>
+            <h4><span class="dt-step-badge">2</span>Results</h4>
             <div id="process-summary" style="margin-bottom: 16px;"></div>
 
             <p id="correlation-options-note" style="font-size:0.8rem; color:#888; margin:4px 0 0;">
@@ -523,7 +544,7 @@
             <div class="dt-export-list" id="export-buttons"></div>
 
             <div id="viz-links-section" class="hidden" style="margin-top: 20px; padding-top: 16px; border-top: 1px solid #e0e0e0;">
-                <h5 style="margin-bottom: 8px; color: #333;">Proceed to Visualization</h5>
+                <h5 style="margin-bottom: 8px; color: #333;"><span class="dt-step-badge">3</span>Proceed to Visualization</h5>
                 <p style="color: #666; font-size: 0.9rem; margin-bottom: 12px;">
                     Send your processed data directly to a visualization dashboard — no download or re-upload needed.
                 </p>
@@ -567,5 +588,5 @@
 {% endblock %}
 
 {% block 'scripts' %}
-<script src="{% static 'peptide/js/data_transformation.js' %}?v=36"></script>
+<script src="{% static 'peptide/js/data_transformation.js' %}?v=37"></script>
 {% endblock %}

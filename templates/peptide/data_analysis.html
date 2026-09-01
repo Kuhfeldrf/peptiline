@@ -206,6 +206,11 @@ select.multi-select:disabled { background: #f8f9fa; color: #aaa; }
 
         <hr style="margin:14px 0;">
 
+        <div class="step-title" style="margin-top:4px;">
+            <span class="step-badge">3</span>
+            Plotting Options
+        </div>
+
         <!-- 2-column settings layout -->
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:2px;">
 
@@ -393,6 +398,21 @@ select.multi-select:disabled { background: #f8f9fa; color: #aaa; }
             <button class="btn-generate" id="generate-btn" disabled>
                 <i class="fas fa-chart-bar"></i> Generate / Update Plot
             </button>
+            <span id="generate-spinner" style="display:none; font-size:.95rem;">
+                <i class="fas fa-circle-notch spin" style="color:#1976d2;"></i> Generating plot…
+            </span>
+        </div>
+    </div>
+</div><!-- end .page-box -->
+
+    <!-- ── Step 3: Plot output ──────────────────────────────────── -->
+    <div class="step-card step-disabled" id="step3-card">
+        <div class="step-title">
+            <span class="step-badge">4</span>
+            Plot Output
+        </div>
+
+        <div style="margin-bottom:12px; display:flex; gap:10px; flex-wrap:wrap;">
             <button class="btn-download" id="download-btn" disabled>
                 <i class="fas fa-download"></i> Download Interactive (HTML)
             </button>
@@ -402,19 +422,8 @@ select.multi-select:disabled { background: #f8f9fa; color: #aaa; }
             <button class="btn-download" id="download-svg-btn" disabled>
                 <i class="fas fa-bezier-curve"></i> Download SVG
             </button>
-            <span id="generate-spinner" style="display:none; font-size:.95rem;">
-                <i class="fas fa-circle-notch spin" style="color:#1976d2;"></i> Generating plot…
-            </span>
         </div>
-    </div>
-</div><!-- end .page-box -->
 
-    <!-- ── Step 3: Plot output ──────────────────────────────────── -->
-    <div class="step-card" id="step3-card">
-        <div class="step-title">
-            <span class="step-badge">3</span>
-            Plot Output
-        </div>
         <div id="plot-messages"></div>
         <div id="heatmap-placeholder" class="placeholder-box">
             <i class="fas fa-chart-bar" style="font-size:2rem; margin-bottom:8px; display:block; color:#ccc;"></i>
@@ -788,6 +797,9 @@ async function generatePlot() {
 
     const data = await resp.json();
     btn.disabled = false; spinner.style.display = 'none';
+
+    // Un-grey the output card now that there is a result (or an error) to show.
+    document.getElementById('step3-card').classList.remove('step-disabled');
 
     // Hide placeholder, show plot area
     document.getElementById('heatmap-placeholder').style.display = 'none';
