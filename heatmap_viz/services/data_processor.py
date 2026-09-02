@@ -2,6 +2,7 @@
 Data processing service for the Heatmap Visualization web app.
 Extracted from heatmap_visualization.ipynb DataTransformation and HeatmapDataHandler classes.
 """
+import html
 import io
 import re
 import sys
@@ -20,6 +21,12 @@ from utils.parallel import run_tasks
 # Raster resolution for rendered heatmaps. 300 dpi is the usual publication
 # floor; the preview and the downloaded PNG are the same encoded image.
 EXPORT_DPI = 300
+
+# Proteins whose peptide-vs-sequence alignment warning is suppressed. P02666
+# (bovine beta-casein): the bundled example dataset maps both A1/A2 variants
+# onto one entry, so the His67 <-> Pro67 polymorphism shows up as false
+# mismatches against whichever variant sequence is on file.
+_SKIP_ALIGNMENT_WARNING_PIDS = {'P02666'}
 
 
 def _coerce_font_size(value, default: int) -> int:
@@ -753,22 +760,12 @@ def build_available_data_variables(
         #                 purely cosmetic, so every peptide must move down by
         #                 strip_len to stay on the same residue.
         position_offset = 0
+        numbering, reason = 'mature', ''
         if strip_len:
             numbering, reason = detect_dataset_numbering(
                 pinfo.get('sequence', ''), protein_df, strip_len)
             if numbering == 'precursor':
                 position_offset = strip_len
-                messages.append(
-                    f"{protein_id}: peptide positions are numbered against the full precursor "
-                    f"({reason}), so they were shifted down by {strip_len} to stay aligned with "
-                    "the trimmed sequence."
-                )
-            else:
-                messages.append(
-                    f"{protein_id}: peptide positions are numbered from the mature protein "
-                    f"({reason}), so {strip_len} residue(s) were trimmed from the sequence "
-                    "without moving any positions."
-                )
             protein_sequence = protein_sequence[strip_len:]
 
         is_all_null = (
@@ -781,10 +778,43 @@ def build_available_data_variables(
         # dataset carries the peptide's own sequence text, that the residues
         # match. Runs once per protein (not per var_key) so a systematic
         # mismatch isn't repeated.
-        messages.extend(validate_peptide_alignment(
-            protein_sequence, protein_df, position_offset=position_offset,
-            protein_id=protein_id,
-        ))
+        #
+        # P02666 (bovine beta-casein) is exempt: the bundled example dataset
+        # maps both A1/A2 variants onto this single entry, so the A1/A2
+        # polymorphism (His67 <-> Pro67) makes ~half the peptides read as
+        # "misaligned" against whichever variant sequence is on file. That is
+        # expected for this dataset, not a real misalignment.
+        if protein_id in _SKIP_ALIGNMENT_WARNING_PIDS:
+            align_msgs = []
+        else:
+            align_msgs = validate_peptide_alignment(
+                protein_sequence, protein_df, position_offset=position_offset,
+                protein_id=protein_id,
+            )
+
+        # Only explain the trim/renumber when the user actually has something to
+        # act on: positions were shifted (precursor numbering), the alignment
+        # still looks off, or the numbering guess wasn't confident. A clean
+        # mature-numbered trim changes nothing visible, so stay quiet.
+        numbering_confident = reason[:1].isdigit()
+        if strip_len and (align_msgs or numbering == 'precursor' or not numbering_confident):
+            who = html.escape(str(protein_id))
+            why = html.escape(str(reason))
+            if numbering == 'precursor':
+                body = (f"<p>Peptide positions were shifted down by {strip_len} so they "
+                        f"stay on the same residues after the trim ({why}).</p>")
+            else:
+                body = f"<p>Peptide positions were kept as-is ({why}).</p>"
+            messages.append(
+                '<details class="hm-msg-details">'
+                f"<summary>{who}: {strip_len} residue(s) trimmed from the start of the "
+                "sequence (click to expand)</summary>"
+                f"{body}"
+                "<p>Check that the sequence is correct after the start/stop sequence "
+                "has been stripped.</p>"
+                "</details>"
+            )
+        messages.extend(align_msgs)
 
         for var_key in selected_var_keys:
             if var_key not in gvar_to_info:

@@ -4,15 +4,20 @@
  * Matches the dashboard design system (#1976d2, 6px radius, system/Inter font).
  */
 
-/* Two-column [ picker | panel ] split for one selector row. */
+/* Two-column [ picker | panel ] split for one selector row.
+ *
+ * Both tracks are explicitly capped so the row keeps a readable, form-like
+ * width on a wide / full-screen page instead of the panel stretching the
+ * full 1600px page-box. Leftover horizontal space is simply left blank to
+ * the right (tracks stay left-aligned). Below 820px the row stacks. */
 .rr-selector-row {
     display: grid;
-    grid-template-columns: minmax(220px, 320px) 1fr;
+    grid-template-columns: minmax(220px, 320px) minmax(0, 460px);
     gap: 16px;
     align-items: start;
 }
 @media (max-width: 820px) {
-    .rr-selector-row { grid-template-columns: 1fr; }
+    .rr-selector-row { grid-template-columns: minmax(0, 460px); }
 }
 
 /* Filter box above a picker's <select>. */

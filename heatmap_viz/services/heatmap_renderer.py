@@ -6,6 +6,7 @@ Those heavy libraries are imported lazily inside the rendering functions
 that actually use them — on the first plot call, not on notebook startup.
 """
 
+import html
 import json
 import logging
 import pandas as pd
@@ -707,6 +708,21 @@ def calculate_abundance(protein_sequence, peptide_dataframe, grouping_variable, 
     return abundance_df
 
 
+def _differs_only_by_il(expected, actual):
+    """True when two equal-length residue strings differ *only* at positions
+    where one side is I and the other L.
+
+    Leucine and isoleucine are isobaric and cannot be told apart by mass
+    spectrometry, so a search engine's I/L call is essentially a coin flip.
+    An "expected vs actual" difference that is nothing but I<->L swaps is not
+    a real misalignment and must not be flagged.
+    """
+    if len(expected) != len(actual):
+        return False
+    diffs = [(e, a) for e, a in zip(expected, actual) if e != a]
+    return bool(diffs) and all({e, a} == {'I', 'L'} for e, a in diffs)
+
+
 def validate_peptide_alignment(protein_sequence, peptide_dataframe, position_offset=0,
                                protein_id=None, max_examples=5):
     """
@@ -725,9 +741,10 @@ def validate_peptide_alignment(protein_sequence, peptide_dataframe, position_off
     match the dataset's numbering at all) so users get one clear message
     instead of peptides silently disappearing from or misplaced on the plot.
 
-    Returns a list with zero or one human-readable error string (a single
-    summary, not one line per peptide, so a systematic mismatch doesn't
-    flood the UI).
+    Returns a list with zero or one human-readable warning string (a single
+    collapsible summary, not one line per peptide, so a systematic mismatch
+    doesn't flood the UI). Differences that are purely I<->L swaps are
+    ignored (see :func:`_differs_only_by_il`).
     """
     if 'start' not in peptide_dataframe.columns or 'end' not in peptide_dataframe.columns:
         return []
@@ -773,7 +790,7 @@ def validate_peptide_alignment(protein_sequence, peptide_dataframe, position_off
             if isinstance(peptide_seq, str) and peptide_seq.strip():
                 expected = _NON_AA_RE.sub('', peptide_seq).upper()
                 actual = protein_sequence[start_idx:stop_idx].upper()
-                if expected and expected != actual:
+                if expected and expected != actual and not _differs_only_by_il(expected, actual):
                     mismatched += 1
                     if len(examples) < max_examples:
                         examples.append(f"{start_val}-{end_val} is '{actual}', expected '{expected}'")
@@ -782,14 +799,25 @@ def validate_peptide_alignment(protein_sequence, peptide_dataframe, position_off
     if not total:
         return []
 
-    label = f" for {protein_id}" if protein_id else ""
-    more = f"; +{total - len(examples)} more" if total > len(examples) else ""
+    who = protein_id or "This protein"
+    bullets = "".join(f"<li>{html.escape(e)}</li>" for e in examples)
+    if total > len(examples):
+        bullets += f"<li>+{total - len(examples)} more</li>"
     return [
-        f"Error: {total} peptide position(s){label} do not align with the protein "
-        f"sequence ({'; '.join(examples)}{more}). The amino acid position in the "
-        "dataset appears misaligned with the FASTA/UniProt sequence — check the "
-        "Strip Start Sequence value (or the UniProt signal-peptide length) against "
-        "the numbering used in your dataset."
+        '<details class="hm-msg-details">'
+        f"<summary>{html.escape(who)}: the dataset appears misaligned with the "
+        "FASTA/UniProt sequence (click to expand)</summary>"
+        f"<p>{total} peptide position(s) don&rsquo;t match the protein sequence:</p>"
+        f"<ul>{bullets}</ul>"
+        "<p>Is the protein sequence correct after the start/stop sequence has been "
+        "stripped? Things to try:</p>"
+        "<ul>"
+        "<li>adjust the <strong>Strip Start Sequence</strong> value (or the UniProt "
+        "signal-peptide length)</li>"
+        "<li>upload a <strong>FASTA file</strong> whose sequence matches the "
+        "numbering used in your dataset</li>"
+        "</ul>"
+        "</details>"
     ]
 
 

@@ -66,6 +66,11 @@ select.multi-select:disabled { background: #f8f9fa; color: #aaa; }
 .status-success { background: #e8f5e9; border-left: 4px solid #388e3c; }
 .status-warning { background: #fff8e1; border-left: 4px solid #f9a825; }
 .status-error   { background: #ffebee; border-left: 4px solid #c62828; }
+.hm-msg-details > summary { cursor: pointer; font-weight: 600; }
+.hm-msg-details[open] > summary { margin-bottom: 6px; }
+.hm-msg-details p { margin: 6px 0; }
+.hm-msg-details ul { margin: 6px 0; padding-left: 20px; }
+.hm-msg-details li { margin: 2px 0; }
 
 .spin { animation: spin 1s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
@@ -1015,9 +1020,7 @@ function populateSelectors(data) {
             stripped: p.name_stripped || p.label,
             raw: p.name_raw || p.name_stripped || p.label,
         };
-        // Default-select the first protein so the page has a usable selection
-        // out of the box.
-        const opt = new Option(hmProteinOptionText(p.id), p.id, i === 0, i === 0);
+        const opt = new Option(hmProteinOptionText(p.id), p.id, false, false);
         if (!p.has_sequence) opt.dataset.hasSequence = 'false';
         protSel.add(opt);
     });
@@ -1650,7 +1653,12 @@ async function generateHeatmap() {
     }
 
     if (data.messages && data.messages.length)
-        data.messages.forEach(m => appendStatus(msgs, m, /^Error:/.test(m) ? 'error' : 'info'));
+        data.messages.forEach(m => {
+            const type = /^\s*<details/.test(m) ? 'warning'
+                       : /^Error:/.test(m)      ? 'error'
+                       :                          'info';
+            appendStatus(msgs, m, type);
+        });
 
     currentLandscapeB64             = data.landscape;
     currentCompactJson              = data.compact || null;
@@ -1918,7 +1926,7 @@ if (new URLSearchParams(window.location.search).get('from_dt') === '1') {
 })();
 
 // Load example helpers for heatmap page
-function hmLoadExample(url, inputId, linkId) {
+function hmLoadExample(url, inputId, linkId, afterChange) {
     var link = document.getElementById(linkId);
     var origHtml = link.innerHTML;
     link.innerHTML = '<i class="fas fa-spinner fa-spin" style="font-size:.85rem;"></i> Loading...';
@@ -1935,6 +1943,7 @@ function hmLoadExample(url, inputId, linkId) {
             var input = document.getElementById(inputId);
             input.files = dt.files;
             input.dispatchEvent(new Event('change'));
+            if (typeof afterChange === 'function') afterChange();
             link.innerHTML = '<i class="fas fa-check" style="font-size:.85rem;"></i> Loaded';
             setTimeout(function() { link.innerHTML = origHtml; }, 3000);
         })
@@ -1946,7 +1955,16 @@ function hmLoadExample(url, inputId, linkId) {
 }
 document.getElementById('hm-load-example-csv').addEventListener('click', function(e) {
     e.preventDefault();
-    hmLoadExample('/static/peptide/examples/example_merged_dataframe.csv', 'merged-file-input', 'hm-load-example-csv');
+    // The example dataset is bovine caseins numbered from the mature protein,
+    // so it needs "Strip start sequence" on to line up. A normal upload can't
+    // assume that, so the checkbox only auto-enables for the example load.
+    hmLoadExample('/static/peptide/examples/example_merged_dataframe.csv', 'merged-file-input', 'hm-load-example-csv', function() {
+        const cb = document.getElementById('strip-start-sequence');
+        if (cb && !cb.checked) {
+            cb.checked = true;
+            cb.dispatchEvent(new Event('change'));
+        }
+    });
 });
 document.getElementById('hm-load-example-fasta').addEventListener('click', function(e) {
     e.preventDefault();
