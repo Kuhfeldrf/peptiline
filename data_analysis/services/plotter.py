@@ -46,6 +46,64 @@ RELATIVE_STATS_NOTE = (
     'comparison is defined on absolute values. Switch to an Absolute metric.'
 )
 
+# Shown when Show Stats is on but the chart is not a bar chart the overlay is
+# defined for. Pie/correlation have no replicate-level bar to annotate, and a
+# stacked bar's segments are parts of a whole (the same compositional objection
+# as RELATIVE_STATS_NOTE), so no markers are drawn on either.
+NON_BAR_STATS_NOTE = (
+    'Significance markers are only available on Grouped Bar Plots — the '
+    'comparison annotates a bar per sample group.'
+)
+
+# Shown when fewer than two sample groups are selected: there is no comparison
+# to make, so the checkbox would silently do nothing.
+TOO_FEW_GROUPS_NOTE = (
+    'Significance not shown: select at least 2 sample groups to compare.'
+)
+
+# THE guard against the mislabelled figure. In "By Sample" orientation the
+# x-clusters are the samples and the coloured bars within a cluster are the
+# selected functions/proteins, but the only comparison defined here is
+# sample-vs-sample on the cluster *total* (the sum of those bars). One letter per
+# cluster therefore describes a quantity that is not drawn, while visually
+# attaching itself to whichever bar happens to be tallest. Rather than render an
+# unattributable marker we refuse and name the two ways out.
+def _series_ambiguity_note(n_series, noun):
+    """Explain why a multi-series By-Sample chart gets no significance markers."""
+    return (
+        f'Significance not shown: in "By Sample" orientation each sample holds '
+        f'{n_series} {noun} bars, but the only comparison defined here is between '
+        f'samples on their combined total — a single letter could not be '
+        f'attributed to any one bar. Select a single {noun}, or switch to '
+        f'"By {noun.capitalize()}" orientation to compare the samples within each '
+        f'{noun}.'
+    )
+
+
+def significance_gate(state, n_series=1, series_noun='function'):
+    """Single authority on whether significance markers may be drawn.
+
+    Returns ``(allowed, note)``. When ``allowed`` is False, ``note`` is the
+    user-facing explanation to render as the figure caption — the overlay is
+    never silently skipped. ``n_series`` is how many bars share one x-cluster in
+    "By Sample" orientation (1 for the sample-totals chart, and for the
+    By-Function / By-Protein orientations where each bar IS a sample).
+
+    The client mirrors these rules to grey the checkbox, but this function is
+    what actually decides: a hand-rolled request cannot slip past it.
+    """
+    if not state.show_significance:
+        return False, None
+    if state.plot_type != 'Grouped Bar Plots':
+        return False, NON_BAR_STATS_NOTE
+    if state.is_relative:
+        return False, RELATIVE_STATS_NOTE
+    if len(state.selected_groups) < 2:
+        return False, TOO_FEW_GROUPS_NOTE
+    if state.orientation == 'By Sample' and n_series > 1:
+        return False, _series_ambiguity_note(n_series, series_noun)
+    return True, None
+
 
 def _log_arr(v, base=10):
     """Base-aware elementwise log (base 10 or 2) for array-likes / scalars."""
@@ -178,7 +236,6 @@ def _plot_totals_relative(state: DataAnalysisState):
         textfont=dict(size=state.font_size_value_label, color='black'),
         showlegend=False, hoverinfo='none',
     ))
-
     y_title = 'Relative ' + state.metric_name
     yaxis_kw = _axis_style(state.font_size_ylabel, state.font_size_ytick)
     yaxis_kw['range'] = [0, 100]
@@ -190,6 +247,13 @@ def _plot_totals_relative(state: DataAnalysisState):
         'xaxis': dict(title=state.xlabel or '', tickangle=45, **_axis_style(state.font_size_xlabel, state.font_size_xtick)),
         'yaxis': dict(title=state.ylabel or y_title, **yaxis_kw),
     })
+    # After update_layout, which owns the x-axis title the caption appends to.
+    # This chart is reachable with Show Stats ticked (No Filter / Both, By Sample,
+    # Relative); every other path captions its refusal, and without this one the
+    # checkbox looked honoured while silently drawing nothing.
+    _, sig_note = significance_gate(state, n_series=1)
+    if sig_note:
+        _add_significance_caption(fig, sig_note)
     return fig
 
 
@@ -328,7 +392,11 @@ def plot_total_peptides(state: DataAnalysisState):
             yaxis=dict(title=state.ylabel or y_axis_title, **yaxis_kw),
         )
 
-    if state.show_significance and not state.is_relative:
+    # One bar per sample here, so a per-sample letter is unambiguous: n_series=1.
+    sig_ok, sig_note = significance_gate(state, n_series=1)
+    if sig_note:
+        _add_significance_caption(fig, sig_note)
+    if sig_ok:
         if state.use_count:
             tops = {g: (0 if counts[i] is None else counts[i]) + count_sems[i] for i, g in enumerate(groups)}
         else:
@@ -341,7 +409,8 @@ def plot_total_peptides(state: DataAnalysisState):
         _add_totals_significance(fig, groups, state.total_reps_dict,
                                  'count' if state.use_count else 'abundance', tops, is_log_axis,
                                  method=state.significance_method,
-                                 sig_font_size=state.font_size_value_label)
+                                 sig_font_size=state.font_size_value_label,
+                                 extra_notes=[n for n in (_log_scale_note(state),) if n])
     return fig
 
 
@@ -349,7 +418,8 @@ def plot_total_peptides(state: DataAnalysisState):
 # Plot 2: Grouped bar plot
 # ---------------------------------------------------------------------------
 
-def _significance_caption(method_label, excluded, min_n, tested_any, reason=None):
+def _significance_caption(method_label, excluded, min_n, tested_any, reason=None,
+                          notes=None):
     """Build the footnote that keeps the significance overlay honest.
 
     When a comparison ran, it names the test + alpha, lists any groups dropped for
@@ -357,6 +427,10 @@ def _significance_caption(method_label, excluded, min_n, tested_any, reason=None
     warns that a non-significant result is inconclusive when n is small. When
     nothing could be tested, it says *why* rather than leaving the user staring at
     a checkbox that silently did nothing.
+
+    ``notes`` are extra clauses the caller needs stated for the figure to be read
+    correctly — e.g. that the letters were withheld because nothing separated, or
+    that the test ran on untransformed values under a log axis.
     """
     if not tested_any:
         why = reason or 'need at least 3 replicates in at least 2 groups'
@@ -364,11 +438,32 @@ def _significance_caption(method_label, excluded, min_n, tested_any, reason=None
     parts = [f'{method_label}, α = 0.05']
     if excluded:
         parts.append('excluded (fewer than 3 replicates): ' + ', '.join(excluded))
+    parts.extend(notes or [])
     if min_n is not None and min_n <= 4:
         parts.append(
             f'smallest group n = {min_n}: power is low, so a shared letter / "ns" '
             'means not resolvable at this sample size, not "no difference"')
     return '; '.join(parts) + '.'
+
+
+def _log_scale_note(state):
+    """Caption clause for the log-axis / raw-test mismatch, or None.
+
+    The comparison always runs on the untransformed replicate values, so under a
+    log y-axis the bars and the letters are on different scales (and a Tukey on
+    raw vs logged abundance need not agree). Say so rather than let the reader
+    assume the test matched the plot.
+    """
+    if not getattr(state, 'log_transform', False):
+        return None
+    return ('test computed on untransformed replicate values (the log y-axis is '
+            'a display transform)')
+
+
+# Pooled "everything else" bars are built by summing the minor categories, which
+# has no replicate vector behind it, so they can never be tested. Named in the
+# caption instead of silently going unlettered.
+POOLED_CATEGORIES = ('Other Functions', 'Other Proteins')
 
 
 def _add_significance_caption(fig, text):
@@ -423,7 +518,8 @@ def _offset_fn(tops_vals, is_log_axis):
 
 
 def _add_totals_significance(fig, groups, total_reps, metric_key, tops, is_log_axis,
-                             method='tukey', x_categorical=True, sig_font_size=None):
+                             method='tukey', x_categorical=True, sig_font_size=None,
+                             extra_notes=None):
     """Significance markers for a chart whose x-clusters are the sample groups.
 
     Used both by the totals bar chart and by grouped bars in "By Sample"
@@ -452,6 +548,7 @@ def _add_totals_significance(fig, groups, total_reps, metric_key, tops, is_log_a
     rep_arrays = {g: list(total_reps.get(g, {}).get(metric_key, []) or []) for g in groups}
     res = stats.compare_groups(rep_arrays, method=method)
     excluded = [redact_string_descriptions(g) for g in res.get('excluded', [])]
+    notes = list(extra_notes or [])
     if not res['testable']:
         _add_significance_caption(fig, _significance_caption(
             res['method'], excluded, None, False, res.get('reason')))
@@ -488,6 +585,11 @@ def _add_totals_significance(fig, groups, total_reps, metric_key, tops, is_log_a
                            text=stars, showarrow=False, yanchor='bottom',
                            font=dict(size=star_size, color='black'))
         anchor_y = above(y, 1.5)
+    elif stats.letters_are_uninformative(res['letters']):
+        # Every group shares one letter: the row of identical letters carries no
+        # contrast, so state the outcome in words instead of drawing it.
+        notes.append(f'no pairwise differences resolved among the {len(groups)} '
+                     'groups, so no letters are drawn')
     else:
         # Compact-letter display as a scatter-text trace, auto-extends the y-range.
         letter_groups = [g for g in groups if res['letters'].get(g)]
@@ -512,11 +614,11 @@ def _add_totals_significance(fig, groups, total_reps, metric_key, tops, is_log_a
         ))
 
     _add_significance_caption(fig, _significance_caption(
-        res['method'], excluded, res.get('min_n'), True))
+        res['method'], excluded, res.get('min_n'), True, notes=notes))
 
 
 def _add_grouped_significance(fig, categories, group_order, geom, reps_lookup, metric_key,
-                              method='tukey', sig_font_size=None):
+                              method='tukey', sig_font_size=None, extra_notes=None):
     """Overlay ANOVA + Tukey HSD significance markers on a grouped bar chart.
 
     For each category cluster (one function or one protein) the sample groups are
@@ -544,8 +646,18 @@ def _add_grouped_significance(fig, categories, group_order, geom, reps_lookup, m
     excluded, min_ns, last_reason = set(), [], None
     star_size = sig_font_size if sig_font_size is not None else 13
     letter_size = sig_font_size if sig_font_size is not None else 12
+    notes = list(extra_notes or [])
+    pooled_untested = []
 
+    # Pass 1: run every cluster's test up front, so the drawing pass knows whether
+    # ANY cluster resolved a difference. When none did, the letters are a grid of
+    # identical 'a's that reads as a per-bar annotation while saying nothing — the
+    # confusion this guard exists to prevent — so they are replaced by a caption.
+    results = []
     for ci, cat in enumerate(categories):
+        if cat in POOLED_CATEGORIES:
+            pooled_untested.append(redact_string_descriptions(cat))
+            continue
         reps = reps_lookup(cat) or {}
         rep_arrays = {g: list(reps.get(g, {}).get(metric_key, []) or []) for g in group_order}
         res = stats.compare_groups(rep_arrays, method=method)
@@ -555,6 +667,23 @@ def _add_grouped_significance(fig, categories, group_order, geom, reps_lookup, m
             continue
         if res.get('min_n') is not None:
             min_ns.append(res['min_n'])
+        results.append((ci, res))
+
+    two_group = len(group_order) == 2
+    all_degenerate = (not two_group) and bool(results) and all(
+        stats.letters_are_uninformative(res['letters']) for _, res in results)
+    if all_degenerate:
+        notes.append('no pairwise differences resolved in any group, so no letters '
+                     'are drawn')
+    # Each cluster is its own ANOVA family. Tukey/Games-Howell control error
+    # WITHIN a cluster, but nothing corrects across clusters, so a reader
+    # scanning k of them faces an inflated family-wise rate. State the count
+    # rather than let the figure imply one corrected analysis.
+    if len(results) > 1:
+        notes.append(f'{len(results)} independent comparisons, one per x-axis '
+                     'group; α is not corrected across them')
+
+    for ci, res in results:
         cat_geom = {g: geom.get((ci, g)) for g in group_order if geom.get((ci, g))}
         if not cat_geom:
             continue
@@ -564,7 +693,7 @@ def _add_grouped_significance(fig, categories, group_order, geom, reps_lookup, m
         # Two displayed groups → significance bracket with stars. Each vertical
         # riser starts just above its OWN bar+SEM top and the horizontal sits above
         # the taller of the two, so the bracket never overlaps either error bar.
-        if len(group_order) == 2 and all(g in cat_geom for g in group_order):
+        if two_group and all(g in cat_geom for g in group_order):
             g1, g2 = group_order
             label = stats.significance_stars(res['pairwise'].get(frozenset((g1, g2))))
             t1, t2 = cat_geom[g1]['top'], cat_geom[g2]['top']
@@ -578,7 +707,7 @@ def _add_grouped_significance(fig, categories, group_order, geom, reps_lookup, m
             fig.add_annotation(x=(x1 + x2) / 2, y=y + off * 0.2, text=label, showarrow=False,
                                font=dict(size=star_size, color='black'), yanchor='bottom')
             needed_top = max(needed_top, y + off * 2)
-        else:
+        elif not all_degenerate:
             # Three or more groups → compact-letter display above each bar.
             for g, letter in res['letters'].items():
                 cg = cat_geom.get(g)
@@ -588,15 +717,22 @@ def _add_grouped_significance(fig, categories, group_order, geom, reps_lookup, m
                                        yanchor='bottom')
             needed_top = max(needed_top, cluster_top + off * 2)
 
+    if pooled_untested:
+        notes.append('not tested (pooled aggregate with no replicate vector): '
+                     + ', '.join(pooled_untested))
+
     if any_marker and needed_top > axis_max:
         # Linear grouped-bar axis (log-transform pre-logs the values), so a plain
         # [0, top] range is valid and leaves headroom for the markers.
         fig.update_yaxes(range=[0, needed_top + off])
 
     excluded_disp = [redact_string_descriptions(g) for g in group_order if g in excluded]
+    # `results` (not `any_marker`) decides whether a comparison ran: with every
+    # cluster degenerate the tests all succeeded and are reported in the caption
+    # even though deliberately nothing was drawn.
     _add_significance_caption(fig, _significance_caption(
         method_label, excluded_disp, min(min_ns) if min_ns else None,
-        any_marker, last_reason))
+        bool(results), last_reason, notes=notes))
 
 
 def create_grouped_bar_plot(state: DataAnalysisState):
@@ -609,6 +745,9 @@ def create_grouped_bar_plot(state: DataAnalysisState):
     use_log = state.log_transform
     log_base = state.log_base
     metric_key = 'count' if use_count else 'abundance'
+    # `show_sig` is decided per-branch by significance_gate() once the number of
+    # bars per x-cluster is known (see each branch below); this only gates the
+    # cheap geometry bookkeeping in the bar loops.
     show_sig = state.show_significance and not state.is_relative
 
     if orientation == 'By Function' or (orientation == 'By Sample' and plot_filter in ('Selected Function(s)', 'Functional vs Non-Functional Peptides')):
@@ -728,22 +867,31 @@ def create_grouped_bar_plot(state: DataAnalysisState):
             hoverlabel=HOVERLABEL,
             legend=_legend_style(state, legend_lbl, yanchor='top', y=1.0, xanchor='left', x=1.05),
         )
-        if show_sig and orientation == 'By Function' and sig_geom:
+        # By Function: each cluster is one function and every bar is a sample, so
+        # letters attach to bars. By Sample: the cluster is the sample and the bars
+        # are functions, so only a single-function selection is unambiguous.
+        sig_ok, sig_note = significance_gate(
+            state, n_series=len(bar_groups) if orientation == 'By Sample' else 1,
+            series_noun='function')
+        notes = [n for n in (_log_scale_note(state),) if n]
+        if sig_note:
+            _add_significance_caption(fig, sig_note)
+        elif sig_ok and orientation == 'By Function' and sig_geom:
             _add_grouped_significance(
                 fig, categories, list(bar_groups), sig_geom,
                 lambda fn: state.function_reps_dict.get(fn, {}), metric_key,
-                method=state.significance_method, sig_font_size=state.font_size_value_label)
-        elif show_sig and orientation == 'By Sample' and bysample_tops:
-            # Samples are the x-clusters here, so compare the samples on their
-            # replicate-level filtered totals (total_reps_dict is computed on the
-            # filtered_df, i.e. the selected functions) and annotate per cluster.
-            # Grouped bars use a numeric x-axis (tickvals/ticktext) -> x_categorical=False.
+                method=state.significance_method, sig_font_size=state.font_size_value_label,
+                extra_notes=notes)
+        elif sig_ok and orientation == 'By Sample' and bysample_tops:
+            # Exactly one function is plotted per sample (the gate above enforces
+            # it), so the sample's filtered total IS that bar and a per-cluster
+            # letter is attributable. Grouped bars use a numeric x-axis
+            # (tickvals/ticktext) -> x_categorical=False.
             _add_totals_significance(fig, categories, state.total_reps_dict, metric_key,
                                      bysample_tops, is_log_axis=False,
                                      method=state.significance_method, x_categorical=False,
-                                     sig_font_size=state.font_size_value_label)
-        elif state.show_significance and state.is_relative:
-            _add_significance_caption(fig, RELATIVE_STATS_NOTE)
+                                     sig_font_size=state.font_size_value_label,
+                                     extra_notes=notes)
         return fig
 
     elif orientation == 'By Protein' or (orientation == 'By Sample' and plot_filter == 'Selected Protein(s)'):
@@ -861,21 +1009,27 @@ def create_grouped_bar_plot(state: DataAnalysisState):
             hoverlabel=HOVERLABEL,
             legend=_legend_style(state, legend_lbl, yanchor='top', y=1.0, xanchor='left', x=1.05),
         )
-        if show_sig and orientation == 'By Protein' and sig_geom:
+        sig_ok, sig_note = significance_gate(
+            state, n_series=len(bar_groups_list) if orientation == 'By Sample' else 1,
+            series_noun='protein')
+        notes = [n for n in (_log_scale_note(state),) if n]
+        if sig_note:
+            _add_significance_caption(fig, sig_note)
+        elif sig_ok and orientation == 'By Protein' and sig_geom:
             _add_grouped_significance(
                 fig, categories, list(bar_groups_list), sig_geom,
                 lambda name: state.protein_reps_dict.get(name, {}), metric_key,
-                method=state.significance_method, sig_font_size=state.font_size_value_label)
-        elif show_sig and orientation == 'By Sample' and bysample_tops:
-            # Samples are the x-clusters; compare them on their replicate-level
-            # filtered totals (total_reps_dict, computed on the selected-protein
-            # filtered_df) and annotate per cluster. Numeric x-axis -> x_categorical=False.
+                method=state.significance_method, sig_font_size=state.font_size_value_label,
+                extra_notes=notes)
+        elif sig_ok and orientation == 'By Sample' and bysample_tops:
+            # Exactly one protein per sample cluster (enforced by the gate), so the
+            # sample's filtered total IS that bar and the letter is attributable.
+            # Numeric x-axis -> x_categorical=False.
             _add_totals_significance(fig, categories, state.total_reps_dict, metric_key,
                                      bysample_tops, is_log_axis=False,
                                      method=state.significance_method, x_categorical=False,
-                                     sig_font_size=state.font_size_value_label)
-        elif state.show_significance and state.is_relative:
-            _add_significance_caption(fig, RELATIVE_STATS_NOTE)
+                                     sig_font_size=state.font_size_value_label,
+                                     extra_notes=notes)
         return fig
 
     elif plot_filter in ('No Filter', 'Both') and orientation == 'By Sample':
@@ -1972,6 +2126,12 @@ def generate_plot(merged_df: pd.DataFrame, group_data_dict: dict, protein_dict: 
     except Exception:
         warnings.append('Error generating plot: ' + traceback.format_exc())
         return None, warnings
+
+    # Stacked / pie / correlation figures have no per-sample bar to annotate, so
+    # the overlay is never drawn on them. Say so instead of letting a ticked
+    # checkbox appear to have been honoured.
+    if state.show_significance and plot_type != 'Grouped Bar Plots':
+        warnings.append(NON_BAR_STATS_NOTE)
 
     warnings.extend(state.warnings)
 

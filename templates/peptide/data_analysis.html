@@ -246,8 +246,10 @@ select.multi-select:disabled { background: #f8f9fa; color: #aaa; }
                 <div style="font-weight:700; font-size:.95rem; margin-bottom:12px;">
                     <u>Visualization Settings:</u>
                 </div>
-                <!-- 2x2 grid of radio groups, vertical options -->
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px 12px;">
+                <!-- 3x2 grid: four radio groups, then the checkbox stack (left)
+                     beside Correlation Type (right, under Metric). align-items:start
+                     keeps each cell hugging its content instead of stretching. -->
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px 12px; align-items:start;">
 
                     <div class="rg-field">
                         <span class="rg-label">Plot Type</span>
@@ -284,42 +286,47 @@ select.multi-select:disabled { background: #f8f9fa; color: #aaa; }
                         </div>
                     </div>
 
-                </div>
-
-                <!-- Correlation type (conditional, in left column) -->
-                <div class="rg-field" id="corr-type-block" style="display:none; margin-top:6px;">
-                    <span class="rg-label">Correlation Type</span>
-                    <div class="radio-group" id="rg-correlation-type" style="flex-direction:column; gap:4px; align-items:flex-start;">
-                        <label><input type="radio" name="correlation-type" value="Pearson" checked> Pearson</label>
-                        <label><input type="radio" name="correlation-type" value="Spearman"> Spearman</label>
-                    </div>
-                </div>
-
-                <!-- Checkboxes under Visualization Settings -->
-                <div style="margin-top:6px; display:flex; flex-direction:column; gap:4px;">
-                    <label class="checkbox-row">
-                        <input type="checkbox" id="log-transform" disabled> Log&#x2081;&#x2080; transformation
-                    </label>
-                    <label class="checkbox-row">
-                        <input type="checkbox" id="log2-transform" disabled> Log&#x2082; transformation
-                    </label>
-                    <label class="checkbox-row">
-                        <input type="checkbox" id="plot-minor" disabled> Group Unselected Proteins or Functions
-                    </label>
-                    <!-- Significance control: shown only for Grouped Bar Plots + the
-                         Absolute metric; JS hides this whole block otherwise. -->
-                    <div id="significance-controls" style="display:flex; flex-direction:column; gap:4px;">
-                        <label class="checkbox-row" title="Compare sample groups on replicate-level values and annotate the bars. Two groups show a significance bracket (*/**/***); three or more show a compact-letter display (bars sharing a letter are not significantly different). Requires ≥3 replicates per group; shown on absolute (non-relative) bar charts. Because replicate counts are small, power is low: a shared letter / 'ns' means 'not resolvable at this sample size', not 'no difference'.">
-                            <input type="checkbox" id="show-significance" disabled> Plot Significance
+                    <!-- Checkboxes: grid row 3, column 1 (under Value Type). -->
+                    <div style="margin-top:6px; display:flex; flex-direction:column; gap:4px;">
+                        <label class="checkbox-row">
+                            <input type="checkbox" id="log-transform" disabled> Log&#x2081;&#x2080; transformation
                         </label>
-                        <label class="checkbox-row" style="padding-left:22px; gap:6px;" title="ANOVA + Tukey HSD assumes equal variance across groups (the convention in the peptidomics literature). Welch + Games–Howell does not assume equal variance and is more reliable when group spreads differ, as abundance data often do.">
-                            Test:
-                            <select id="significance-method" disabled style="border:1px solid #ced4da; border-radius:4px; padding:2px 6px; font-size:.85rem;">
-                                <option value="tukey" selected>ANOVA + Tukey HSD (equal variance)</option>
-                                <option value="games-howell">Welch + Games–Howell (unequal variance)</option>
-                            </select>
+                        <label class="checkbox-row">
+                            <input type="checkbox" id="log2-transform" disabled> Log&#x2082; transformation
                         </label>
+                        <label class="checkbox-row">
+                            <input type="checkbox" id="plot-minor" disabled> Group Unselected Proteins or Functions
+                        </label>
+                        <!-- Significance controls. Always present: applySignificanceRules()
+                             greys these rows (never hides them) when the current
+                             combination cannot carry an attributable marker, and swaps
+                             the row title for the reason so hovering explains it. -->
+                        <div id="significance-controls" style="display:flex; flex-direction:column; gap:4px;">
+                            <label class="checkbox-row" title="Compare sample groups on replicate-level values and annotate the bars. Two groups show a significance bracket (*/**/***); three or more show a compact-letter display (bars sharing a letter are not significantly different). Requires ≥3 replicates per group; shown on absolute (non-relative) bar charts, and only where each marker belongs to exactly one bar — in By Sample orientation that means a single function/protein, otherwise use By Function / By Protein orientation. Because replicate counts are small, power is low: a shared letter / 'ns' means 'not resolvable at this sample size', not 'no difference'.">
+                                <input type="checkbox" id="show-significance" disabled> Plot Significance
+                            </label>
+                            <label class="checkbox-row" style="padding-left:22px; gap:6px;" title="ANOVA + Tukey HSD assumes equal variance across groups (the convention in the peptidomics literature). Welch + Games–Howell does not assume equal variance and is more reliable when group spreads differ, as abundance data often do.">
+                                Test:
+                                <select id="significance-method" disabled style="border:1px solid #ced4da; border-radius:4px; padding:2px 6px; font-size:.85rem;">
+                                    <option value="tukey" selected>ANOVA + Tukey HSD (equal variance)</option>
+                                    <option value="games-howell">Welch + Games–Howell (unequal variance)</option>
+                                </select>
+                            </label>
+                        </div>
                     </div>
+
+                    <!-- Correlation Type: grid row 3, column 2 — directly under
+                         Metric and beside the log-transform checkboxes. Always
+                         present; applyPlotTypeGreying() greys it (never hides it)
+                         for the plot types that have no correlation to configure. -->
+                    <div class="rg-field" id="corr-type-block" style="margin-top:6px;">
+                        <span class="rg-label">Correlation Type</span>
+                        <div class="radio-group rg-disabled" id="rg-correlation-type" style="flex-direction:column; gap:4px; align-items:flex-start;">
+                            <label><input type="radio" name="correlation-type" value="Pearson" checked disabled> Pearson</label>
+                            <label><input type="radio" name="correlation-type" value="Spearman" disabled> Spearman</label>
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
@@ -572,7 +579,13 @@ async function handleUpload(file) {
 // columns — the same detection the Heatmap dashboard shows. Replicate data is
 // what enables the group-comparison statistics (SEM error bars + significance
 // testing); single-average files still plot, without those.
+// True once a file with replicate-level columns is loaded. Significance needs
+// per-replicate vectors, so without them the test is not merely underpowered —
+// it has no input at all, and the control stays greyed.
+let daHasReplicates = false;
+
 function applyDaReplicateBanner(data) {
+    daHasReplicates = !!data.has_replicates;
     const banner = document.getElementById('da-replicate-banner');
     if (!banner) return;
     banner.style.display = 'block';
@@ -631,26 +644,33 @@ function populateSelectors(data) {
     resetOrderPanels();
 }
 
+// Enable/disable a whole radio-group field in place, matching how enableStep2()
+// styles them, and hang `why` on the field as a tooltip so a greyed group always
+// explains itself. Nothing in this panel hides — options only grey.
+function setRadioGroupEnabled(fieldId, groupId, enabled, why) {
+    const field = document.getElementById(fieldId);
+    const group = document.getElementById(groupId);
+    if (!field || !group) return;
+    group.classList.toggle('rg-disabled', !enabled);
+    group.querySelectorAll('input[type=radio]').forEach(r => { r.disabled = !enabled; });
+    field.setAttribute('title', why || '');
+}
+
 // ── Dynamic UI: plot type changes (correlation block + metric/log greying) ─
 function applyPlotTypeGreying() {
     const plotType = getRadioValue('plot-type');
-    document.getElementById('corr-type-block').style.display =
-        plotType === 'Corr. Scatter Plots' ? '' : 'none';
-
-    // The significance control is shown only for Grouped Bar Plots AND the
-    // Absolute metric. Significance testing on relative (normalized/composition)
-    // values is poor practice, so it is hidden (and cleared) for Relative. This
-    // single rule is the complete guard against invalid combinations.
-    const statsBox = document.getElementById('significance-controls');
-    if (statsBox) {
-        const isGrouped  = plotType === 'Grouped Bar Plots';
-        const isAbsolute = getRadioValue('metric-type') === 'Absolute';
-        const showStats  = isGrouped && isAbsolute;
-        statsBox.style.display = showStats ? 'flex' : 'none';
-        if (!showStats) document.getElementById('show-significance').checked = false;
-    }
-
     const step2Active = !document.getElementById('step2-card').classList.contains('step-disabled');
+
+    // Correlation Type applies only to the correlation scatter plots; for every
+    // other plot type it greys in place rather than vanishing.
+    const isCorr = plotType === 'Corr. Scatter Plots';
+    setRadioGroupEnabled('corr-type-block', 'rg-correlation-type', isCorr && step2Active,
+        isCorr ? 'Pearson measures linear association; Spearman ranks the values '
+                 + 'first and so tolerates outliers and non-linear but monotonic trends.'
+               : 'Correlation Type applies only to Corr. Scatter Plots.');
+
+    applySignificanceRules();
+
     const logChk  = document.getElementById('log-transform');
     const logLabel = logChk.closest('label');
     const log2Chk  = document.getElementById('log2-transform');
@@ -663,13 +683,123 @@ function applyPlotTypeGreying() {
     if (lockAbsolute && absInput) absInput.checked = true;
     setControlEnabled(relInput, !lockAbsolute && step2Active);
 
-    // Grey out log transform when Pie, or when metric is Relative
+    // Grey out log transform when Pie, or when metric is Relative. Like the
+    // significance rows, these stay in place and grey rather than disappearing,
+    // and carry the reason as a tooltip so the greying is never unexplained.
     const isRelative = getRadioValue('metric-type') === 'Relative';
     const isPie = plotType === 'Pie Charts';
     const logEnabled = !(isPie || isRelative) && step2Active;
+    const logWhy = isPie
+        ? 'A pie chart has no y-axis to rescale.'
+        : (isRelative ? 'Relative values are percentages of a whole; a log axis '
+                        + 'would misrepresent that composition. Switch to Absolute.'
+                      : 'Plot the y-axis on a logarithmic scale.');
     setControlEnabled(logChk, logEnabled, { row: logLabel, clearOnDisable: true });
     setControlEnabled(log2Chk, logEnabled, { row: log2Label, clearOnDisable: true });
+    logLabel.setAttribute('title', logWhy);
+    log2Label.setAttribute('title', logWhy);
 }
+
+// ── Significance availability ────────────────────────────────────
+// Mirrors significance_gate() in data_analysis/services/plotter.py. The server
+// decides for real (and captions the figure when it refuses); this copy exists
+// so the user is stopped at the checkbox instead of at the finished plot.
+
+// Real (non-sentinel) options currently offered in a selector.
+function realOptionCount(selectId, nonReal) {
+    return Array.from(document.getElementById(selectId).options)
+                .filter(o => !nonReal.has(o.value)).length;
+}
+
+// How many bars would share one x-cluster. In "By Sample" orientation the
+// clusters are the samples and the bars are the selected functions/proteins; in
+// every other orientation each bar IS a sample, so the answer is 1.
+function seriesPerCluster() {
+    if (getRadioValue('plot-orientation') !== 'By Sample') return 1;
+    const filterVal = derivePlotFilter();
+    // No Filter / Both in By Sample render the sample-totals chart: one bar each.
+    if (filterVal === 'No Filter' || filterVal === 'Both') return 1;
+    if (filterVal === 'Functional vs Non-Functional Peptides') return 2;
+
+    let n;
+    if (filterVal === 'Selected Function(s)') {
+        const fns = getMultiSelectValues(document.getElementById('function-selector'));
+        n = fns.includes('All Functional Peptides')
+            ? realOptionCount('function-selector', NON_REAL_FUNCTION)
+            : fns.filter(v => !NON_REAL_FUNCTION.has(v)).length;
+    } else {
+        const ps = getMultiSelectValues(document.getElementById('protein-selector'));
+        n = ps.includes('All Proteins (No Filter)')
+            ? realOptionCount('protein-selector', NON_REAL_PROTEIN)
+            : ps.filter(v => !NON_REAL_PROTEIN.has(v)).length;
+    }
+    // "Group Unselected…" adds one more pooled bar to every cluster.
+    if (document.getElementById('plot-minor').checked) n += 1;
+    return Math.max(n, 1);
+}
+
+// Why the significance overlay cannot be drawn for the current combination, or
+// null when it can. Ordered so the most fundamental objection wins.
+function significanceBlockedReason() {
+    if (!daHasReplicates) {
+        return 'This file has no replicate-level "Grouped:" columns, so there are ' +
+               'no per-replicate values to compare. Re-export from Data ' +
+               'Transformation with grouped replicates to enable significance.';
+    }
+    if (getRadioValue('plot-type') !== 'Grouped Bar Plots') {
+        return 'Significance markers are only available on Grouped Bar Plots — ' +
+               'the comparison annotates one bar per sample group.';
+    }
+    if (getRadioValue('metric-type') !== 'Absolute') {
+        return 'Significance is defined on absolute values. Relative (composition) ' +
+               'percentages are constrained to sum to 100%, so their replicate ' +
+               'variance is not a valid input to the test. Switch to Absolute.';
+    }
+    if (getMultiSelectValues(document.getElementById('group-selector')).length < 2) {
+        return 'Select at least 2 sample groups to compare.';
+    }
+    const nSeries = seriesPerCluster();
+    if (nSeries > 1) {
+        const noun = derivePlotFilter() === 'Selected Protein(s)' ? 'protein' : 'function';
+        return `Each sample would hold ${nSeries} ${noun} bars, but the only comparison ` +
+               `defined here is between samples on their combined total — one letter ` +
+               `could not be attributed to any single bar. Select a single ${noun}, or ` +
+               `switch to "By ${noun === 'protein' ? 'Protein' : 'Function'}" orientation.`;
+    }
+    return null;
+}
+
+function applySignificanceRules() {
+    const chk    = document.getElementById('show-significance');
+    const method = document.getElementById('significance-method');
+    if (!chk || !method) return;
+
+    // Every row stays in place and simply greys out — a control that vanishes
+    // makes the panel jump and leaves the user unable to see that the option
+    // exists at all, let alone why it is unavailable. Each row's own title is the
+    // general explainer; when blocked, the specific reason replaces it (a
+    // disabled input swallows its mouse events, so the tooltip lives on the
+    // surrounding label). Stash the original title on first use.
+    const rows = [chk.closest('label'), method.closest('label')].filter(Boolean);
+    rows.forEach(r => {
+        if (r.dataset.baseTitle === undefined)
+            r.dataset.baseTitle = r.getAttribute('title') || '';
+    });
+
+    const blocked = significanceBlockedReason();
+    const step2Active = !document.getElementById('step2-card').classList.contains('step-disabled');
+    const enabled = !blocked && step2Active;
+    setControlEnabled(chk, enabled, { clearOnDisable: true });
+    setControlEnabled(method, enabled, { row: method.closest('label') });
+    rows.forEach(r => r.setAttribute('title', blocked || r.dataset.baseTitle));
+}
+
+['rg-plot-orientation', 'rg-abs-or-count'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('click', applySignificanceRules);
+});
+document.getElementById('plot-minor').addEventListener('change', applySignificanceRules);
+document.getElementById('group-selector').addEventListener('change', applySignificanceRules);
 
 // Log10 / Log2 y-axis transforms are mutually exclusive; "neither" is allowed.
 (function wireLogExclusivity() {
@@ -746,6 +876,10 @@ function applySelectionRules() {
         setControlEnabled(byProtInput, !disableByProt);
         if (disableByProt && byProtInput.checked) bySampInput.checked = true;
     }
+
+    // Selections change how many bars share a cluster, so re-check whether the
+    // significance overlay can still be attributed to a bar.
+    applySignificanceRules();
 }
 
 ['protein-selector', 'function-selector'].forEach(id => {

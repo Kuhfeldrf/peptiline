@@ -11,6 +11,7 @@ import unittest
 
 import numpy as np
 import pandas as pd
+import plotly.io as pio
 
 # conftest.py bootstraps Django; import the service directly.
 from data_analysis.services import stats
@@ -290,6 +291,113 @@ class TestSignificanceOverlayIntegration(unittest.TestCase):
         fig = plotter.create_grouped_bar_plot(st)
         self.assertEqual(len(fig.layout.annotations), 0)
         self.assertFalse(self._has_error_bars(fig))
+
+    def test_bysample_multiple_functions_refuses_with_explanation(self):
+        # The reported figure: x = samples, one coloured bar per function, and a
+        # single letter floating over the tallest bar of each cluster. That letter
+        # described the cluster TOTAL, not the bar it sat above.
+        merged, reps, pdct = self._dataset()
+        st = self._state(reps, merged, pdct, orientation='By Sample',
+                         plot_filter='Selected Function(s)',
+                         selected_functions=['ACE-inhibitory', 'Antioxidant'])
+        fig = plotter.create_grouped_bar_plot(st)
+        cap = self._caption(fig)
+        self.assertIsNotNone(cap)
+        self.assertIn('not shown', cap)
+        self.assertIn('By Function', cap)      # names the way out
+        self.assertEqual(len(self._letters(fig)), 0)
+        self.assertEqual([t for t in fig.data if getattr(t, 'mode', None) == 'text'], [])
+
+    def test_bysample_single_function_still_shows_letters(self):
+        merged, reps, pdct = self._dataset()
+        st = self._state(reps, merged, pdct, orientation='By Sample',
+                         plot_filter='Selected Function(s)',
+                         selected_functions=['ACE-inhibitory'])
+        fig = plotter.create_grouped_bar_plot(st)
+        self.assertIn('Tukey', self._caption(fig) or '')
+        self.assertTrue([t for t in fig.data if getattr(t, 'mode', None) == 'text'])
+
+    def test_uninformative_letters_are_replaced_by_a_caption(self):
+        # All three groups drawn from the same distribution: every group lands in
+        # one clique, so a grid of identical 'a's would be drawn. Suppress it and
+        # say the result in words instead.
+        rng = np.random.default_rng(3)
+        reps = {g: [f'{g}_{i}' for i in (1, 2, 3)] for g in self.GROUPS}
+        rows = []
+        for i in range(12):
+            fn = 'ACE-inhibitory' if i % 2 == 0 else 'Antioxidant'
+            row = {'Unique Peptide ID': f'pep{i}', 'Protein': 'P02666', 'function': fn}
+            for g in self.GROUPS:
+                for rc in reps[g]:
+                    row[rc] = float(100 + rng.normal(0, 8))
+                row[f'Avg_{g}'] = float(np.mean([row[rc] for rc in reps[g]]))
+            rows.append(row)
+        st = self._state(reps, pd.DataFrame(rows), {'P02666': {'name': 'Beta-casein'}},
+                         orientation='By Function', plot_filter='Selected Function(s)')
+        fig = plotter.create_grouped_bar_plot(st)
+        self.assertEqual(len(self._letters(fig)), 0)
+        cap = self._caption(fig)
+        self.assertIn('no pairwise differences resolved', cap)
+        self.assertIn('Tukey', cap)   # the test still ran and is still named
+
+    def test_relative_totals_chart_explains_itself(self):
+        # No Filter + By Sample + Relative routes to the relative-totals chart,
+        # which used to return with the checkbox ticked and no explanation at all.
+        merged, reps, pdct = self._dataset()
+        st = self._state(reps, merged, pdct, orientation='By Sample',
+                         plot_filter='No Filter', metric_type='Relative')
+        fig = plotter.plot_total_peptides(st)
+        self.assertIn('relative', (self._caption(fig) or '').lower())
+
+    def test_multiple_clusters_disclose_uncorrected_multiplicity(self):
+        # Two functions -> two separate ANOVA families. Tukey corrects within a
+        # cluster, nothing corrects across them; the caption must say so.
+        merged, reps, pdct = self._dataset()
+        st = self._state(reps, merged, pdct, orientation='By Function',
+                         plot_filter='Selected Function(s)')
+        fig = plotter.create_grouped_bar_plot(st)
+        self.assertIn('2 independent comparisons', self._caption(fig))
+
+    def test_single_cluster_omits_the_multiplicity_note(self):
+        merged, reps, pdct = self._dataset()
+        st = self._state(reps, merged, pdct, orientation='By Function',
+                         plot_filter='Selected Function(s)',
+                         selected_functions=['ACE-inhibitory'])
+        fig = plotter.create_grouped_bar_plot(st)
+        self.assertNotIn('independent comparisons', self._caption(fig))
+
+    def test_no_combination_leaves_the_overlay_silent(self):
+        # Sweep every plot-type / orientation / metric / pooling combination with
+        # Show Stats on: each must either draw markers or say why it did not.
+        merged, reps, pdct = self._dataset()
+        selections = {
+            'no filter':  (['No Protein Filter'], ['No Function Filter']),
+            'one fn':     (['No Protein Filter'], ['ACE-inhibitory']),
+            'two fn':     (['No Protein Filter'], ['ACE-inhibitory', 'Antioxidant']),
+            'one prot':   (['P02666'], ['No Function Filter']),
+            'two prot':   (['P02666', 'P02662'], ['No Function Filter']),
+        }
+        for label, (prots, fns) in selections.items():
+            for orient in ('By Sample', 'By Function', 'By Protein'):
+                for metric in ('Absolute', 'Relative'):
+                    for minor in (False, True):
+                        with self.subTest(sel=label, orient=orient,
+                                          metric=metric, minor=minor):
+                            params = dict(
+                                selected_groups=self.GROUPS, selected_proteins=prots,
+                                selected_functions=fns, plot_type='Grouped Bar Plots',
+                                orientation=orient, abs_or_count='Abundance',
+                                metric_type=metric, show_significance=True,
+                                plot_minor=minor)
+                            js, warns = plotter.generate_plot(merged, reps, pdct, params)
+                            self.assertIsNotNone(js, f'{label}/{orient}: no figure')
+                            fig = pio.from_json(js)
+                            drew = bool(self._letters(fig)) or any(
+                                getattr(t, 'mode', None) == 'text' and t.text is not None
+                                and any('<b>' in str(x) for x in t.text) for t in fig.data)
+                            self.assertTrue(
+                                drew or self._caption(fig) or warns,
+                                'overlay was silently skipped with no explanation')
 
     def test_totals_plot_gets_compact_letters(self):
         merged, reps, pdct = self._dataset()
@@ -605,11 +713,12 @@ class TestBySampleSignificanceAndRelativeNote(unittest.TestCase):
             t = ''
         return t if 'color:#555555' in t else None
 
-    def test_bysample_selected_protein_shows_stats(self):
-        # The reported bug: By Protein filter + By Sample orientation drew no stats.
-        st = self._state(orientation='By Sample')
+    def test_bysample_single_protein_shows_stats(self):
+        # By Protein filter + By Sample orientation must still draw stats when the
+        # cluster holds exactly ONE bar — then the sample's filtered total IS that
+        # bar, so a per-cluster letter is attributable.
+        st = self._state(orientation='By Sample', selected_proteins=['P1'])
         fig = plotter.create_grouped_bar_plot(st)
-        # A significance comparison ran -> the honesty caption naming the test is present.
         cap = self._caption(fig)
         self.assertIsNotNone(cap)
         self.assertIn('Tukey', cap)
@@ -617,12 +726,31 @@ class TestBySampleSignificanceAndRelativeNote(unittest.TestCase):
         text_traces = [t for t in fig.data if getattr(t, 'mode', None) == 'text']
         self.assertGreaterEqual(len(text_traces), 1)
 
-    def test_bysample_matches_byprotein_availability(self):
-        # Stats availability must not depend on orientation (the user's point).
-        for orient in ('By Sample', 'By Protein'):
-            st = self._state(orientation=orient)
-            fig = plotter.create_grouped_bar_plot(st)
-            self.assertIsNotNone(self._caption(fig), f'{orient}: expected stats caption')
+    def test_bysample_multiple_proteins_refuses_with_explanation(self):
+        # Two proteins per sample cluster: the only defined comparison is on the
+        # cluster TOTAL, which is not any one bar. No markers, and the caption says
+        # why and how to get a valid figure.
+        st = self._state(orientation='By Sample', selected_proteins=['P1', 'P2'])
+        fig = plotter.create_grouped_bar_plot(st)
+        cap = self._caption(fig)
+        self.assertIsNotNone(cap)
+        self.assertIn('not shown', cap)
+        self.assertIn('By Protein', cap)
+        self.assertNotIn('Tukey', cap)
+        self.assertEqual([t for t in fig.data if getattr(t, 'mode', None) == 'text'], [])
+
+    def test_byprotein_orientation_always_available(self):
+        # By Protein puts a sample on every bar, so multi-protein is fine there.
+        st = self._state(orientation='By Protein', selected_proteins=['P1', 'P2'])
+        fig = plotter.create_grouped_bar_plot(st)
+        cap = self._caption(fig)
+        self.assertIsNotNone(cap)
+        self.assertIn('Tukey', cap)
+
+    def test_single_sample_group_refuses(self):
+        st = self._state(orientation='By Protein', selected_groups=['Ctrl'])
+        fig = plotter.create_grouped_bar_plot(st)
+        self.assertIn('at least 2 sample groups', self._caption(fig) or '')
 
     def test_relative_metric_shows_explanatory_note(self):
         st = self._state(orientation='By Sample', metric_type='Relative')
@@ -633,9 +761,15 @@ class TestBySampleSignificanceAndRelativeNote(unittest.TestCase):
         self.assertIn('Absolute', cap)
 
     def test_count_metric_is_supported(self):
-        st = self._state(orientation='By Sample', abs_or_count='Count')
+        st = self._state(orientation='By Sample', abs_or_count='Count',
+                         selected_proteins=['P1'])
         fig = plotter.create_grouped_bar_plot(st)
-        self.assertIsNotNone(self._caption(fig))
+        self.assertIn('Tukey', self._caption(fig) or '')
+
+    def test_log_axis_states_the_test_ran_on_raw_values(self):
+        st = self._state(orientation='By Protein', log_transform=True)
+        fig = plotter.create_grouped_bar_plot(st)
+        self.assertIn('untransformed', self._caption(fig) or '')
 
 
 class TestDynamicTitles(unittest.TestCase):

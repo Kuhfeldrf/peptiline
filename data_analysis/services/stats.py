@@ -126,6 +126,19 @@ def _compact_letters(groups, pairwise, alpha=ALPHA):
     return letters
 
 
+def letters_are_uninformative(letters):
+    """True when every group carries the *same* compact letter.
+
+    A CLD in which all groups share one identical letter says only "nothing was
+    resolved" — but drawn on the figure it reads as a per-bar annotation and
+    invites the reader to hunt for a contrast that does not exist (the exact
+    confusion reported for the multi-function bar chart). Callers use this to
+    drop the letter row and state the result in the caption instead.
+    """
+    values = [v for v in letters.values() if v]
+    return bool(values) and len(values) == len(letters) and len(set(values)) == 1
+
+
 def _welch_anova(arrays):
     """Welch's (unequal-variance) one-way ANOVA omnibus p-value.
 

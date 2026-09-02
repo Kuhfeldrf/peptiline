@@ -280,20 +280,23 @@ select.multi-select:disabled { background: #f8f9fa; color: #aaa; }
                 Requires replicate-level <code>'Grouped:'</code> columns (per-replicate abundances) alongside each <code>Avg_</code> column. Upload such a file to enable a between-group effect-size track.
             </small>
 
-            <div id="comparison-controls" class="hidden" style="margin-top:10px; display:grid; grid-template-columns:1fr 1fr; gap:10px 16px; align-items:end;">
+            <!-- Always present. toggleComparisonControls() greys these (never
+                 hides them) so the series a comparison would use stay readable
+                 before the toggle is switched on. -->
+            <div id="comparison-controls" class="control-disabled" style="margin-top:10px; display:grid; grid-template-columns:1fr 1fr; gap:10px 16px; align-items:end;">
                 <div class="selector-block" style="margin:0;">
                     <label style="font-size:.9rem; font-weight:600;">Series A <span class="text-muted" style="font-weight:400;">(+ = higher in A)</span></label>
-                    <select id="series-a" style="width:100%; border:1px solid #ced4da; border-radius:4px; padding:5px 8px; font-size:.9rem;"></select>
+                    <select id="series-a" disabled style="width:100%; border:1px solid #ced4da; border-radius:4px; padding:5px 8px; font-size:.9rem;"></select>
                 </div>
                 <div class="selector-block" style="margin:0;">
                     <label style="font-size:.9rem; font-weight:600;">Series B</label>
-                    <select id="series-b" style="width:100%; border:1px solid #ced4da; border-radius:4px; padding:5px 8px; font-size:.9rem;"></select>
+                    <select id="series-b" disabled style="width:100%; border:1px solid #ced4da; border-radius:4px; padding:5px 8px; font-size:.9rem;"></select>
                 </div>
                 <div class="rg-field" style="grid-column:1 / -1;">
                     <span class="rg-label">Metric</span>
-                    <div class="radio-group" id="rg-comparison-metric" style="flex-direction:row; gap:16px;">
-                        <label><input type="radio" name="comparison-metric" value="smd" checked> Standardized Mean Difference (SMD, Cohen&rsquo;s <i>d</i>)</label>
-                        <label><input type="radio" name="comparison-metric" value="log2fc"> log&#x2082; fold change</label>
+                    <div class="radio-group rg-disabled" id="rg-comparison-metric" style="flex-direction:row; gap:16px;">
+                        <label><input type="radio" name="comparison-metric" value="smd" checked disabled> Standardized Mean Difference (SMD, Cohen&rsquo;s <i>d</i>)</label>
+                        <label><input type="radio" name="comparison-metric" value="log2fc" disabled> log&#x2082; fold change</label>
                     </div>
                 </div>
             </div>
@@ -692,35 +695,74 @@ function applyHmReplicateBanner() {
 }
 
 // ── Differential comparison (SMD / log2FC) ────────────────────────
+// Why the differential/effect-size track cannot be plotted right now, or null
+// when it can. SMD and log2FC are computed from per-replicate vectors on BOTH
+// sides, so without replicate columns the statistic has no input at all — it is
+// not merely underpowered. Mirrors the Data Analysis significance gate.
+function comparisonBlockedReason() {
+    if (!hasReplicates) {
+        return 'This file has only Avg_ columns (single-average). SMD and log2 fold ' +
+               'change are computed from per-replicate values, so there is nothing ' +
+               'to compare. Re-export from Data Transformation with grouped ' +
+               "replicates ('Grouped:' columns) to enable it.";
+    }
+    if (replicateBackedCombos().length < 2) {
+        return 'A comparison needs two replicate-backed series. Select at least two ' +
+               'protein × grouping-variable combinations that carry replicate ' +
+               "('Grouped:') columns above.";
+    }
+    return null;
+}
+
 // Gate the comparison controls on the uploaded file carrying replicate-level
 // data. enableStep2() blanket-enables every step-2 input, so this runs last to
-// re-disable the comparison toggle when no replicate columns are present.
+// re-disable them when the statistic has no valid input.
 function applyComparisonAvailability() {
     const cb     = document.getElementById('comparison-mode');
     const banner = document.getElementById('comparison-banner');
     if (!cb) return;
-    if (hasReplicates) {
-        cb.disabled = false;
-        banner.textContent =
-            'Pick two series and a metric to overlay an effect-size track.';
-    } else {
-        cb.checked  = false;
-        cb.disabled = true;
-        banner.innerHTML =
-            "Comparison disabled: this file has only <code>Avg_</code> columns (single-average). " +
-            "It needs the per-replicate <code>'Grouped:'</code> columns — re-export from Data Transformation with grouped replicates.";
+
+    const blocked = comparisonBlockedReason();
+    // Grey the toggle in place rather than hiding the section: a control that
+    // vanishes leaves the user unable to see the feature exists, let alone why
+    // it is unavailable. The reason goes on the row as a tooltip and into the
+    // banner, and a disabled input swallows its own mouse events, so the title
+    // has to live on the surrounding label.
+    setControlEnabled(cb, !blocked, { row: cb.closest('.checkbox-row'),
+                                      clearOnDisable: true });
+    const row = cb.closest('.checkbox-row');
+    if (row) {
+        if (row.dataset.baseTitle === undefined)
+            row.dataset.baseTitle = row.getAttribute('title') || '';
+        row.setAttribute('title', blocked || row.dataset.baseTitle);
     }
+    // The banner is deliberately NOT greyed — it is the text explaining the
+    // greying, so it has to stay at full contrast.
+    banner.textContent = blocked
+        || 'Pick two series and a metric to overlay an effect-size track.';
     toggleComparisonControls();
 }
 
-// Show/hide the Series A/B + metric block based on the toggle, and (re)populate
-// the series pickers from the current protein × replicate-backed-variable choices.
+// Grey (never hide) the Series A/B + metric block based on the toggle, and
+// (re)populate the series pickers from the current protein × replicate-backed
+// variable choices.
 function toggleComparisonControls() {
     const cb   = document.getElementById('comparison-mode');
     const ctrl = document.getElementById('comparison-controls');
     const on   = cb && cb.checked && !cb.disabled;
-    ctrl.classList.toggle('hidden', !on);
-    if (on) refreshComparisonSeries();
+    // Always populate: the pickers stay readable while greyed, so the user can
+    // see which series a comparison would use before enabling it.
+    refreshComparisonSeries();
+    ctrl.classList.toggle('control-disabled', !on);
+    ['series-a', 'series-b'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.disabled = !on;
+    });
+    const metricGroup = document.getElementById('rg-comparison-metric');
+    if (metricGroup) {
+        metricGroup.classList.toggle('rg-disabled', !on);
+        metricGroup.querySelectorAll('input[type=radio]').forEach(r => { r.disabled = !on; });
+    }
     syncManualYAxisDefaults();
     _updateLogTransformState();
 
@@ -739,16 +781,16 @@ function toggleComparisonControls() {
     }
 }
 
-// Build the (protein × variable) combos that are replicate-backed and offer them
-// as Series A / Series B. Combo value matches the renderer's combo_key
-// (`${protein_id}_${var_key}`). Preserves the current pick when still valid.
-function refreshComparisonSeries() {
-    const selA = document.getElementById('series-a');
-    const selB = document.getElementById('series-b');
-    if (!selA || !selB) return;
-
-    const proteins = getMultiSelectValues(document.getElementById('protein-selector'));
-    const varKeys  = getMultiSelectValues(document.getElementById('varkey-selector'));
+// The (protein × variable) combos that are replicate-backed, i.e. the series a
+// differential comparison could actually be computed on. Combo value matches the
+// renderer's combo_key (`${protein_id}_${var_key}`). Read both by the
+// availability gate (which needs two of them to exist) and by the pickers.
+function replicateBackedCombos() {
+    const protSel = document.getElementById('protein-selector');
+    const varSel  = document.getElementById('varkey-selector');
+    if (!protSel || !varSel) return [];
+    const proteins = getMultiSelectValues(protSel);
+    const varKeys  = getMultiSelectValues(varSel);
     const protLabel = pid => {
         const opt = document.querySelector(`#protein-selector option[value="${CSS.escape(pid)}"]`);
         return opt ? opt.textContent : pid;
@@ -763,7 +805,17 @@ function refreshComparisonSeries() {
             }
         });
     });
+    return combos;
+}
 
+// Offer those combos as Series A / Series B, preserving the current pick when
+// it is still valid.
+function refreshComparisonSeries() {
+    const selA = document.getElementById('series-a');
+    const selB = document.getElementById('series-b');
+    if (!selA || !selB) return;
+
+    const combos = replicateBackedCombos();
     const prevA = selA.value, prevB = selB.value;
     const fill = (sel) => {
         sel.innerHTML = '';
@@ -779,12 +831,9 @@ function refreshComparisonSeries() {
     } else {
         selB.value = values.find(v => v !== selA.value) || (values[0] || '');
     }
-
-    const banner = document.getElementById('comparison-banner');
-    if (combos.length < 2 && !document.getElementById('comparison-mode').disabled) {
-        banner.textContent =
-            'Select at least two replicate-backed protein × variable series (above) to compare.';
-    }
+    // The "fewer than two series" case is now one of comparisonBlockedReason()'s
+    // rules, so the banner is owned by applyComparisonAvailability() alone —
+    // writing it here too would let a stale message survive a fixed selection.
 }
 
 // "Show amino acid sequence on tiles" only applies to the wrapped-band renderers
@@ -1277,13 +1326,15 @@ document.getElementById('protein-selector').addEventListener('change', async fun
         _showAutoFetchResult(fetched, failed, document.getElementById('autofetch-msgs'), true);
     }
     await applyItemsSelectorState(true);
-    refreshComparisonSeries();
+    // Availability depends on how many replicate-backed series the selection
+    // yields, so re-run the whole gate (it repopulates the pickers itself).
+    applyComparisonAvailability();
     updateStripStartSuggestion();
 });
 
 document.getElementById('varkey-selector').addEventListener('change', async function() {
     await applyItemsSelectorState(true);
-    refreshComparisonSeries();
+    applyComparisonAvailability();
 });
 
 // Comparison-mode toggle: show/hide the Series A/B + metric block.
