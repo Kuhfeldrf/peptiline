@@ -85,12 +85,12 @@
 }
 .rr-grip { color: #c2cad3; cursor: grab; }
 .rr-idx {
-    width: 19px;
-    height: 19px;
+    min-width: 1.6em;
+    height: 1.6em;
     border-radius: 4px;
     background: #f0f7ff;
     color: #1976d2;
-    font-size: .72rem;
+    font-size: .78rem;
     font-weight: 700;
     display: inline-flex;
     align-items: center;
@@ -113,7 +113,7 @@
     white-space: nowrap;
 }
 .rr-disp:hover { background: #fff7e0; }
-.rr-was { font-size: .7rem; color: #64748b; }
+.rr-was { font-size: .78rem; color: #64748b; }
 .rr-rename {
     font: inherit;
     font-size: .88rem;
@@ -124,7 +124,7 @@
     outline: none;
 }
 .rr-badge {
-    font-size: .62rem;
+    font-size: .75rem;
     background: #fff3cd;
     color: #7a5b00;
     border-radius: 3px;

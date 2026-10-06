@@ -75,7 +75,7 @@
 
 #page-content-wrapper {
     padding: 15px;
-    margin-top: 60px;  /* Adjust this value based on the height of your menu */
+    /* body already has padding-top for the fixed header (base.html) */
 }
 /* Menu Bar Styles */
 

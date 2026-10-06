@@ -1,0 +1,4184 @@
+[
+ {
+  "browser": "chromium",
+  "profile": "laptop-15-scaled",
+  "desc": "15\" 1080p laptop, 150% OS scaling",
+  "page": "landing",
+  "zoom": 1.0,
+  "ui": {
+   "chars": 3674,
+   "min_px": 14,
+   "p10_px": 14,
+   "median_px": 14.0,
+   "pct_lt12": 0.0,
+   "pct_lt14": 0.0,
+   "smallest": [
+    [
+     14,
+     "div",
+     "Integrated analysis modules"
+    ],
+    [
+     14,
+     "div",
+     "Step end-to-end workflow"
+    ],
+    [
+     14,
+     "div",
+     "Exportable data files"
+    ],
+    [
+     14,
+     "div",
+     "Analysis & visualization views"
+    ],
+    [
+     14,
+     "li",
+     "Multi-dataset import and merge"
+    ]
+   ]
+  },
+  "plot": null,
+  "overflow_x": 0,
+  "overflow_offenders": [],
+  "root_px": 10,
+  "body_px": 14,
+  "shot": "/tmp/claude-1000/-home-kuhfeldrf-notebooks-peptiline/fe1349c4-3a13-4d32-bf42-e90954c239d2/scratchpad/baseline/shots/chromium_laptop-15-scaled_z1.0_landing.png"
+ },
+ {
+  "browser": "chromium",
+  "profile": "laptop-15-scaled",
+  "desc": "15\" 1080p laptop, 150% OS scaling",
+  "page": "data_transformation",
+  "zoom": 1.0,
+  "ui": {
+   "chars": 1166,
+   "min_px": 8.2,
+   "p10_px": 8.5,
+   "median_px": 9.5,
+   "pct_lt12": 57.5,
+   "pct_lt14": 57.5,
+   "smallest": [
+    [
+     8.2,
+     "a",
+     "Download example file"
+    ],
+    [
+     8.2,
+     "div",
+     "\u00b7"
+    ],
+    [
+     8.2,
+     "a",
+     "Loaded"
+    ],
+    [
+     8.2,
+     "a",
+     "Download example file"
+    ],
+    [
+     8.2,
+     "div",
+     "\u00b7"
+    ]
+   ]
+  },
+  "plot": null,
+  "overflow_x": 0,
+  "overflow_offenders": [],
+  "root_px": 10,
+  "body_px": 14,
+  "shot": "/tmp/claude-1000/-home-kuhfeldrf-notebooks-peptiline/fe1349c4-3a13-4d32-bf42-e90954c239d2/scratchpad/baseline/shots/chromium_laptop-15-scaled_z1.0_data_transformation.png"
+ },
+ {
+  "browser": "chromium",
+  "profile": "laptop-15-scaled",
+  "desc": "15\" 1080p laptop, 150% OS scaling",
+  "page": "data_analysis",
+  "zoom": 1.0,
+  "ui": {
+   "chars": 2236,
+   "min_px": 7.2,
+   "p10_px": 8,
+   "median_px": 9.2,
+   "pct_lt12": 94.6,
+   "pct_lt14": 94.6,
+   "smallest": [
+    [
+     7.2,
+     "span",
+     "1"
+    ],
+    [
+     7.2,
+     "span",
+     "2"
+    ],
+    [
+     7.2,
+     "span",
+     "3"
+    ],
+    [
+     7.2,
+     "span",
+     "4"
+    ],
+    [
+     7.2,
+     "span",
+     "5"
+    ]
+   ]
+  },
+  "plot": {
+   "chars": 192,
+   "min_px": 12,
+   "p10_px": 12,
+   "median_px": 16.0,
+   "pct_lt12": 0.0,
+   "pct_lt14": 25.0,
+   "smallest": [
+    [
+     12,
+     "text",
+     "3.68e+10"
+    ],
+    [
+     12,
+     "text",
+     "3.46e+10"
+    ],
+    [
+     12,
+     "text",
+     "4.74e+10"
+    ],
+    [
+     12,
+     "text",
+     "6.77e+10"
+    ],
+    [
+     12,
+     "text",
+     "3.01e+10"
+    ]
+   ]
+  },
+  "overflow_x": 0,
+  "overflow_offenders": [],
+  "root_px": 10,
+  "body_px": 14,
+  "shot": "/tmp/claude-1000/-home-kuhfeldrf-notebooks-peptiline/fe1349c4-3a13-4d32-bf42-e90954c239d2/scratchpad/baseline/shots/chromium_laptop-15-scaled_z1.0_data_analysis.png"
+ },
+ {
+  "browser": "chromium",
+  "profile": "laptop-15-scaled",
+  "desc": "15\" 1080p laptop, 150% OS scaling",
+  "page": "heatmap",
+  "zoom": 1.0,
+  "ui": {
+   "chars": 2472,
+   "min_px": 7.2,
+   "p10_px": 8.6,
+   "median_px": 9.2,
+   "pct_lt12": 93.9,
+   "pct_lt14": 93.9,
+   "smallest": [
+    [
+     7.2,
+     "span",
+     "1"
+    ],
+    [
+     7.2,
+     "span",
+     "1"
+    ],
+    [
+     7.2,
+     "span",
+     "2"
+    ],
+    [
+     8,
+     "span",
+     "On the figure \u00b7 drag to reorder, click a name to r"
+    ],
+    [
+     8,
+     "a",
+     "Clear"
+    ]
+   ]
+  },
+  "plot": {
+   "chars": 398,
+   "min_px": 13,
+   "p10_px": 13,
+   "median_px": 13.0,
+   "pct_lt12": 0.0,
+   "pct_lt14": 52.5,
+   "smallest": [
+    [
+     13,
+     "text",
+     "R"
+    ],
+    [
+     13,
+     "text",
+     "E"
+    ],
+    [
+     13,
+     "text",
+     "L"
+    ],
+    [
+     13,
+     "text",
+     "E"
+    ],
+    [
+     13,
+     "text",
+     "E"
+    ]
+   ]
+  },
+  "overflow_x": 0,
+  "overflow_offenders": [],
+  "root_px": 10,
+  "body_px": 14,
+  "shot": "/tmp/claude-1000/-home-kuhfeldrf-notebooks-peptiline/fe1349c4-3a13-4d32-bf42-e90954c239d2/scratchpad/baseline/shots/chromium_laptop-15-scaled_z1.0_heatmap.png"
+ },
+ {
+  "browser": "chromium",
+  "profile": "laptop-15",
+  "desc": "15\" 1080p laptop, 125% OS scaling",
+  "page": "landing",
+  "zoom": 1.0,
+  "ui": {
+   "chars": 3674,
+   "min_px": 14,
+   "p10_px": 14,
+   "median_px": 14.0,
+   "pct_lt12": 0.0,
+   "pct_lt14": 0.0,
+   "smallest": [
+    [
+     14,
+     "div",
+     "Integrated analysis modules"
+    ],
+    [
+     14,
+     "div",
+     "Step end-to-end workflow"
+    ],
+    [
+     14,
+     "div",
+     "Exportable data files"
+    ],
+    [
+     14,
+     "div",
+     "Analysis & visualization views"
+    ],
+    [
+     14,
+     "li",
+     "Multi-dataset import and merge"
+    ]
+   ]
+  },
+  "plot": null,
+  "overflow_x": 0,
+  "overflow_offenders": [],
+  "root_px": 10,
+  "body_px": 14,
+  "shot": "/tmp/claude-1000/-home-kuhfeldrf-notebooks-peptiline/fe1349c4-3a13-4d32-bf42-e90954c239d2/scratchpad/baseline/shots/chromium_laptop-15_z1.0_landing.png"
+ },
+ {
+  "browser": "chromium",
+  "profile": "laptop-15",
+  "desc": "15\" 1080p laptop, 125% OS scaling",
+  "page": "data_transformation",
+  "zoom": 1.0,
+  "ui": {
+   "chars": 1166,
+   "min_px": 8.2,
+   "p10_px": 8.5,
+   "median_px": 9.5,
+   "pct_lt12": 57.5,
+   "pct_lt14": 57.5,
+   "smallest": [
+    [
+     8.2,
+     "a",
+     "Download example file"
+    ],
+    [
+     8.2,
+     "div",
+     "\u00b7"
+    ],
+    [
+     8.2,
+     "a",
+     "Loaded"
+    ],
+    [
+     8.2,
+     "a",
+     "Download example file"
+    ],
+    [
+     8.2,
+     "div",
+     "\u00b7"
+    ]
+   ]
+  },
+  "plot": null,
+  "overflow_x": 0,
+  "overflow_offenders": [],
+  "root_px": 10,
+  "body_px": 14,
+  "shot": "/tmp/claude-1000/-home-kuhfeldrf-notebooks-peptiline/fe1349c4-3a13-4d32-bf42-e90954c239d2/scratchpad/baseline/shots/chromium_laptop-15_z1.0_data_transformation.png"
+ },
+ {
+  "browser": "chromium",
+  "profile": "laptop-15",
+  "desc": "15\" 1080p laptop, 125% OS scaling",
+  "page": "data_analysis",
+  "zoom": 1.0,
+  "ui": {
+   "chars": 2236,
+   "min_px": 7.2,
+   "p10_px": 8,
+   "median_px": 9.2,
+   "pct_lt12": 94.6,
+   "pct_lt14": 94.6,
+   "smallest": [
+    [
+     7.2,
+     "span",
+     "1"
+    ],
+    [
+     7.2,
+     "span",
+     "2"
+    ],
+    [
+     7.2,
+     "span",
+     "3"
+    ],
+    [
+     7.2,
+     "span",
+     "4"
+    ],
+    [
+     7.2,
+     "span",
+     "5"
+    ]
+   ]
+  },
+  "plot": {
+   "chars": 192,
+   "min_px": 12,
+   "p10_px": 12,
+   "median_px": 16.0,
+   "pct_lt12": 0.0,
+   "pct_lt14": 25.0,
+   "smallest": [
+    [
+     12,
+     "text",
+     "3.68e+10"
+    ],
+    [
+     12,
+     "text",
+     "3.46e+10"
+    ],
+    [
+     12,
+     "text",
+     "4.74e+10"
+    ],
+    [
+     12,
+     "text",
+     "6.77e+10"
+    ],
+    [
+     12,
+     "text",
+     "3.01e+10"
+    ]
+   ]
+  },
+  "overflow_x": 0,
+  "overflow_offenders": [],
+  "root_px": 10,
+  "body_px": 14,
+  "shot": "/tmp/claude-1000/-home-kuhfeldrf-notebooks-peptiline/fe1349c4-3a13-4d32-bf42-e90954c239d2/scratchpad/baseline/shots/chromium_laptop-15_z1.0_data_analysis.png"
+ },
+ {
+  "browser": "chromium",
+  "profile": "laptop-15",
+  "desc": "15\" 1080p laptop, 125% OS scaling",
+  "page": "heatmap",
+  "zoom": 1.0,
+  "ui": {
+   "chars": 2472,
+   "min_px": 7.2,
+   "p10_px": 8.6,
+   "median_px": 9.2,
+   "pct_lt12": 93.9,
+   "pct_lt14": 93.9,
+   "smallest": [
+    [
+     7.2,
+     "span",
+     "1"
+    ],
+    [
+     7.2,
+     "span",
+     "1"
+    ],
+    [
+     7.2,
+     "span",
+     "2"
+    ],
+    [
+     8,
+     "span",
+     "On the figure \u00b7 drag to reorder, click a name to r"
+    ],
+    [
+     8,
+     "a",
+     "Clear"
+    ]
+   ]
+  },
+  "plot": {
+   "chars": 398,
+   "min_px": 13,
+   "p10_px": 13,
+   "median_px": 13.0,
+   "pct_lt12": 0.0,
+   "pct_lt14": 52.5,
+   "smallest": [
+    [
+     13,
+     "text",
+     "R"
+    ],
+    [
+     13,
+     "text",
+     "E"
+    ],
+    [
+     13,
+     "text",
+     "L"
+    ],
+    [
+     13,
+     "text",
+     "E"
+    ],
+    [
+     13,
+     "text",
+     "E"
+    ]
+   ]
+  },
+  "overflow_x": 0,
+  "overflow_offenders": [],
+  "root_px": 10,
+  "body_px": 14,
+  "shot": "/tmp/claude-1000/-home-kuhfeldrf-notebooks-peptiline/fe1349c4-3a13-4d32-bf42-e90954c239d2/scratchpad/baseline/shots/chromium_laptop-15_z1.0_heatmap.png"
+ },
+ {
+  "browser": "chromium",
+  "profile": "laptop-13-mac",
+  "desc": "13-15\" MacBook (Retina)",
+  "page": "landing",
+  "zoom": 1.0,
+  "ui": {
+   "chars": 3674,
+   "min_px": 14,
+   "p10_px": 14,
+   "median_px": 14.0,
+   "pct_lt12": 0.0,
+   "pct_lt14": 0.0,
+   "smallest": [
+    [
+     14,
+     "div",
+     "Integrated analysis modules"
+    ],
+    [
+     14,
+     "div",
+     "Step end-to-end workflow"
+    ],
+    [
+     14,
+     "div",
+     "Exportable data files"
+    ],
+    [
+     14,
+     "div",
+     "Analysis & visualization views"
+    ],
+    [
+     14,
+     "li",
+     "Multi-dataset import and merge"
+    ]
+   ]
+  },
+  "plot": null,
+  "overflow_x": 0,
+  "overflow_offenders": [],
+  "root_px": 10,
+  "body_px": 14,
+  "shot": "/tmp/claude-1000/-home-kuhfeldrf-notebooks-peptiline/fe1349c4-3a13-4d32-bf42-e90954c239d2/scratchpad/baseline/shots/chromium_laptop-13-mac_z1.0_landing.png"
+ },
+ {
+  "browser": "chromium",
+  "profile": "laptop-13-mac",
+  "desc": "13-15\" MacBook (Retina)",
+  "page": "data_transformation",
+  "zoom": 1.0,
+  "ui": {
+   "chars": 1166,
+   "min_px": 8.2,
+   "p10_px": 8.5,
+   "median_px": 9.5,
+   "pct_lt12": 57.5,
+   "pct_lt14": 57.5,
+   "smallest": [
+    [
+     8.2,
+     "a",
+     "Download example file"
+    ],
+    [
+     8.2,
+     "div",
+     "\u00b7"
+    ],
+    [
+     8.2,
+     "a",
+     "Loaded"
+    ],
+    [
+     8.2,
+     "a",
+     "Download example file"
+    ],
+    [
+     8.2,
+     "div",
+     "\u00b7"
+    ]
+   ]
+  },
+  "plot": null,
+  "overflow_x": 0,
+  "overflow_offenders": [],
+  "root_px": 10,
+  "body_px": 14,
+  "shot": "/tmp/claude-1000/-home-kuhfeldrf-notebooks-peptiline/fe1349c4-3a13-4d32-bf42-e90954c239d2/scratchpad/baseline/shots/chromium_laptop-13-mac_z1.0_data_transformation.png"
+ },
+ {
+  "browser": "chromium",
+  "profile": "laptop-13-mac",
+  "desc": "13-15\" MacBook (Retina)",
+  "page": "data_analysis",
+  "zoom": 1.0,
+  "ui": {
+   "chars": 2236,
+   "min_px": 7.2,
+   "p10_px": 8,
+   "median_px": 9.2,
+   "pct_lt12": 94.6,
+   "pct_lt14": 94.6,
+   "smallest": [
+    [
+     7.2,
+     "span",
+     "1"
+    ],
+    [
+     7.2,
+     "span",
+     "2"
+    ],
+    [
+     7.2,
+     "span",
+     "3"
+    ],
+    [
+     7.2,
+     "span",
+     "4"
+    ],
+    [
+     7.2,
+     "span",
+     "5"
+    ]
+   ]
+  },
+  "plot": {
+   "chars": 192,
+   "min_px": 12,
+   "p10_px": 12,
+   "median_px": 16.0,
+   "pct_lt12": 0.0,
+   "pct_lt14": 25.0,
+   "smallest": [
+    [
+     12,
+     "text",
+     "3.68e+10"
+    ],
+    [
+     12,
+     "text",
+     "3.46e+10"
+    ],
+    [
+     12,
+     "text",
+     "4.74e+10"
+    ],
+    [
+     12,
+     "text",
+     "6.77e+10"
+    ],
+    [
+     12,
+     "text",
+     "3.01e+10"
+    ]
+   ]
+  },
+  "overflow_x": 0,
+  "overflow_offenders": [],
+  "root_px": 10,
+  "body_px": 14,
+  "shot": "/tmp/claude-1000/-home-kuhfeldrf-notebooks-peptiline/fe1349c4-3a13-4d32-bf42-e90954c239d2/scratchpad/baseline/shots/chromium_laptop-13-mac_z1.0_data_analysis.png"
+ },
+ {
+  "browser": "chromium",
+  "profile": "laptop-13-mac",
+  "desc": "13-15\" MacBook (Retina)",
+  "page": "heatmap",
+  "zoom": 1.0,
+  "ui": {
+   "chars": 2472,
+   "min_px": 7.2,
+   "p10_px": 8.6,
+   "median_px": 9.2,
+   "pct_lt12": 93.9,
+   "pct_lt14": 93.9,
+   "smallest": [
+    [
+     7.2,
+     "span",
+     "1"
+    ],
+    [
+     7.2,
+     "span",
+     "1"
+    ],
+    [
+     7.2,
+     "span",
+     "2"
+    ],
+    [
+     8,
+     "span",
+     "On the figure \u00b7 drag to reorder, click a name to r"
+    ],
+    [
+     8,
+     "a",
+     "Clear"
+    ]
+   ]
+  },
+  "plot": {
+   "chars": 398,
+   "min_px": 13,
+   "p10_px": 13,
+   "median_px": 13.0,
+   "pct_lt12": 0.0,
+   "pct_lt14": 52.5,
+   "smallest": [
+    [
+     13,
+     "text",
+     "R"
+    ],
+    [
+     13,
+     "text",
+     "E"
+    ],
+    [
+     13,
+     "text",
+     "L"
+    ],
+    [
+     13,
+     "text",
+     "E"
+    ],
+    [
+     13,
+     "text",
+     "E"
+    ]
+   ]
+  },
+  "overflow_x": 0,
+  "overflow_offenders": [],
+  "root_px": 10,
+  "body_px": 14,
+  "shot": "/tmp/claude-1000/-home-kuhfeldrf-notebooks-peptiline/fe1349c4-3a13-4d32-bf42-e90954c239d2/scratchpad/baseline/shots/chromium_laptop-13-mac_z1.0_heatmap.png"
+ },
+ {
+  "browser": "chromium",
+  "profile": "desktop-1080",
+  "desc": "24\" 1080p monitor, 100%",
+  "page": "landing",
+  "zoom": 1.0,
+  "ui": {
+   "chars": 3674,
+   "min_px": 14,
+   "p10_px": 14,
+   "median_px": 14.0,
+   "pct_lt12": 0.0,
+   "pct_lt14": 0.0,
+   "smallest": [
+    [
+     14,
+     "div",
+     "Integrated analysis modules"
+    ],
+    [
+     14,
+     "div",
+     "Step end-to-end workflow"
+    ],
+    [
+     14,
+     "div",
+     "Exportable data files"
+    ],
+    [
+     14,
+     "div",
+     "Analysis & visualization views"
+    ],
+    [
+     14,
+     "li",
+     "Multi-dataset import and merge"
+    ]
+   ]
+  },
+  "plot": null,
+  "overflow_x": 0,
+  "overflow_offenders": [],
+  "root_px": 10,
+  "body_px": 14,
+  "shot": "/tmp/claude-1000/-home-kuhfeldrf-notebooks-peptiline/fe1349c4-3a13-4d32-bf42-e90954c239d2/scratchpad/baseline/shots/chromium_desktop-1080_z1.0_landing.png"
+ },
+ {
+  "browser": "chromium",
+  "profile": "desktop-1080",
+  "desc": "24\" 1080p monitor, 100%",
+  "page": "data_transformation",
+  "zoom": 1.0,
+  "ui": {
+   "chars": 1166,
+   "min_px": 8.2,
+   "p10_px": 8.5,
+   "median_px": 9.5,
+   "pct_lt12": 57.5,
+   "pct_lt14": 57.5,
+   "smallest": [
+    [
+     8.2,
+     "a",
+     "Download example file"
+    ],
+    [
+     8.2,
+     "div",
+     "\u00b7"
+    ],
+    [
+     8.2,
+     "a",
+     "Loaded"
+    ],
+    [
+     8.2,
+     "a",
+     "Download example file"
+    ],
+    [
+     8.2,
+     "div",
+     "\u00b7"
+    ]
+   ]
+  },
+  "plot": null,
+  "overflow_x": 0,
+  "overflow_offenders": [],
+  "root_px": 10,
+  "body_px": 14,
+  "shot": "/tmp/claude-1000/-home-kuhfeldrf-notebooks-peptiline/fe1349c4-3a13-4d32-bf42-e90954c239d2/scratchpad/baseline/shots/chromium_desktop-1080_z1.0_data_transformation.png"
+ },
+ {
+  "browser": "chromium",
+  "profile": "desktop-1080",
+  "desc": "24\" 1080p monitor, 100%",
+  "page": "data_analysis",
+  "zoom": 1.0,
+  "ui": {
+   "chars": 2236,
+   "min_px": 7.2,
+   "p10_px": 8,
+   "median_px": 9.2,
+   "pct_lt12": 94.6,
+   "pct_lt14": 94.6,
+   "smallest": [
+    [
+     7.2,
+     "span",
+     "1"
+    ],
+    [
+     7.2,
+     "span",
+     "2"
+    ],
+    [
+     7.2,
+     "span",
+     "3"
+    ],
+    [
+     7.2,
+     "span",
+     "4"
+    ],
+    [
+     7.2,
+     "span",
+     "5"
+    ]
+   ]
+  },
+  "plot": {
+   "chars": 192,
+   "min_px": 12,
+   "p10_px": 12,
+   "median_px": 16.0,
+   "pct_lt12": 0.0,
+   "pct_lt14": 25.0,
+   "smallest": [
+    [
+     12,
+     "text",
+     "3.68e+10"
+    ],
+    [
+     12,
+     "text",
+     "3.46e+10"
+    ],
+    [
+     12,
+     "text",
+     "4.74e+10"
+    ],
+    [
+     12,
+     "text",
+     "6.77e+10"
+    ],
+    [
+     12,
+     "text",
+     "3.01e+10"
+    ]
+   ]
+  },
+  "overflow_x": 0,
+  "overflow_offenders": [],
+  "root_px": 10,
+  "body_px": 14,
+  "shot": "/tmp/claude-1000/-home-kuhfeldrf-notebooks-peptiline/fe1349c4-3a13-4d32-bf42-e90954c239d2/scratchpad/baseline/shots/chromium_desktop-1080_z1.0_data_analysis.png"
+ },
+ {
+  "browser": "chromium",
+  "profile": "desktop-1080",
+  "desc": "24\" 1080p monitor, 100%",
+  "page": "heatmap",
+  "zoom": 1.0,
+  "ui": {
+   "chars": 2472,
+   "min_px": 7.2,
+   "p10_px": 8.6,
+   "median_px": 9.2,
+   "pct_lt12": 93.9,
+   "pct_lt14": 93.9,
+   "smallest": [
+    [
+     7.2,
+     "span",
+     "1"
+    ],
+    [
+     7.2,
+     "span",
+     "1"
+    ],
+    [
+     7.2,
+     "span",
+     "2"
+    ],
+    [
+     8,
+     "span",
+     "On the figure \u00b7 drag to reorder, click a name to r"
+    ],
+    [
+     8,
+     "a",
+     "Clear"
+    ]
+   ]
+  },
+  "plot": {
+   "chars": 398,
+   "min_px": 13,
+   "p10_px": 13,
+   "median_px": 13.0,
+   "pct_lt12": 0.0,
+   "pct_lt14": 52.5,
+   "smallest": [
+    [
+     13,
+     "text",
+     "R"
+    ],
+    [
+     13,
+     "text",
+     "E"
+    ],
+    [
+     13,
+     "text",
+     "L"
+    ],
+    [
+     13,
+     "text",
+     "E"
+    ],
+    [
+     13,
+     "text",
+     "E"
+    ]
+   ]
+  },
+  "overflow_x": 0,
+  "overflow_offenders": [],
+  "root_px": 10,
+  "body_px": 14,
+  "shot": "/tmp/claude-1000/-home-kuhfeldrf-notebooks-peptiline/fe1349c4-3a13-4d32-bf42-e90954c239d2/scratchpad/baseline/shots/chromium_desktop-1080_z1.0_heatmap.png"
+ },
+ {
+  "browser": "chromium",
+  "profile": "desktop-27-qhd",
+  "desc": "27\" QHD monitor, 100%",
+  "page": "landing",
+  "zoom": 1.0,
+  "ui": {
+   "chars": 3674,
+   "min_px": 14,
+   "p10_px": 14,
+   "median_px": 14.0,
+   "pct_lt12": 0.0,
+   "pct_lt14": 0.0,
+   "smallest": [
+    [
+     14,
+     "div",
+     "Integrated analysis modules"
+    ],
+    [
+     14,
+     "div",
+     "Step end-to-end workflow"
+    ],
+    [
+     14,
+     "div",
+     "Exportable data files"
+    ],
+    [
+     14,
+     "div",
+     "Analysis & visualization views"
+    ],
+    [
+     14,
+     "li",
+     "Multi-dataset import and merge"
+    ]
+   ]
+  },
+  "plot": null,
+  "overflow_x": 0,
+  "overflow_offenders": [],
+  "root_px": 10,
+  "body_px": 14,
+  "shot": "/tmp/claude-1000/-home-kuhfeldrf-notebooks-peptiline/fe1349c4-3a13-4d32-bf42-e90954c239d2/scratchpad/baseline/shots/chromium_desktop-27-qhd_z1.0_landing.png"
+ },
+ {
+  "browser": "chromium",
+  "profile": "desktop-27-qhd",
+  "desc": "27\" QHD monitor, 100%",
+  "page": "data_transformation",
+  "zoom": 1.0,
+  "ui": {
+   "chars": 1166,
+   "min_px": 8.2,
+   "p10_px": 8.5,
+   "median_px": 9.5,
+   "pct_lt12": 57.5,
+   "pct_lt14": 57.5,
+   "smallest": [
+    [
+     8.2,
+     "a",
+     "Download example file"
+    ],
+    [
+     8.2,
+     "div",
+     "\u00b7"
+    ],
+    [
+     8.2,
+     "a",
+     "Loaded"
+    ],
+    [
+     8.2,
+     "a",
+     "Download example file"
+    ],
+    [
+     8.2,
+     "div",
+     "\u00b7"
+    ]
+   ]
+  },
+  "plot": null,
+  "overflow_x": 0,
+  "overflow_offenders": [],
+  "root_px": 10,
+  "body_px": 14,
+  "shot": "/tmp/claude-1000/-home-kuhfeldrf-notebooks-peptiline/fe1349c4-3a13-4d32-bf42-e90954c239d2/scratchpad/baseline/shots/chromium_desktop-27-qhd_z1.0_data_transformation.png"
+ },
+ {
+  "browser": "chromium",
+  "profile": "desktop-27-qhd",
+  "desc": "27\" QHD monitor, 100%",
+  "page": "data_analysis",
+  "zoom": 1.0,
+  "ui": {
+   "chars": 2236,
+   "min_px": 7.2,
+   "p10_px": 8,
+   "median_px": 9.2,
+   "pct_lt12": 94.6,
+   "pct_lt14": 94.6,
+   "smallest": [
+    [
+     7.2,
+     "span",
+     "1"
+    ],
+    [
+     7.2,
+     "span",
+     "2"
+    ],
+    [
+     7.2,
+     "span",
+     "3"
+    ],
+    [
+     7.2,
+     "span",
+     "4"
+    ],
+    [
+     7.2,
+     "span",
+     "5"
+    ]
+   ]
+  },
+  "plot": {
+   "chars": 192,
+   "min_px": 12,
+   "p10_px": 12,
+   "median_px": 16.0,
+   "pct_lt12": 0.0,
+   "pct_lt14": 25.0,
+   "smallest": [
+    [
+     12,
+     "text",
+     "3.68e+10"
+    ],
+    [
+     12,
+     "text",
+     "3.46e+10"
+    ],
+    [
+     12,
+     "text",
+     "4.74e+10"
+    ],
+    [
+     12,
+     "text",
+     "6.77e+10"
+    ],
+    [
+     12,
+     "text",
+     "3.01e+10"
+    ]
+   ]
+  },
+  "overflow_x": 0,
+  "overflow_offenders": [],
+  "root_px": 10,
+  "body_px": 14,
+  "shot": "/tmp/claude-1000/-home-kuhfeldrf-notebooks-peptiline/fe1349c4-3a13-4d32-bf42-e90954c239d2/scratchpad/baseline/shots/chromium_desktop-27-qhd_z1.0_data_analysis.png"
+ },
+ {
+  "browser": "chromium",
+  "profile": "desktop-27-qhd",
+  "desc": "27\" QHD monitor, 100%",
+  "page": "heatmap",
+  "zoom": 1.0,
+  "ui": {
+   "chars": 2472,
+   "min_px": 7.2,
+   "p10_px": 8.6,
+   "median_px": 9.2,
+   "pct_lt12": 93.9,
+   "pct_lt14": 93.9,
+   "smallest": [
+    [
+     7.2,
+     "span",
+     "1"
+    ],
+    [
+     7.2,
+     "span",
+     "1"
+    ],
+    [
+     7.2,
+     "span",
+     "2"
+    ],
+    [
+     8,
+     "span",
+     "On the figure \u00b7 drag to reorder, click a name to r"
+    ],
+    [
+     8,
+     "a",
+     "Clear"
+    ]
+   ]
+  },
+  "plot": {
+   "chars": 398,
+   "min_px": 13,
+   "p10_px": 13,
+   "median_px": 13.0,
+   "pct_lt12": 0.0,
+   "pct_lt14": 52.5,
+   "smallest": [
+    [
+     13,
+     "text",
+     "R"
+    ],
+    [
+     13,
+     "text",
+     "E"
+    ],
+    [
+     13,
+     "text",
+     "L"
+    ],
+    [
+     13,
+     "text",
+     "E"
+    ],
+    [
+     13,
+     "text",
+     "E"
+    ]
+   ]
+  },
+  "overflow_x": 0,
+  "overflow_offenders": [],
+  "root_px": 10,
+  "body_px": 14,
+  "shot": "/tmp/claude-1000/-home-kuhfeldrf-notebooks-peptiline/fe1349c4-3a13-4d32-bf42-e90954c239d2/scratchpad/baseline/shots/chromium_desktop-27-qhd_z1.0_heatmap.png"
+ },
+ {
+  "browser": "chromium",
+  "profile": "desktop-27-4k",
+  "desc": "27\" 4K monitor, 150% OS scaling",
+  "page": "landing",
+  "zoom": 1.0,
+  "ui": {
+   "chars": 3674,
+   "min_px": 14,
+   "p10_px": 14,
+   "median_px": 14.0,
+   "pct_lt12": 0.0,
+   "pct_lt14": 0.0,
+   "smallest": [
+    [
+     14,
+     "div",
+     "Integrated analysis modules"
+    ],
+    [
+     14,
+     "div",
+     "Step end-to-end workflow"
+    ],
+    [
+     14,
+     "div",
+     "Exportable data files"
+    ],
+    [
+     14,
+     "div",
+     "Analysis & visualization views"
+    ],
+    [
+     14,
+     "li",
+     "Multi-dataset import and merge"
+    ]
+   ]
+  },
+  "plot": null,
+  "overflow_x": 0,
+  "overflow_offenders": [],
+  "root_px": 10,
+  "body_px": 14,
+  "shot": "/tmp/claude-1000/-home-kuhfeldrf-notebooks-peptiline/fe1349c4-3a13-4d32-bf42-e90954c239d2/scratchpad/baseline/shots/chromium_desktop-27-4k_z1.0_landing.png"
+ },
+ {
+  "browser": "chromium",
+  "profile": "desktop-27-4k",
+  "desc": "27\" 4K monitor, 150% OS scaling",
+  "page": "data_transformation",
+  "zoom": 1.0,
+  "ui": {
+   "chars": 1166,
+   "min_px": 8.2,
+   "p10_px": 8.5,
+   "median_px": 9.5,
+   "pct_lt12": 57.5,
+   "pct_lt14": 57.5,
+   "smallest": [
+    [
+     8.2,
+     "a",
+     "Download example file"
+    ],
+    [
+     8.2,
+     "div",
+     "\u00b7"
+    ],
+    [
+     8.2,
+     "a",
+     "Loaded"
+    ],
+    [
+     8.2,
+     "a",
+     "Download example file"
+    ],
+    [
+     8.2,
+     "div",
+     "\u00b7"
+    ]
+   ]
+  },
+  "plot": null,
+  "overflow_x": 0,
+  "overflow_offenders": [],
+  "root_px": 10,
+  "body_px": 14,
+  "shot": "/tmp/claude-1000/-home-kuhfeldrf-notebooks-peptiline/fe1349c4-3a13-4d32-bf42-e90954c239d2/scratchpad/baseline/shots/chromium_desktop-27-4k_z1.0_data_transformation.png"
+ },
+ {
+  "browser": "chromium",
+  "profile": "desktop-27-4k",
+  "desc": "27\" 4K monitor, 150% OS scaling",
+  "page": "data_analysis",
+  "zoom": 1.0,
+  "ui": {
+   "chars": 2236,
+   "min_px": 7.2,
+   "p10_px": 8,
+   "median_px": 9.2,
+   "pct_lt12": 94.6,
+   "pct_lt14": 94.6,
+   "smallest": [
+    [
+     7.2,
+     "span",
+     "1"
+    ],
+    [
+     7.2,
+     "span",
+     "2"
+    ],
+    [
+     7.2,
+     "span",
+     "3"
+    ],
+    [
+     7.2,
+     "span",
+     "4"
+    ],
+    [
+     7.2,
+     "span",
+     "5"
+    ]
+   ]
+  },
+  "plot": {
+   "chars": 192,
+   "min_px": 12,
+   "p10_px": 12,
+   "median_px": 16.0,
+   "pct_lt12": 0.0,
+   "pct_lt14": 25.0,
+   "smallest": [
+    [
+     12,
+     "text",
+     "3.68e+10"
+    ],
+    [
+     12,
+     "text",
+     "3.46e+10"
+    ],
+    [
+     12,
+     "text",
+     "4.74e+10"
+    ],
+    [
+     12,
+     "text",
+     "6.77e+10"
+    ],
+    [
+     12,
+     "text",
+     "3.01e+10"
+    ]
+   ]
+  },
+  "overflow_x": 0,
+  "overflow_offenders": [],
+  "root_px": 10,
+  "body_px": 14,
+  "shot": "/tmp/claude-1000/-home-kuhfeldrf-notebooks-peptiline/fe1349c4-3a13-4d32-bf42-e90954c239d2/scratchpad/baseline/shots/chromium_desktop-27-4k_z1.0_data_analysis.png"
+ },
+ {
+  "browser": "chromium",
+  "profile": "desktop-27-4k",
+  "desc": "27\" 4K monitor, 150% OS scaling",
+  "page": "heatmap",
+  "zoom": 1.0,
+  "ui": {
+   "chars": 2472,
+   "min_px": 7.2,
+   "p10_px": 8.6,
+   "median_px": 9.2,
+   "pct_lt12": 93.9,
+   "pct_lt14": 93.9,
+   "smallest": [
+    [
+     7.2,
+     "span",
+     "1"
+    ],
+    [
+     7.2,
+     "span",
+     "1"
+    ],
+    [
+     7.2,
+     "span",
+     "2"
+    ],
+    [
+     8,
+     "span",
+     "On the figure \u00b7 drag to reorder, click a name to r"
+    ],
+    [
+     8,
+     "a",
+     "Clear"
+    ]
+   ]
+  },
+  "plot": {
+   "chars": 398,
+   "min_px": 13,
+   "p10_px": 13,
+   "median_px": 13.0,
+   "pct_lt12": 0.0,
+   "pct_lt14": 52.5,
+   "smallest": [
+    [
+     13,
+     "text",
+     "R"
+    ],
+    [
+     13,
+     "text",
+     "E"
+    ],
+    [
+     13,
+     "text",
+     "L"
+    ],
+    [
+     13,
+     "text",
+     "E"
+    ],
+    [
+     13,
+     "text",
+     "E"
+    ]
+   ]
+  },
+  "overflow_x": 0,
+  "overflow_offenders": [],
+  "root_px": 10,
+  "body_px": 14,
+  "shot": "/tmp/claude-1000/-home-kuhfeldrf-notebooks-peptiline/fe1349c4-3a13-4d32-bf42-e90954c239d2/scratchpad/baseline/shots/chromium_desktop-27-4k_z1.0_heatmap.png"
+ },
+ {
+  "browser": "chromium",
+  "profile": "tablet",
+  "desc": "iPad, portrait",
+  "page": "landing",
+  "zoom": 1.0,
+  "ui": {
+   "chars": 3674,
+   "min_px": 14,
+   "p10_px": 14,
+   "median_px": 14.0,
+   "pct_lt12": 0.0,
+   "pct_lt14": 0.0,
+   "smallest": [
+    [
+     14,
+     "div",
+     "Integrated analysis modules"
+    ],
+    [
+     14,
+     "div",
+     "Step end-to-end workflow"
+    ],
+    [
+     14,
+     "div",
+     "Exportable data files"
+    ],
+    [
+     14,
+     "div",
+     "Analysis & visualization views"
+    ],
+    [
+     14,
+     "li",
+     "Multi-dataset import and merge"
+    ]
+   ]
+  },
+  "plot": null,
+  "overflow_x": 0,
+  "overflow_offenders": [],
+  "root_px": 10,
+  "body_px": 14,
+  "shot": "/tmp/claude-1000/-home-kuhfeldrf-notebooks-peptiline/fe1349c4-3a13-4d32-bf42-e90954c239d2/scratchpad/baseline/shots/chromium_tablet_z1.0_landing.png"
+ },
+ {
+  "browser": "chromium",
+  "profile": "tablet",
+  "desc": "iPad, portrait",
+  "page": "data_transformation",
+  "zoom": 1.0,
+  "ui": {
+   "chars": 1166,
+   "min_px": 8.2,
+   "p10_px": 8.5,
+   "median_px": 9.5,
+   "pct_lt12": 57.5,
+   "pct_lt14": 57.5,
+   "smallest": [
+    [
+     8.2,
+     "a",
+     "Download example file"
+    ],
+    [
+     8.2,
+     "div",
+     "\u00b7"
+    ],
+    [
+     8.2,
+     "a",
+     "Loaded"
+    ],
+    [
+     8.2,
+     "a",
+     "Download example file"
+    ],
+    [
+     8.2,
+     "div",
+     "\u00b7"
+    ]
+   ]
+  },
+  "plot": null,
+  "overflow_x": 0,
+  "overflow_offenders": [],
+  "root_px": 10,
+  "body_px": 14,
+  "shot": "/tmp/claude-1000/-home-kuhfeldrf-notebooks-peptiline/fe1349c4-3a13-4d32-bf42-e90954c239d2/scratchpad/baseline/shots/chromium_tablet_z1.0_data_transformation.png"
+ },
+ {
+  "browser": "chromium",
+  "profile": "tablet",
+  "desc": "iPad, portrait",
+  "page": "data_analysis",
+  "zoom": 1.0,
+  "ui": {
+   "chars": 2236,
+   "min_px": 7.2,
+   "p10_px": 8,
+   "median_px": 9.2,
+   "pct_lt12": 94.6,
+   "pct_lt14": 94.6,
+   "smallest": [
+    [
+     7.2,
+     "span",
+     "1"
+    ],
+    [
+     7.2,
+     "span",
+     "2"
+    ],
+    [
+     7.2,
+     "span",
+     "3"
+    ],
+    [
+     7.2,
+     "span",
+     "4"
+    ],
+    [
+     7.2,
+     "span",
+     "5"
+    ]
+   ]
+  },
+  "plot": {
+   "chars": 192,
+   "min_px": 12,
+   "p10_px": 12,
+   "median_px": 16.0,
+   "pct_lt12": 0.0,
+   "pct_lt14": 25.0,
+   "smallest": [
+    [
+     12,
+     "text",
+     "3.68e+10"
+    ],
+    [
+     12,
+     "text",
+     "3.46e+10"
+    ],
+    [
+     12,
+     "text",
+     "4.74e+10"
+    ],
+    [
+     12,
+     "text",
+     "6.77e+10"
+    ],
+    [
+     12,
+     "text",
+     "3.01e+10"
+    ]
+   ]
+  },
+  "overflow_x": 0,
+  "overflow_offenders": [],
+  "root_px": 10,
+  "body_px": 14,
+  "shot": "/tmp/claude-1000/-home-kuhfeldrf-notebooks-peptiline/fe1349c4-3a13-4d32-bf42-e90954c239d2/scratchpad/baseline/shots/chromium_tablet_z1.0_data_analysis.png"
+ },
+ {
+  "browser": "chromium",
+  "profile": "tablet",
+  "desc": "iPad, portrait",
+  "page": "heatmap",
+  "zoom": 1.0,
+  "ui": {
+   "chars": 2472,
+   "min_px": 7.2,
+   "p10_px": 8.6,
+   "median_px": 9.2,
+   "pct_lt12": 93.9,
+   "pct_lt14": 93.9,
+   "smallest": [
+    [
+     7.2,
+     "span",
+     "1"
+    ],
+    [
+     7.2,
+     "span",
+     "1"
+    ],
+    [
+     7.2,
+     "span",
+     "2"
+    ],
+    [
+     8,
+     "span",
+     "On the figure \u00b7 drag to reorder, click a name to r"
+    ],
+    [
+     8,
+     "a",
+     "Clear"
+    ]
+   ]
+  },
+  "plot": {
+   "chars": 398,
+   "min_px": 13,
+   "p10_px": 13,
+   "median_px": 13.0,
+   "pct_lt12": 0.0,
+   "pct_lt14": 52.5,
+   "smallest": [
+    [
+     13,
+     "text",
+     "R"
+    ],
+    [
+     13,
+     "text",
+     "E"
+    ],
+    [
+     13,
+     "text",
+     "L"
+    ],
+    [
+     13,
+     "text",
+     "E"
+    ],
+    [
+     13,
+     "text",
+     "E"
+    ]
+   ]
+  },
+  "overflow_x": 0,
+  "overflow_offenders": [],
+  "root_px": 10,
+  "body_px": 14,
+  "shot": "/tmp/claude-1000/-home-kuhfeldrf-notebooks-peptiline/fe1349c4-3a13-4d32-bf42-e90954c239d2/scratchpad/baseline/shots/chromium_tablet_z1.0_heatmap.png"
+ },
+ {
+  "browser": "chromium",
+  "profile": "phone",
+  "desc": "iPhone-class phone",
+  "page": "landing",
+  "zoom": 1.0,
+  "ui": {
+   "chars": 3674,
+   "min_px": 14,
+   "p10_px": 14,
+   "median_px": 14.0,
+   "pct_lt12": 0.0,
+   "pct_lt14": 0.0,
+   "smallest": [
+    [
+     14,
+     "a",
+     "About"
+    ],
+    [
+     14,
+     "a",
+     "Tools"
+    ],
+    [
+     14,
+     "a",
+     "Contact"
+    ],
+    [
+     14,
+     "div",
+     "Integrated analysis modules"
+    ],
+    [
+     14,
+     "div",
+     "Step end-to-end workflow"
+    ]
+   ]
+  },
+  "plot": null,
+  "overflow_x": 0,
+  "overflow_offenders": [],
+  "root_px": 10,
+  "body_px": 14,
+  "shot": "/tmp/claude-1000/-home-kuhfeldrf-notebooks-peptiline/fe1349c4-3a13-4d32-bf42-e90954c239d2/scratchpad/baseline/shots/chromium_phone_z1.0_landing.png"
+ },
+ {
+  "browser": "chromium",
+  "profile": "phone",
+  "desc": "iPhone-class phone",
+  "page": "data_transformation",
+  "zoom": 1.0,
+  "ui": {
+   "chars": 1166,
+   "min_px": 8.2,
+   "p10_px": 8.5,
+   "median_px": 9.5,
+   "pct_lt12": 57.5,
+   "pct_lt14": 57.5,
+   "smallest": [
+    [
+     8.2,
+     "a",
+     "Download example file"
+    ],
+    [
+     8.2,
+     "div",
+     "\u00b7"
+    ],
+    [
+     8.2,
+     "a",
+     "Loaded"
+    ],
+    [
+     8.2,
+     "a",
+     "Download example file"
+    ],
+    [
+     8.2,
+     "div",
+     "\u00b7"
+    ]
+   ]
+  },
+  "plot": null,
+  "overflow_x": 0,
+  "overflow_offenders": [],
+  "root_px": 10,
+  "body_px": 14,
+  "shot": "/tmp/claude-1000/-home-kuhfeldrf-notebooks-peptiline/fe1349c4-3a13-4d32-bf42-e90954c239d2/scratchpad/baseline/shots/chromium_phone_z1.0_data_transformation.png"
+ },
+ {
+  "browser": "chromium",
+  "profile": "phone",
+  "desc": "iPhone-class phone",
+  "page": "data_analysis",
+  "zoom": 1.0,
+  "ui": {
+   "chars": 2142,
+   "min_px": 7.2,
+   "p10_px": 8,
+   "median_px": 9.5,
+   "pct_lt12": 94.4,
+   "pct_lt14": 94.4,
+   "smallest": [
+    [
+     7.2,
+     "span",
+     "1"
+    ],
+    [
+     7.2,
+     "span",
+     "2"
+    ],
+    [
+     7.2,
+     "span",
+     "3"
+    ],
+    [
+     7.2,
+     "span",
+     "4"
+    ],
+    [
+     7.2,
+     "span",
+     "5"
+    ]
+   ]
+  },
+  "plot": {
+   "chars": 166,
+   "min_px": 12,
+   "p10_px": 12,
+   "median_px": 16.0,
+   "pct_lt12": 0.0,
+   "pct_lt14": 28.9,
+   "smallest": [
+    [
+     12,
+     "text",
+     "3.68e+10"
+    ],
+    [
+     12,
+     "text",
+     "3.46e+10"
+    ],
+    [
+     12,
+     "text",
+     "4.74e+10"
+    ],
+    [
+     12,
+     "text",
+     "6.77e+10"
+    ],
+    [
+     12,
+     "text",
+     "3.01e+10"
+    ]
+   ]
+  },
+  "overflow_x": 0,
+  "overflow_offenders": [],
+  "root_px": 10,
+  "body_px": 14,
+  "shot": "/tmp/claude-1000/-home-kuhfeldrf-notebooks-peptiline/fe1349c4-3a13-4d32-bf42-e90954c239d2/scratchpad/baseline/shots/chromium_phone_z1.0_data_analysis.png"
+ },
+ {
+  "browser": "chromium",
+  "profile": "phone",
+  "desc": "iPhone-class phone",
+  "page": "heatmap",
+  "zoom": 1.0,
+  "ui": {
+   "chars": 2245,
+   "min_px": 7.2,
+   "p10_px": 8.2,
+   "median_px": 9.5,
+   "pct_lt12": 93.3,
+   "pct_lt14": 93.3,
+   "smallest": [
+    [
+     7.2,
+     "span",
+     "1"
+    ],
+    [
+     7.2,
+     "span",
+     "1"
+    ],
+    [
+     7.2,
+     "span",
+     "2"
+    ],
+    [
+     8,
+     "span",
+     "On the figure \u00b7 drag to reorder, click a name to r"
+    ],
+    [
+     8,
+     "a",
+     "Clear"
+    ]
+   ]
+  },
+  "plot": {
+   "chars": 398,
+   "min_px": 13,
+   "p10_px": 13,
+   "median_px": 13.0,
+   "pct_lt12": 0.0,
+   "pct_lt14": 52.5,
+   "smallest": [
+    [
+     13,
+     "text",
+     "R"
+    ],
+    [
+     13,
+     "text",
+     "E"
+    ],
+    [
+     13,
+     "text",
+     "L"
+    ],
+    [
+     13,
+     "text",
+     "E"
+    ],
+    [
+     13,
+     "text",
+     "E"
+    ]
+   ]
+  },
+  "overflow_x": 0,
+  "overflow_offenders": [],
+  "root_px": 10,
+  "body_px": 14,
+  "shot": "/tmp/claude-1000/-home-kuhfeldrf-notebooks-peptiline/fe1349c4-3a13-4d32-bf42-e90954c239d2/scratchpad/baseline/shots/chromium_phone_z1.0_heatmap.png"
+ },
+ {
+  "browser": "firefox",
+  "profile": "laptop-15-scaled",
+  "desc": "15\" 1080p laptop, 150% OS scaling",
+  "page": "landing",
+  "zoom": 1.0,
+  "ui": {
+   "chars": 3674,
+   "min_px": 14,
+   "p10_px": 14,
+   "median_px": 14.0,
+   "pct_lt12": 0.0,
+   "pct_lt14": 0.0,
+   "smallest": [
+    [
+     14,
+     "div",
+     "Integrated analysis modules"
+    ],
+    [
+     14,
+     "div",
+     "Step end-to-end workflow"
+    ],
+    [
+     14,
+     "div",
+     "Exportable data files"
+    ],
+    [
+     14,
+     "div",
+     "Analysis & visualization views"
+    ],
+    [
+     14,
+     "li",
+     "Multi-dataset import and merge"
+    ]
+   ]
+  },
+  "plot": null,
+  "overflow_x": 0,
+  "overflow_offenders": [],
+  "root_px": 10,
+  "body_px": 14,
+  "shot": "/tmp/claude-1000/-home-kuhfeldrf-notebooks-peptiline/fe1349c4-3a13-4d32-bf42-e90954c239d2/scratchpad/baseline/shots/firefox_laptop-15-scaled_z1.0_landing.png"
+ },
+ {
+  "browser": "firefox",
+  "profile": "laptop-15-scaled",
+  "desc": "15\" 1080p laptop, 150% OS scaling",
+  "page": "data_transformation",
+  "zoom": 1.0,
+  "ui": {
+   "chars": 1166,
+   "min_px": 8.2,
+   "p10_px": 8.5,
+   "median_px": 9.5,
+   "pct_lt12": 57.5,
+   "pct_lt14": 57.5,
+   "smallest": [
+    [
+     8.2,
+     "a",
+     "Download example file"
+    ],
+    [
+     8.2,
+     "div",
+     "\u00b7"
+    ],
+    [
+     8.2,
+     "a",
+     "Loaded"
+    ],
+    [
+     8.2,
+     "a",
+     "Download example file"
+    ],
+    [
+     8.2,
+     "div",
+     "\u00b7"
+    ]
+   ]
+  },
+  "plot": null,
+  "overflow_x": 0,
+  "overflow_offenders": [],
+  "root_px": 10,
+  "body_px": 14,
+  "shot": "/tmp/claude-1000/-home-kuhfeldrf-notebooks-peptiline/fe1349c4-3a13-4d32-bf42-e90954c239d2/scratchpad/baseline/shots/firefox_laptop-15-scaled_z1.0_data_transformation.png"
+ },
+ {
+  "browser": "firefox",
+  "profile": "laptop-15-scaled",
+  "desc": "15\" 1080p laptop, 150% OS scaling",
+  "page": "data_analysis",
+  "zoom": 1.0,
+  "ui": {
+   "chars": 2236,
+   "min_px": 7.2,
+   "p10_px": 8,
+   "median_px": 9.2,
+   "pct_lt12": 94.6,
+   "pct_lt14": 94.6,
+   "smallest": [
+    [
+     7.2,
+     "span",
+     "1"
+    ],
+    [
+     7.2,
+     "span",
+     "2"
+    ],
+    [
+     7.2,
+     "span",
+     "3"
+    ],
+    [
+     7.2,
+     "span",
+     "4"
+    ],
+    [
+     7.2,
+     "span",
+     "5"
+    ]
+   ]
+  },
+  "plot": {
+   "chars": 192,
+   "min_px": 12,
+   "p10_px": 12,
+   "median_px": 16.0,
+   "pct_lt12": 0.0,
+   "pct_lt14": 25.0,
+   "smallest": [
+    [
+     12,
+     "text",
+     "3.68e+10"
+    ],
+    [
+     12,
+     "text",
+     "3.46e+10"
+    ],
+    [
+     12,
+     "text",
+     "4.74e+10"
+    ],
+    [
+     12,
+     "text",
+     "6.77e+10"
+    ],
+    [
+     12,
+     "text",
+     "3.01e+10"
+    ]
+   ]
+  },
+  "overflow_x": 0,
+  "overflow_offenders": [],
+  "root_px": 10,
+  "body_px": 14,
+  "shot": "/tmp/claude-1000/-home-kuhfeldrf-notebooks-peptiline/fe1349c4-3a13-4d32-bf42-e90954c239d2/scratchpad/baseline/shots/firefox_laptop-15-scaled_z1.0_data_analysis.png"
+ },
+ {
+  "browser": "firefox",
+  "profile": "laptop-15-scaled",
+  "desc": "15\" 1080p laptop, 150% OS scaling",
+  "page": "heatmap",
+  "zoom": 1.0,
+  "ui": {
+   "chars": 2472,
+   "min_px": 7.2,
+   "p10_px": 8.6,
+   "median_px": 9.2,
+   "pct_lt12": 93.9,
+   "pct_lt14": 93.9,
+   "smallest": [
+    [
+     7.2,
+     "span",
+     "1"
+    ],
+    [
+     7.2,
+     "span",
+     "1"
+    ],
+    [
+     7.2,
+     "span",
+     "2"
+    ],
+    [
+     8,
+     "span",
+     "On the figure \u00b7 drag to reorder, click a name to r"
+    ],
+    [
+     8,
+     "a",
+     "Clear"
+    ]
+   ]
+  },
+  "plot": {
+   "chars": 398,
+   "min_px": 13,
+   "p10_px": 13,
+   "median_px": 13.0,
+   "pct_lt12": 0.0,
+   "pct_lt14": 52.5,
+   "smallest": [
+    [
+     13,
+     "text",
+     "R"
+    ],
+    [
+     13,
+     "text",
+     "E"
+    ],
+    [
+     13,
+     "text",
+     "L"
+    ],
+    [
+     13,
+     "text",
+     "E"
+    ],
+    [
+     13,
+     "text",
+     "E"
+    ]
+   ]
+  },
+  "overflow_x": 0,
+  "overflow_offenders": [],
+  "root_px": 10,
+  "body_px": 14,
+  "shot": "/tmp/claude-1000/-home-kuhfeldrf-notebooks-peptiline/fe1349c4-3a13-4d32-bf42-e90954c239d2/scratchpad/baseline/shots/firefox_laptop-15-scaled_z1.0_heatmap.png"
+ },
+ {
+  "browser": "firefox",
+  "profile": "laptop-15",
+  "desc": "15\" 1080p laptop, 125% OS scaling",
+  "page": "landing",
+  "zoom": 1.0,
+  "ui": {
+   "chars": 3674,
+   "min_px": 14,
+   "p10_px": 14,
+   "median_px": 14.0,
+   "pct_lt12": 0.0,
+   "pct_lt14": 0.0,
+   "smallest": [
+    [
+     14,
+     "div",
+     "Integrated analysis modules"
+    ],
+    [
+     14,
+     "div",
+     "Step end-to-end workflow"
+    ],
+    [
+     14,
+     "div",
+     "Exportable data files"
+    ],
+    [
+     14,
+     "div",
+     "Analysis & visualization views"
+    ],
+    [
+     14,
+     "li",
+     "Multi-dataset import and merge"
+    ]
+   ]
+  },
+  "plot": null,
+  "overflow_x": 0,
+  "overflow_offenders": [],
+  "root_px": 10,
+  "body_px": 14,
+  "shot": "/tmp/claude-1000/-home-kuhfeldrf-notebooks-peptiline/fe1349c4-3a13-4d32-bf42-e90954c239d2/scratchpad/baseline/shots/firefox_laptop-15_z1.0_landing.png"
+ },
+ {
+  "browser": "firefox",
+  "profile": "laptop-15",
+  "desc": "15\" 1080p laptop, 125% OS scaling",
+  "page": "data_transformation",
+  "zoom": 1.0,
+  "ui": {
+   "chars": 1166,
+   "min_px": 8.2,
+   "p10_px": 8.5,
+   "median_px": 9.5,
+   "pct_lt12": 57.5,
+   "pct_lt14": 57.5,
+   "smallest": [
+    [
+     8.2,
+     "a",
+     "Download example file"
+    ],
+    [
+     8.2,
+     "div",
+     "\u00b7"
+    ],
+    [
+     8.2,
+     "a",
+     "Loaded"
+    ],
+    [
+     8.2,
+     "a",
+     "Download example file"
+    ],
+    [
+     8.2,
+     "div",
+     "\u00b7"
+    ]
+   ]
+  },
+  "plot": null,
+  "overflow_x": 0,
+  "overflow_offenders": [],
+  "root_px": 10,
+  "body_px": 14,
+  "shot": "/tmp/claude-1000/-home-kuhfeldrf-notebooks-peptiline/fe1349c4-3a13-4d32-bf42-e90954c239d2/scratchpad/baseline/shots/firefox_laptop-15_z1.0_data_transformation.png"
+ },
+ {
+  "browser": "firefox",
+  "profile": "laptop-15",
+  "desc": "15\" 1080p laptop, 125% OS scaling",
+  "page": "data_analysis",
+  "zoom": 1.0,
+  "ui": {
+   "chars": 2236,
+   "min_px": 7.2,
+   "p10_px": 8,
+   "median_px": 9.2,
+   "pct_lt12": 94.6,
+   "pct_lt14": 94.6,
+   "smallest": [
+    [
+     7.2,
+     "span",
+     "1"
+    ],
+    [
+     7.2,
+     "span",
+     "2"
+    ],
+    [
+     7.2,
+     "span",
+     "3"
+    ],
+    [
+     7.2,
+     "span",
+     "4"
+    ],
+    [
+     7.2,
+     "span",
+     "5"
+    ]
+   ]
+  },
+  "plot": {
+   "chars": 192,
+   "min_px": 12,
+   "p10_px": 12,
+   "median_px": 16.0,
+   "pct_lt12": 0.0,
+   "pct_lt14": 25.0,
+   "smallest": [
+    [
+     12,
+     "text",
+     "3.68e+10"
+    ],
+    [
+     12,
+     "text",
+     "3.46e+10"
+    ],
+    [
+     12,
+     "text",
+     "4.74e+10"
+    ],
+    [
+     12,
+     "text",
+     "6.77e+10"
+    ],
+    [
+     12,
+     "text",
+     "3.01e+10"
+    ]
+   ]
+  },
+  "overflow_x": 0,
+  "overflow_offenders": [],
+  "root_px": 10,
+  "body_px": 14,
+  "shot": "/tmp/claude-1000/-home-kuhfeldrf-notebooks-peptiline/fe1349c4-3a13-4d32-bf42-e90954c239d2/scratchpad/baseline/shots/firefox_laptop-15_z1.0_data_analysis.png"
+ },
+ {
+  "browser": "firefox",
+  "profile": "laptop-15",
+  "desc": "15\" 1080p laptop, 125% OS scaling",
+  "page": "heatmap",
+  "zoom": 1.0,
+  "ui": {
+   "chars": 2472,
+   "min_px": 7.2,
+   "p10_px": 8.6,
+   "median_px": 9.2,
+   "pct_lt12": 93.9,
+   "pct_lt14": 93.9,
+   "smallest": [
+    [
+     7.2,
+     "span",
+     "1"
+    ],
+    [
+     7.2,
+     "span",
+     "1"
+    ],
+    [
+     7.2,
+     "span",
+     "2"
+    ],
+    [
+     8,
+     "span",
+     "On the figure \u00b7 drag to reorder, click a name to r"
+    ],
+    [
+     8,
+     "a",
+     "Clear"
+    ]
+   ]
+  },
+  "plot": {
+   "chars": 398,
+   "min_px": 13,
+   "p10_px": 13,
+   "median_px": 13.0,
+   "pct_lt12": 0.0,
+   "pct_lt14": 52.5,
+   "smallest": [
+    [
+     13,
+     "text",
+     "R"
+    ],
+    [
+     13,
+     "text",
+     "E"
+    ],
+    [
+     13,
+     "text",
+     "L"
+    ],
+    [
+     13,
+     "text",
+     "E"
+    ],
+    [
+     13,
+     "text",
+     "E"
+    ]
+   ]
+  },
+  "overflow_x": 0,
+  "overflow_offenders": [],
+  "root_px": 10,
+  "body_px": 14,
+  "shot": "/tmp/claude-1000/-home-kuhfeldrf-notebooks-peptiline/fe1349c4-3a13-4d32-bf42-e90954c239d2/scratchpad/baseline/shots/firefox_laptop-15_z1.0_heatmap.png"
+ },
+ {
+  "browser": "firefox",
+  "profile": "laptop-13-mac",
+  "desc": "13-15\" MacBook (Retina)",
+  "page": "landing",
+  "zoom": 1.0,
+  "ui": {
+   "chars": 3674,
+   "min_px": 14,
+   "p10_px": 14,
+   "median_px": 14.0,
+   "pct_lt12": 0.0,
+   "pct_lt14": 0.0,
+   "smallest": [
+    [
+     14,
+     "div",
+     "Integrated analysis modules"
+    ],
+    [
+     14,
+     "div",
+     "Step end-to-end workflow"
+    ],
+    [
+     14,
+     "div",
+     "Exportable data files"
+    ],
+    [
+     14,
+     "div",
+     "Analysis & visualization views"
+    ],
+    [
+     14,
+     "li",
+     "Multi-dataset import and merge"
+    ]
+   ]
+  },
+  "plot": null,
+  "overflow_x": 0,
+  "overflow_offenders": [],
+  "root_px": 10,
+  "body_px": 14,
+  "shot": "/tmp/claude-1000/-home-kuhfeldrf-notebooks-peptiline/fe1349c4-3a13-4d32-bf42-e90954c239d2/scratchpad/baseline/shots/firefox_laptop-13-mac_z1.0_landing.png"
+ },
+ {
+  "browser": "firefox",
+  "profile": "laptop-13-mac",
+  "desc": "13-15\" MacBook (Retina)",
+  "page": "data_transformation",
+  "zoom": 1.0,
+  "ui": {
+   "chars": 1166,
+   "min_px": 8.2,
+   "p10_px": 8.5,
+   "median_px": 9.5,
+   "pct_lt12": 57.5,
+   "pct_lt14": 57.5,
+   "smallest": [
+    [
+     8.2,
+     "a",
+     "Download example file"
+    ],
+    [
+     8.2,
+     "div",
+     "\u00b7"
+    ],
+    [
+     8.2,
+     "a",
+     "Loaded"
+    ],
+    [
+     8.2,
+     "a",
+     "Download example file"
+    ],
+    [
+     8.2,
+     "div",
+     "\u00b7"
+    ]
+   ]
+  },
+  "plot": null,
+  "overflow_x": 0,
+  "overflow_offenders": [],
+  "root_px": 10,
+  "body_px": 14,
+  "shot": "/tmp/claude-1000/-home-kuhfeldrf-notebooks-peptiline/fe1349c4-3a13-4d32-bf42-e90954c239d2/scratchpad/baseline/shots/firefox_laptop-13-mac_z1.0_data_transformation.png"
+ },
+ {
+  "browser": "firefox",
+  "profile": "laptop-13-mac",
+  "desc": "13-15\" MacBook (Retina)",
+  "page": "data_analysis",
+  "zoom": 1.0,
+  "ui": {
+   "chars": 2236,
+   "min_px": 7.2,
+   "p10_px": 8,
+   "median_px": 9.2,
+   "pct_lt12": 94.6,
+   "pct_lt14": 94.6,
+   "smallest": [
+    [
+     7.2,
+     "span",
+     "1"
+    ],
+    [
+     7.2,
+     "span",
+     "2"
+    ],
+    [
+     7.2,
+     "span",
+     "3"
+    ],
+    [
+     7.2,
+     "span",
+     "4"
+    ],
+    [
+     7.2,
+     "span",
+     "5"
+    ]
+   ]
+  },
+  "plot": {
+   "chars": 192,
+   "min_px": 12,
+   "p10_px": 12,
+   "median_px": 16.0,
+   "pct_lt12": 0.0,
+   "pct_lt14": 25.0,
+   "smallest": [
+    [
+     12,
+     "text",
+     "3.68e+10"
+    ],
+    [
+     12,
+     "text",
+     "3.46e+10"
+    ],
+    [
+     12,
+     "text",
+     "4.74e+10"
+    ],
+    [
+     12,
+     "text",
+     "6.77e+10"
+    ],
+    [
+     12,
+     "text",
+     "3.01e+10"
+    ]
+   ]
+  },
+  "overflow_x": 0,
+  "overflow_offenders": [],
+  "root_px": 10,
+  "body_px": 14,
+  "shot": "/tmp/claude-1000/-home-kuhfeldrf-notebooks-peptiline/fe1349c4-3a13-4d32-bf42-e90954c239d2/scratchpad/baseline/shots/firefox_laptop-13-mac_z1.0_data_analysis.png"
+ },
+ {
+  "browser": "firefox",
+  "profile": "laptop-13-mac",
+  "desc": "13-15\" MacBook (Retina)",
+  "page": "heatmap",
+  "zoom": 1.0,
+  "ui": {
+   "chars": 2472,
+   "min_px": 7.2,
+   "p10_px": 8.6,
+   "median_px": 9.2,
+   "pct_lt12": 93.9,
+   "pct_lt14": 93.9,
+   "smallest": [
+    [
+     7.2,
+     "span",
+     "1"
+    ],
+    [
+     7.2,
+     "span",
+     "1"
+    ],
+    [
+     7.2,
+     "span",
+     "2"
+    ],
+    [
+     8,
+     "span",
+     "On the figure \u00b7 drag to reorder, click a name to r"
+    ],
+    [
+     8,
+     "a",
+     "Clear"
+    ]
+   ]
+  },
+  "plot": {
+   "chars": 398,
+   "min_px": 13,
+   "p10_px": 13,
+   "median_px": 13.0,
+   "pct_lt12": 0.0,
+   "pct_lt14": 52.5,
+   "smallest": [
+    [
+     13,
+     "text",
+     "R"
+    ],
+    [
+     13,
+     "text",
+     "E"
+    ],
+    [
+     13,
+     "text",
+     "L"
+    ],
+    [
+     13,
+     "text",
+     "E"
+    ],
+    [
+     13,
+     "text",
+     "E"
+    ]
+   ]
+  },
+  "overflow_x": 0,
+  "overflow_offenders": [],
+  "root_px": 10,
+  "body_px": 14,
+  "shot": "/tmp/claude-1000/-home-kuhfeldrf-notebooks-peptiline/fe1349c4-3a13-4d32-bf42-e90954c239d2/scratchpad/baseline/shots/firefox_laptop-13-mac_z1.0_heatmap.png"
+ },
+ {
+  "browser": "firefox",
+  "profile": "desktop-1080",
+  "desc": "24\" 1080p monitor, 100%",
+  "page": "landing",
+  "zoom": 1.0,
+  "ui": {
+   "chars": 3674,
+   "min_px": 14,
+   "p10_px": 14,
+   "median_px": 14.0,
+   "pct_lt12": 0.0,
+   "pct_lt14": 0.0,
+   "smallest": [
+    [
+     14,
+     "div",
+     "Integrated analysis modules"
+    ],
+    [
+     14,
+     "div",
+     "Step end-to-end workflow"
+    ],
+    [
+     14,
+     "div",
+     "Exportable data files"
+    ],
+    [
+     14,
+     "div",
+     "Analysis & visualization views"
+    ],
+    [
+     14,
+     "li",
+     "Multi-dataset import and merge"
+    ]
+   ]
+  },
+  "plot": null,
+  "overflow_x": 0,
+  "overflow_offenders": [],
+  "root_px": 10,
+  "body_px": 14,
+  "shot": "/tmp/claude-1000/-home-kuhfeldrf-notebooks-peptiline/fe1349c4-3a13-4d32-bf42-e90954c239d2/scratchpad/baseline/shots/firefox_desktop-1080_z1.0_landing.png"
+ },
+ {
+  "browser": "firefox",
+  "profile": "desktop-1080",
+  "desc": "24\" 1080p monitor, 100%",
+  "page": "data_transformation",
+  "zoom": 1.0,
+  "ui": {
+   "chars": 1166,
+   "min_px": 8.2,
+   "p10_px": 8.5,
+   "median_px": 9.5,
+   "pct_lt12": 57.5,
+   "pct_lt14": 57.5,
+   "smallest": [
+    [
+     8.2,
+     "a",
+     "Download example file"
+    ],
+    [
+     8.2,
+     "div",
+     "\u00b7"
+    ],
+    [
+     8.2,
+     "a",
+     "Loaded"
+    ],
+    [
+     8.2,
+     "a",
+     "Download example file"
+    ],
+    [
+     8.2,
+     "div",
+     "\u00b7"
+    ]
+   ]
+  },
+  "plot": null,
+  "overflow_x": 0,
+  "overflow_offenders": [],
+  "root_px": 10,
+  "body_px": 14,
+  "shot": "/tmp/claude-1000/-home-kuhfeldrf-notebooks-peptiline/fe1349c4-3a13-4d32-bf42-e90954c239d2/scratchpad/baseline/shots/firefox_desktop-1080_z1.0_data_transformation.png"
+ },
+ {
+  "browser": "firefox",
+  "profile": "desktop-1080",
+  "desc": "24\" 1080p monitor, 100%",
+  "page": "data_analysis",
+  "zoom": 1.0,
+  "ui": {
+   "chars": 2236,
+   "min_px": 7.2,
+   "p10_px": 8,
+   "median_px": 9.2,
+   "pct_lt12": 94.6,
+   "pct_lt14": 94.6,
+   "smallest": [
+    [
+     7.2,
+     "span",
+     "1"
+    ],
+    [
+     7.2,
+     "span",
+     "2"
+    ],
+    [
+     7.2,
+     "span",
+     "3"
+    ],
+    [
+     7.2,
+     "span",
+     "4"
+    ],
+    [
+     7.2,
+     "span",
+     "5"
+    ]
+   ]
+  },
+  "plot": {
+   "chars": 192,
+   "min_px": 12,
+   "p10_px": 12,
+   "median_px": 16.0,
+   "pct_lt12": 0.0,
+   "pct_lt14": 25.0,
+   "smallest": [
+    [
+     12,
+     "text",
+     "3.68e+10"
+    ],
+    [
+     12,
+     "text",
+     "3.46e+10"
+    ],
+    [
+     12,
+     "text",
+     "4.74e+10"
+    ],
+    [
+     12,
+     "text",
+     "6.77e+10"
+    ],
+    [
+     12,
+     "text",
+     "3.01e+10"
+    ]
+   ]
+  },
+  "overflow_x": 0,
+  "overflow_offenders": [],
+  "root_px": 10,
+  "body_px": 14,
+  "shot": "/tmp/claude-1000/-home-kuhfeldrf-notebooks-peptiline/fe1349c4-3a13-4d32-bf42-e90954c239d2/scratchpad/baseline/shots/firefox_desktop-1080_z1.0_data_analysis.png"
+ },
+ {
+  "browser": "firefox",
+  "profile": "desktop-1080",
+  "desc": "24\" 1080p monitor, 100%",
+  "page": "heatmap",
+  "zoom": 1.0,
+  "ui": {
+   "chars": 2472,
+   "min_px": 7.2,
+   "p10_px": 8.6,
+   "median_px": 9.2,
+   "pct_lt12": 93.9,
+   "pct_lt14": 93.9,
+   "smallest": [
+    [
+     7.2,
+     "span",
+     "1"
+    ],
+    [
+     7.2,
+     "span",
+     "1"
+    ],
+    [
+     7.2,
+     "span",
+     "2"
+    ],
+    [
+     8,
+     "span",
+     "On the figure \u00b7 drag to reorder, click a name to r"
+    ],
+    [
+     8,
+     "a",
+     "Clear"
+    ]
+   ]
+  },
+  "plot": {
+   "chars": 398,
+   "min_px": 13,
+   "p10_px": 13,
+   "median_px": 13.0,
+   "pct_lt12": 0.0,
+   "pct_lt14": 52.5,
+   "smallest": [
+    [
+     13,
+     "text",
+     "R"
+    ],
+    [
+     13,
+     "text",
+     "E"
+    ],
+    [
+     13,
+     "text",
+     "L"
+    ],
+    [
+     13,
+     "text",
+     "E"
+    ],
+    [
+     13,
+     "text",
+     "E"
+    ]
+   ]
+  },
+  "overflow_x": 0,
+  "overflow_offenders": [],
+  "root_px": 10,
+  "body_px": 14,
+  "shot": "/tmp/claude-1000/-home-kuhfeldrf-notebooks-peptiline/fe1349c4-3a13-4d32-bf42-e90954c239d2/scratchpad/baseline/shots/firefox_desktop-1080_z1.0_heatmap.png"
+ },
+ {
+  "browser": "firefox",
+  "profile": "desktop-27-qhd",
+  "desc": "27\" QHD monitor, 100%",
+  "page": "landing",
+  "zoom": 1.0,
+  "ui": {
+   "chars": 3674,
+   "min_px": 14,
+   "p10_px": 14,
+   "median_px": 14.0,
+   "pct_lt12": 0.0,
+   "pct_lt14": 0.0,
+   "smallest": [
+    [
+     14,
+     "div",
+     "Integrated analysis modules"
+    ],
+    [
+     14,
+     "div",
+     "Step end-to-end workflow"
+    ],
+    [
+     14,
+     "div",
+     "Exportable data files"
+    ],
+    [
+     14,
+     "div",
+     "Analysis & visualization views"
+    ],
+    [
+     14,
+     "li",
+     "Multi-dataset import and merge"
+    ]
+   ]
+  },
+  "plot": null,
+  "overflow_x": 0,
+  "overflow_offenders": [],
+  "root_px": 10,
+  "body_px": 14,
+  "shot": "/tmp/claude-1000/-home-kuhfeldrf-notebooks-peptiline/fe1349c4-3a13-4d32-bf42-e90954c239d2/scratchpad/baseline/shots/firefox_desktop-27-qhd_z1.0_landing.png"
+ },
+ {
+  "browser": "firefox",
+  "profile": "desktop-27-qhd",
+  "desc": "27\" QHD monitor, 100%",
+  "page": "data_transformation",
+  "zoom": 1.0,
+  "ui": {
+   "chars": 1166,
+   "min_px": 8.2,
+   "p10_px": 8.5,
+   "median_px": 9.5,
+   "pct_lt12": 57.5,
+   "pct_lt14": 57.5,
+   "smallest": [
+    [
+     8.2,
+     "a",
+     "Download example file"
+    ],
+    [
+     8.2,
+     "div",
+     "\u00b7"
+    ],
+    [
+     8.2,
+     "a",
+     "Loaded"
+    ],
+    [
+     8.2,
+     "a",
+     "Download example file"
+    ],
+    [
+     8.2,
+     "div",
+     "\u00b7"
+    ]
+   ]
+  },
+  "plot": null,
+  "overflow_x": 0,
+  "overflow_offenders": [],
+  "root_px": 10,
+  "body_px": 14,
+  "shot": "/tmp/claude-1000/-home-kuhfeldrf-notebooks-peptiline/fe1349c4-3a13-4d32-bf42-e90954c239d2/scratchpad/baseline/shots/firefox_desktop-27-qhd_z1.0_data_transformation.png"
+ },
+ {
+  "browser": "firefox",
+  "profile": "desktop-27-qhd",
+  "desc": "27\" QHD monitor, 100%",
+  "page": "data_analysis",
+  "zoom": 1.0,
+  "ui": {
+   "chars": 2236,
+   "min_px": 7.2,
+   "p10_px": 8,
+   "median_px": 9.2,
+   "pct_lt12": 94.6,
+   "pct_lt14": 94.6,
+   "smallest": [
+    [
+     7.2,
+     "span",
+     "1"
+    ],
+    [
+     7.2,
+     "span",
+     "2"
+    ],
+    [
+     7.2,
+     "span",
+     "3"
+    ],
+    [
+     7.2,
+     "span",
+     "4"
+    ],
+    [
+     7.2,
+     "span",
+     "5"
+    ]
+   ]
+  },
+  "plot": {
+   "chars": 192,
+   "min_px": 12,
+   "p10_px": 12,
+   "median_px": 16.0,
+   "pct_lt12": 0.0,
+   "pct_lt14": 25.0,
+   "smallest": [
+    [
+     12,
+     "text",
+     "3.68e+10"
+    ],
+    [
+     12,
+     "text",
+     "3.46e+10"
+    ],
+    [
+     12,
+     "text",
+     "4.74e+10"
+    ],
+    [
+     12,
+     "text",
+     "6.77e+10"
+    ],
+    [
+     12,
+     "text",
+     "3.01e+10"
+    ]
+   ]
+  },
+  "overflow_x": 0,
+  "overflow_offenders": [],
+  "root_px": 10,
+  "body_px": 14,
+  "shot": "/tmp/claude-1000/-home-kuhfeldrf-notebooks-peptiline/fe1349c4-3a13-4d32-bf42-e90954c239d2/scratchpad/baseline/shots/firefox_desktop-27-qhd_z1.0_data_analysis.png"
+ },
+ {
+  "browser": "firefox",
+  "profile": "desktop-27-qhd",
+  "desc": "27\" QHD monitor, 100%",
+  "page": "heatmap",
+  "zoom": 1.0,
+  "ui": {
+   "chars": 2472,
+   "min_px": 7.2,
+   "p10_px": 8.6,
+   "median_px": 9.2,
+   "pct_lt12": 93.9,
+   "pct_lt14": 93.9,
+   "smallest": [
+    [
+     7.2,
+     "span",
+     "1"
+    ],
+    [
+     7.2,
+     "span",
+     "1"
+    ],
+    [
+     7.2,
+     "span",
+     "2"
+    ],
+    [
+     8,
+     "span",
+     "On the figure \u00b7 drag to reorder, click a name to r"
+    ],
+    [
+     8,
+     "a",
+     "Clear"
+    ]
+   ]
+  },
+  "plot": {
+   "chars": 398,
+   "min_px": 13,
+   "p10_px": 13,
+   "median_px": 13.0,
+   "pct_lt12": 0.0,
+   "pct_lt14": 52.5,
+   "smallest": [
+    [
+     13,
+     "text",
+     "R"
+    ],
+    [
+     13,
+     "text",
+     "E"
+    ],
+    [
+     13,
+     "text",
+     "L"
+    ],
+    [
+     13,
+     "text",
+     "E"
+    ],
+    [
+     13,
+     "text",
+     "E"
+    ]
+   ]
+  },
+  "overflow_x": 0,
+  "overflow_offenders": [],
+  "root_px": 10,
+  "body_px": 14,
+  "shot": "/tmp/claude-1000/-home-kuhfeldrf-notebooks-peptiline/fe1349c4-3a13-4d32-bf42-e90954c239d2/scratchpad/baseline/shots/firefox_desktop-27-qhd_z1.0_heatmap.png"
+ },
+ {
+  "browser": "firefox",
+  "profile": "desktop-27-4k",
+  "desc": "27\" 4K monitor, 150% OS scaling",
+  "page": "landing",
+  "zoom": 1.0,
+  "ui": {
+   "chars": 3674,
+   "min_px": 14,
+   "p10_px": 14,
+   "median_px": 14.0,
+   "pct_lt12": 0.0,
+   "pct_lt14": 0.0,
+   "smallest": [
+    [
+     14,
+     "div",
+     "Integrated analysis modules"
+    ],
+    [
+     14,
+     "div",
+     "Step end-to-end workflow"
+    ],
+    [
+     14,
+     "div",
+     "Exportable data files"
+    ],
+    [
+     14,
+     "div",
+     "Analysis & visualization views"
+    ],
+    [
+     14,
+     "li",
+     "Multi-dataset import and merge"
+    ]
+   ]
+  },
+  "plot": null,
+  "overflow_x": 0,
+  "overflow_offenders": [],
+  "root_px": 10,
+  "body_px": 14,
+  "shot": "/tmp/claude-1000/-home-kuhfeldrf-notebooks-peptiline/fe1349c4-3a13-4d32-bf42-e90954c239d2/scratchpad/baseline/shots/firefox_desktop-27-4k_z1.0_landing.png"
+ },
+ {
+  "browser": "firefox",
+  "profile": "desktop-27-4k",
+  "desc": "27\" 4K monitor, 150% OS scaling",
+  "page": "data_transformation",
+  "zoom": 1.0,
+  "ui": {
+   "chars": 1166,
+   "min_px": 8.2,
+   "p10_px": 8.5,
+   "median_px": 9.5,
+   "pct_lt12": 57.5,
+   "pct_lt14": 57.5,
+   "smallest": [
+    [
+     8.2,
+     "a",
+     "Download example file"
+    ],
+    [
+     8.2,
+     "div",
+     "\u00b7"
+    ],
+    [
+     8.2,
+     "a",
+     "Loaded"
+    ],
+    [
+     8.2,
+     "a",
+     "Download example file"
+    ],
+    [
+     8.2,
+     "div",
+     "\u00b7"
+    ]
+   ]
+  },
+  "plot": null,
+  "overflow_x": 0,
+  "overflow_offenders": [],
+  "root_px": 10,
+  "body_px": 14,
+  "shot": "/tmp/claude-1000/-home-kuhfeldrf-notebooks-peptiline/fe1349c4-3a13-4d32-bf42-e90954c239d2/scratchpad/baseline/shots/firefox_desktop-27-4k_z1.0_data_transformation.png"
+ },
+ {
+  "browser": "firefox",
+  "profile": "desktop-27-4k",
+  "desc": "27\" 4K monitor, 150% OS scaling",
+  "page": "data_analysis",
+  "zoom": 1.0,
+  "ui": {
+   "chars": 2236,
+   "min_px": 7.2,
+   "p10_px": 8,
+   "median_px": 9.2,
+   "pct_lt12": 94.6,
+   "pct_lt14": 94.6,
+   "smallest": [
+    [
+     7.2,
+     "span",
+     "1"
+    ],
+    [
+     7.2,
+     "span",
+     "2"
+    ],
+    [
+     7.2,
+     "span",
+     "3"
+    ],
+    [
+     7.2,
+     "span",
+     "4"
+    ],
+    [
+     7.2,
+     "span",
+     "5"
+    ]
+   ]
+  },
+  "plot": {
+   "chars": 192,
+   "min_px": 12,
+   "p10_px": 12,
+   "median_px": 16.0,
+   "pct_lt12": 0.0,
+   "pct_lt14": 25.0,
+   "smallest": [
+    [
+     12,
+     "text",
+     "3.68e+10"
+    ],
+    [
+     12,
+     "text",
+     "3.46e+10"
+    ],
+    [
+     12,
+     "text",
+     "4.74e+10"
+    ],
+    [
+     12,
+     "text",
+     "6.77e+10"
+    ],
+    [
+     12,
+     "text",
+     "3.01e+10"
+    ]
+   ]
+  },
+  "overflow_x": 0,
+  "overflow_offenders": [],
+  "root_px": 10,
+  "body_px": 14,
+  "shot": "/tmp/claude-1000/-home-kuhfeldrf-notebooks-peptiline/fe1349c4-3a13-4d32-bf42-e90954c239d2/scratchpad/baseline/shots/firefox_desktop-27-4k_z1.0_data_analysis.png"
+ },
+ {
+  "browser": "firefox",
+  "profile": "desktop-27-4k",
+  "desc": "27\" 4K monitor, 150% OS scaling",
+  "page": "heatmap",
+  "zoom": 1.0,
+  "ui": {
+   "chars": 2472,
+   "min_px": 7.2,
+   "p10_px": 8.6,
+   "median_px": 9.2,
+   "pct_lt12": 93.9,
+   "pct_lt14": 93.9,
+   "smallest": [
+    [
+     7.2,
+     "span",
+     "1"
+    ],
+    [
+     7.2,
+     "span",
+     "1"
+    ],
+    [
+     7.2,
+     "span",
+     "2"
+    ],
+    [
+     8,
+     "span",
+     "On the figure \u00b7 drag to reorder, click a name to r"
+    ],
+    [
+     8,
+     "a",
+     "Clear"
+    ]
+   ]
+  },
+  "plot": {
+   "chars": 398,
+   "min_px": 13,
+   "p10_px": 13,
+   "median_px": 13.0,
+   "pct_lt12": 0.0,
+   "pct_lt14": 52.5,
+   "smallest": [
+    [
+     13,
+     "text",
+     "R"
+    ],
+    [
+     13,
+     "text",
+     "E"
+    ],
+    [
+     13,
+     "text",
+     "L"
+    ],
+    [
+     13,
+     "text",
+     "E"
+    ],
+    [
+     13,
+     "text",
+     "E"
+    ]
+   ]
+  },
+  "overflow_x": 0,
+  "overflow_offenders": [],
+  "root_px": 10,
+  "body_px": 14,
+  "shot": "/tmp/claude-1000/-home-kuhfeldrf-notebooks-peptiline/fe1349c4-3a13-4d32-bf42-e90954c239d2/scratchpad/baseline/shots/firefox_desktop-27-4k_z1.0_heatmap.png"
+ },
+ {
+  "browser": "firefox",
+  "profile": "tablet",
+  "desc": "iPad, portrait",
+  "page": "landing",
+  "zoom": 1.0,
+  "ui": {
+   "chars": 3674,
+   "min_px": 14,
+   "p10_px": 14,
+   "median_px": 14.0,
+   "pct_lt12": 0.0,
+   "pct_lt14": 0.0,
+   "smallest": [
+    [
+     14,
+     "div",
+     "Integrated analysis modules"
+    ],
+    [
+     14,
+     "div",
+     "Step end-to-end workflow"
+    ],
+    [
+     14,
+     "div",
+     "Exportable data files"
+    ],
+    [
+     14,
+     "div",
+     "Analysis & visualization views"
+    ],
+    [
+     14,
+     "li",
+     "Multi-dataset import and merge"
+    ]
+   ]
+  },
+  "plot": null,
+  "overflow_x": 0,
+  "overflow_offenders": [],
+  "root_px": 10,
+  "body_px": 14,
+  "shot": "/tmp/claude-1000/-home-kuhfeldrf-notebooks-peptiline/fe1349c4-3a13-4d32-bf42-e90954c239d2/scratchpad/baseline/shots/firefox_tablet_z1.0_landing.png"
+ },
+ {
+  "browser": "firefox",
+  "profile": "tablet",
+  "desc": "iPad, portrait",
+  "page": "data_transformation",
+  "zoom": 1.0,
+  "ui": {
+   "chars": 1166,
+   "min_px": 8.2,
+   "p10_px": 8.5,
+   "median_px": 9.5,
+   "pct_lt12": 57.5,
+   "pct_lt14": 57.5,
+   "smallest": [
+    [
+     8.2,
+     "a",
+     "Download example file"
+    ],
+    [
+     8.2,
+     "div",
+     "\u00b7"
+    ],
+    [
+     8.2,
+     "a",
+     "Loaded"
+    ],
+    [
+     8.2,
+     "a",
+     "Download example file"
+    ],
+    [
+     8.2,
+     "div",
+     "\u00b7"
+    ]
+   ]
+  },
+  "plot": null,
+  "overflow_x": 0,
+  "overflow_offenders": [],
+  "root_px": 10,
+  "body_px": 14,
+  "shot": "/tmp/claude-1000/-home-kuhfeldrf-notebooks-peptiline/fe1349c4-3a13-4d32-bf42-e90954c239d2/scratchpad/baseline/shots/firefox_tablet_z1.0_data_transformation.png"
+ },
+ {
+  "browser": "firefox",
+  "profile": "tablet",
+  "desc": "iPad, portrait",
+  "page": "data_analysis",
+  "zoom": 1.0,
+  "ui": {
+   "chars": 2236,
+   "min_px": 7.2,
+   "p10_px": 8,
+   "median_px": 9.2,
+   "pct_lt12": 94.6,
+   "pct_lt14": 94.6,
+   "smallest": [
+    [
+     7.2,
+     "span",
+     "1"
+    ],
+    [
+     7.2,
+     "span",
+     "2"
+    ],
+    [
+     7.2,
+     "span",
+     "3"
+    ],
+    [
+     7.2,
+     "span",
+     "4"
+    ],
+    [
+     7.2,
+     "span",
+     "5"
+    ]
+   ]
+  },
+  "plot": {
+   "chars": 192,
+   "min_px": 12,
+   "p10_px": 12,
+   "median_px": 16.0,
+   "pct_lt12": 0.0,
+   "pct_lt14": 25.0,
+   "smallest": [
+    [
+     12,
+     "text",
+     "3.68e+10"
+    ],
+    [
+     12,
+     "text",
+     "3.46e+10"
+    ],
+    [
+     12,
+     "text",
+     "4.74e+10"
+    ],
+    [
+     12,
+     "text",
+     "6.77e+10"
+    ],
+    [
+     12,
+     "text",
+     "3.01e+10"
+    ]
+   ]
+  },
+  "overflow_x": 0,
+  "overflow_offenders": [],
+  "root_px": 10,
+  "body_px": 14,
+  "shot": "/tmp/claude-1000/-home-kuhfeldrf-notebooks-peptiline/fe1349c4-3a13-4d32-bf42-e90954c239d2/scratchpad/baseline/shots/firefox_tablet_z1.0_data_analysis.png"
+ },
+ {
+  "browser": "firefox",
+  "profile": "tablet",
+  "desc": "iPad, portrait",
+  "page": "heatmap",
+  "zoom": 1.0,
+  "ui": {
+   "chars": 2472,
+   "min_px": 7.2,
+   "p10_px": 8.6,
+   "median_px": 9.2,
+   "pct_lt12": 93.9,
+   "pct_lt14": 93.9,
+   "smallest": [
+    [
+     7.2,
+     "span",
+     "1"
+    ],
+    [
+     7.2,
+     "span",
+     "1"
+    ],
+    [
+     7.2,
+     "span",
+     "2"
+    ],
+    [
+     8,
+     "span",
+     "On the figure \u00b7 drag to reorder, click a name to r"
+    ],
+    [
+     8,
+     "a",
+     "Clear"
+    ]
+   ]
+  },
+  "plot": {
+   "chars": 398,
+   "min_px": 13,
+   "p10_px": 13,
+   "median_px": 13.0,
+   "pct_lt12": 0.0,
+   "pct_lt14": 52.5,
+   "smallest": [
+    [
+     13,
+     "text",
+     "R"
+    ],
+    [
+     13,
+     "text",
+     "E"
+    ],
+    [
+     13,
+     "text",
+     "L"
+    ],
+    [
+     13,
+     "text",
+     "E"
+    ],
+    [
+     13,
+     "text",
+     "E"
+    ]
+   ]
+  },
+  "overflow_x": 0,
+  "overflow_offenders": [],
+  "root_px": 10,
+  "body_px": 14,
+  "shot": "/tmp/claude-1000/-home-kuhfeldrf-notebooks-peptiline/fe1349c4-3a13-4d32-bf42-e90954c239d2/scratchpad/baseline/shots/firefox_tablet_z1.0_heatmap.png"
+ },
+ {
+  "browser": "firefox",
+  "profile": "phone",
+  "desc": "iPhone-class phone",
+  "page": "landing",
+  "zoom": 1.0,
+  "ui": {
+   "chars": 3674,
+   "min_px": 14,
+   "p10_px": 14,
+   "median_px": 14.0,
+   "pct_lt12": 0.0,
+   "pct_lt14": 0.0,
+   "smallest": [
+    [
+     14,
+     "a",
+     "About"
+    ],
+    [
+     14,
+     "a",
+     "Tools"
+    ],
+    [
+     14,
+     "a",
+     "Contact"
+    ],
+    [
+     14,
+     "div",
+     "Integrated analysis modules"
+    ],
+    [
+     14,
+     "div",
+     "Step end-to-end workflow"
+    ]
+   ]
+  },
+  "plot": null,
+  "overflow_x": 0,
+  "overflow_offenders": [],
+  "root_px": 10,
+  "body_px": 14,
+  "shot": "/tmp/claude-1000/-home-kuhfeldrf-notebooks-peptiline/fe1349c4-3a13-4d32-bf42-e90954c239d2/scratchpad/baseline/shots/firefox_phone_z1.0_landing.png"
+ },
+ {
+  "browser": "firefox",
+  "profile": "phone",
+  "desc": "iPhone-class phone",
+  "page": "data_transformation",
+  "zoom": 1.0,
+  "ui": {
+   "chars": 1166,
+   "min_px": 8.2,
+   "p10_px": 8.5,
+   "median_px": 9.5,
+   "pct_lt12": 57.5,
+   "pct_lt14": 57.5,
+   "smallest": [
+    [
+     8.2,
+     "a",
+     "Download example file"
+    ],
+    [
+     8.2,
+     "div",
+     "\u00b7"
+    ],
+    [
+     8.2,
+     "a",
+     "Loaded"
+    ],
+    [
+     8.2,
+     "a",
+     "Download example file"
+    ],
+    [
+     8.2,
+     "div",
+     "\u00b7"
+    ]
+   ]
+  },
+  "plot": null,
+  "overflow_x": 0,
+  "overflow_offenders": [],
+  "root_px": 10,
+  "body_px": 14,
+  "shot": "/tmp/claude-1000/-home-kuhfeldrf-notebooks-peptiline/fe1349c4-3a13-4d32-bf42-e90954c239d2/scratchpad/baseline/shots/firefox_phone_z1.0_data_transformation.png"
+ },
+ {
+  "browser": "firefox",
+  "profile": "phone",
+  "desc": "iPhone-class phone",
+  "page": "data_analysis",
+  "zoom": 1.0,
+  "ui": {
+   "chars": 2142,
+   "min_px": 7.2,
+   "p10_px": 8,
+   "median_px": 9.5,
+   "pct_lt12": 94.4,
+   "pct_lt14": 94.4,
+   "smallest": [
+    [
+     7.2,
+     "span",
+     "1"
+    ],
+    [
+     7.2,
+     "span",
+     "2"
+    ],
+    [
+     7.2,
+     "span",
+     "3"
+    ],
+    [
+     7.2,
+     "span",
+     "4"
+    ],
+    [
+     7.2,
+     "span",
+     "5"
+    ]
+   ]
+  },
+  "plot": {
+   "chars": 166,
+   "min_px": 12,
+   "p10_px": 12,
+   "median_px": 16.0,
+   "pct_lt12": 0.0,
+   "pct_lt14": 28.9,
+   "smallest": [
+    [
+     12,
+     "text",
+     "3.68e+10"
+    ],
+    [
+     12,
+     "text",
+     "3.46e+10"
+    ],
+    [
+     12,
+     "text",
+     "4.74e+10"
+    ],
+    [
+     12,
+     "text",
+     "6.77e+10"
+    ],
+    [
+     12,
+     "text",
+     "3.01e+10"
+    ]
+   ]
+  },
+  "overflow_x": 118,
+  "overflow_offenders": [
+   "div right=414",
+   "div right=414",
+   "div right=414",
+   "div.rg-field right=414",
+   "span.rg-label right=414",
+   "div#rg-plot-orientation.radio-group right=414",
+   "label right=409",
+   "label right=407"
+  ],
+  "root_px": 10,
+  "body_px": 14,
+  "shot": "/tmp/claude-1000/-home-kuhfeldrf-notebooks-peptiline/fe1349c4-3a13-4d32-bf42-e90954c239d2/scratchpad/baseline/shots/firefox_phone_z1.0_data_analysis.png"
+ },
+ {
+  "browser": "firefox",
+  "profile": "phone",
+  "desc": "iPhone-class phone",
+  "page": "heatmap",
+  "zoom": 1.0,
+  "ui": {
+   "chars": 2245,
+   "min_px": 7.2,
+   "p10_px": 8.2,
+   "median_px": 9.5,
+   "pct_lt12": 93.3,
+   "pct_lt14": 93.3,
+   "smallest": [
+    [
+     7.2,
+     "span",
+     "1"
+    ],
+    [
+     7.2,
+     "span",
+     "1"
+    ],
+    [
+     7.2,
+     "span",
+     "2"
+    ],
+    [
+     8,
+     "span",
+     "On the figure \u00b7 drag to reorder, click a name to r"
+    ],
+    [
+     8,
+     "a",
+     "Clear"
+    ]
+   ]
+  },
+  "plot": {
+   "chars": 398,
+   "min_px": 13,
+   "p10_px": 13,
+   "median_px": 13.0,
+   "pct_lt12": 0.0,
+   "pct_lt14": 52.5,
+   "smallest": [
+    [
+     13,
+     "text",
+     "R"
+    ],
+    [
+     13,
+     "text",
+     "E"
+    ],
+    [
+     13,
+     "text",
+     "L"
+    ],
+    [
+     13,
+     "text",
+     "E"
+    ],
+    [
+     13,
+     "text",
+     "E"
+    ]
+   ]
+  },
+  "overflow_x": 117,
+  "overflow_offenders": [
+   "u right=409",
+   "input#font-size-plot-title right=430",
+   "input#font-size-xaxis-label right=430",
+   "input#font-size-xaxis-tick right=404",
+   "input#font-size-yaxis-label right=430",
+   "input#font-size-yaxis-tick right=404",
+   "input#font-size-var-label right=404",
+   "input#font-size-legend right=404"
+  ],
+  "root_px": 10,
+  "body_px": 14,
+  "shot": "/tmp/claude-1000/-home-kuhfeldrf-notebooks-peptiline/fe1349c4-3a13-4d32-bf42-e90954c239d2/scratchpad/baseline/shots/firefox_phone_z1.0_heatmap.png"
+ },
+ {
+  "browser": "webkit",
+  "error": "launch failed"
+ }
+]

@@ -4,7 +4,7 @@
 {% block 'head' %}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
-    .dt-wizard { max-width: 960px; margin: 0 auto; }
+    .dt-wizard { max-width: min(96vw, 1200px); margin: 0 auto; }
     .dt-steps { display: flex; margin-bottom: 24px; }
     .dt-step-indicator {
         flex: 1; text-align: center; padding: 12px 8px;
@@ -74,12 +74,12 @@
     .dt-dropzone .file-name { color: #1976d2; font-weight: 600; pointer-events: none; }
     .dt-dropzone .merge-file-list { text-align: left; padding: 4px 8px; pointer-events: none; }
     .dt-dropzone .merge-file-list .merge-file-item { color: #1976d2; font-weight: 600; font-size: 0.85rem; padding: 1px 0; }
-    .dt-columns-select { max-height: 250px; overflow-y: auto; border: 1px solid #dee2e6; border-radius: 4px; padding: 8px; }
+    .dt-columns-select { max-height: 25rem; overflow-y: auto; border: 1px solid #dee2e6; border-radius: 4px; padding: 8px; }
     .dt-columns-select label { display: block; padding: 2px 0; cursor: pointer; }
     .dt-col-panel { display: flex; gap: 12px; margin-bottom: 12px; }
     .dt-col-available, .dt-col-selected { flex: 1; border: 1px solid #dee2e6; border-radius: 4px; }
     .dt-col-panel-header { padding: 6px 10px; background: #f8f9fa; border-bottom: 1px solid #dee2e6; font-weight: 600; font-size: 0.85rem; color: #555; border-radius: 4px 4px 0 0; }
-    .dt-col-list { max-height: 200px; overflow-y: auto; padding: 4px; }
+    .dt-col-list { max-height: 20rem; overflow-y: auto; padding: 4px; }
     .dt-col-item { padding: 5px 10px; cursor: pointer; border-radius: 3px; font-size: 0.88rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .dt-col-item:hover { background: #e8f0fe; color: #1976d2; }
     .dt-col-item.selected-item { display: flex; justify-content: space-between; align-items: center; background: #f0f7ff; }
@@ -291,11 +291,11 @@
 
                 <div style="margin-bottom:8px;">
                     <label><strong>Original Column:</strong></label>
-                    <select id="rn-original-select" class="form-control" style="width:340px; display:inline-block; margin-left:8px;"></select>
+                    <select id="rn-original-select" class="form-control" style="width:340px; max-width:100%; display:inline-block; margin-left:8px;"></select>
                 </div>
                 <div style="margin-bottom:8px;">
                     <label><strong>New Name:</strong></label>
-                    <input type="text" id="rn-new-name-input" class="form-control" style="width:260px; display:inline-block; margin-left:8px;" placeholder="e.g., T_0.2a">
+                    <input type="text" id="rn-new-name-input" class="form-control" style="width:260px; max-width:100%; display:inline-block; margin-left:8px;" placeholder="e.g., T_0.2a">
                 </div>
                 <button class="dt-btn dt-btn-primary" id="rn-add-btn" style="margin-bottom:10px;">
                     <i class="fas fa-plus"></i> Add Rename
@@ -325,10 +325,10 @@
 
                 <div style="margin-bottom:8px;">
                     <label><strong>Bio Replicate Name:</strong></label>
-                    <input type="text" id="tr-bio-rep-name-input" class="form-control" style="width:260px; display:inline-block; margin-left:8px;" placeholder="e.g., Sample_A">
+                    <input type="text" id="tr-bio-rep-name-input" class="form-control" style="width:260px; max-width:100%; display:inline-block; margin-left:8px;" placeholder="e.g., Sample_A">
                 </div>
                 <div style="margin-bottom:8px;">
-                    <input type="text" id="tr-column-search" class="form-control" style="width:300px; margin-bottom:6px;" placeholder="Search columns...">
+                    <input type="text" id="tr-column-search" class="form-control" style="width:300px; max-width:100%; margin-bottom:6px;" placeholder="Search columns...">
                     <div class="dt-col-panel">
                         <div class="dt-col-available">
                             <div class="dt-col-panel-header">Available <span id="tr-avail-count"></span></div>
@@ -370,11 +370,11 @@
             <div id="manual-grouping">
                 <div style="margin-bottom:12px;">
                     <label><strong>Group Name:</strong></label>
-                    <input type="text" id="group-name-input" class="form-control" style="width:300px; display:inline-block;" placeholder="e.g., Control">
+                    <input type="text" id="group-name-input" class="form-control" style="width:300px; max-width:100%; display:inline-block;" placeholder="e.g., Control">
                 </div>
                 <div style="margin-bottom:12px;">
                     <label><strong>Select Abundance Columns:</strong></label>
-                    <input type="text" id="column-search" class="form-control" style="width:300px; margin-bottom:8px;" placeholder="Search columns...">
+                    <input type="text" id="column-search" class="form-control" style="width:300px; max-width:100%; margin-bottom:8px;" placeholder="Search columns...">
                     <div class="dt-col-panel">
                         <div class="dt-col-available">
                             <div class="dt-col-panel-header">Available <span id="avail-count"></span></div>

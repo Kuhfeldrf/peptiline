@@ -37,8 +37,28 @@
   --pl-radius: 10px;
 }
 
+/* Bootstrap 3 sets `html { font-size: 10px }`, which made every `rem` size on
+   the tool pages render at 62.5% of what was written (.92rem -> 9.2px). Reset
+   the root to the browser default (16px, or the user's own font-size setting)
+   so 1rem means what the page CSS assumes. Bootstrap 3 itself sizes in px, so
+   this only affects our rem-based styles. */
+html {
+  font-size: 100%;
+}
+
+/* Larger, higher-resolution monitors (e.g. a 27" QHD panel at 100% scaling)
+   have physically smaller CSS pixels, so step the root size up a little. */
+@media (min-width: 1900px) {
+  html { font-size: 106.25%; }  /* 17px */
+}
+@media (min-width: 2400px) {
+  html { font-size: 112.5%; }   /* 18px */
+}
+
 body {
   font-family: var(--pl-font-sans);
+  font-size: 1rem;
+  line-height: 1.5;
   color: var(--pl-color-text);
   background: var(--pl-color-bg);
 }
@@ -834,6 +854,7 @@ body {
   .pl-nav-links li { flex: 0 0 auto; }
   .pl-nav-links li a { padding: 0 10px; font-size: 14px; white-space: nowrap; }
   .pl-page { padding: var(--pl-space-5) var(--pl-space-2) var(--pl-space-6); }
+  #page-content-wrapper { padding-left: 4px; padding-right: 4px; }
   .pl-stats { grid-template-columns: 1fr 1fr; }
   .pl-viz-grid { grid-template-columns: 1fr; }
 }

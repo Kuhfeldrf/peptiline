@@ -1,0 +1,770 @@
+[
+ {
+  "browser": "chromium",
+  "profile": "laptop-15-scaled",
+  "desc": "15\" 1080p laptop, 150% OS scaling",
+  "page": "landing",
+  "zoom": 1.5,
+  "ui": {
+   "chars": 3674,
+   "min_px": 14,
+   "p10_px": 14,
+   "median_px": 14.0,
+   "pct_lt12": 0.0,
+   "pct_lt14": 0.0,
+   "smallest": [
+    [
+     14,
+     "div",
+     "Integrated analysis modules"
+    ],
+    [
+     14,
+     "div",
+     "Step end-to-end workflow"
+    ],
+    [
+     14,
+     "div",
+     "Exportable data files"
+    ],
+    [
+     14,
+     "div",
+     "Analysis & visualization views"
+    ],
+    [
+     14,
+     "li",
+     "Multi-dataset import and merge"
+    ]
+   ]
+  },
+  "plot": null,
+  "overflow_x": 0,
+  "overflow_offenders": [],
+  "root_px": 16,
+  "body_px": 16,
+  "shot": "/tmp/claude-1000/-home-kuhfeldrf-notebooks-peptiline/fe1349c4-3a13-4d32-bf42-e90954c239d2/scratchpad/after_zoom150/shots/chromium_laptop-15-scaled_z1.5_landing.png"
+ },
+ {
+  "browser": "chromium",
+  "profile": "laptop-15-scaled",
+  "desc": "15\" 1080p laptop, 150% OS scaling",
+  "page": "data_transformation",
+  "zoom": 1.5,
+  "ui": {
+   "chars": 1166,
+   "min_px": 13.1,
+   "p10_px": 13.6,
+   "median_px": 14.2,
+   "pct_lt12": 0.0,
+   "pct_lt14": 38.9,
+   "smallest": [
+    [
+     13.1,
+     "a",
+     "Download example file"
+    ],
+    [
+     13.1,
+     "div",
+     "\u00b7"
+    ],
+    [
+     13.1,
+     "a",
+     "Loaded"
+    ],
+    [
+     13.1,
+     "a",
+     "Download example file"
+    ],
+    [
+     13.1,
+     "div",
+     "\u00b7"
+    ]
+   ]
+  },
+  "plot": null,
+  "overflow_x": 0,
+  "overflow_offenders": [],
+  "root_px": 16,
+  "body_px": 16,
+  "shot": "/tmp/claude-1000/-home-kuhfeldrf-notebooks-peptiline/fe1349c4-3a13-4d32-bf42-e90954c239d2/scratchpad/after_zoom150/shots/chromium_laptop-15-scaled_z1.5_data_transformation.png"
+ },
+ {
+  "browser": "chromium",
+  "profile": "laptop-15-scaled",
+  "desc": "15\" 1080p laptop, 150% OS scaling",
+  "page": "data_analysis",
+  "zoom": 1.5,
+  "ui": {
+   "chars": 2291,
+   "min_px": 12.5,
+   "p10_px": 12.8,
+   "median_px": 14.7,
+   "pct_lt12": 0.0,
+   "pct_lt14": 29.2,
+   "smallest": [
+    [
+     12.5,
+     "span",
+     "1"
+    ],
+    [
+     12.5,
+     "span",
+     "2"
+    ],
+    [
+     12.5,
+     "span",
+     "3"
+    ],
+    [
+     12.5,
+     "span",
+     "4"
+    ],
+    [
+     12.5,
+     "span",
+     "5"
+    ]
+   ]
+  },
+  "plot": null,
+  "overflow_x": 0,
+  "overflow_offenders": [],
+  "root_px": 16,
+  "body_px": 16,
+  "shot": "/tmp/claude-1000/-home-kuhfeldrf-notebooks-peptiline/fe1349c4-3a13-4d32-bf42-e90954c239d2/scratchpad/after_zoom150/shots/chromium_laptop-15-scaled_z1.5_data_analysis.png"
+ },
+ {
+  "browser": "chromium",
+  "profile": "laptop-15-scaled",
+  "desc": "15\" 1080p laptop, 150% OS scaling",
+  "page": "heatmap",
+  "zoom": 1.5,
+  "ui": {
+   "chars": 2539,
+   "min_px": 12.5,
+   "p10_px": 13.6,
+   "median_px": 14.7,
+   "pct_lt12": 0.0,
+   "pct_lt14": 22.1,
+   "smallest": [
+    [
+     12.5,
+     "span",
+     "1"
+    ],
+    [
+     12.8,
+     "span",
+     "On the figure \u00b7 drag to reorder, click a name to r"
+    ],
+    [
+     12.8,
+     "a",
+     "Clear"
+    ],
+    [
+     12.8,
+     "a",
+     "Reset order"
+    ],
+    [
+     12.8,
+     "a",
+     "Reset names"
+    ]
+   ]
+  },
+  "plot": null,
+  "overflow_x": 0,
+  "overflow_offenders": [],
+  "root_px": 16,
+  "body_px": 16,
+  "shot": "/tmp/claude-1000/-home-kuhfeldrf-notebooks-peptiline/fe1349c4-3a13-4d32-bf42-e90954c239d2/scratchpad/after_zoom150/shots/chromium_laptop-15-scaled_z1.5_heatmap.png"
+ },
+ {
+  "browser": "chromium",
+  "profile": "desktop-27-qhd",
+  "desc": "27\" QHD monitor, 100%",
+  "page": "landing",
+  "zoom": 1.5,
+  "ui": {
+   "chars": 3674,
+   "min_px": 14,
+   "p10_px": 14,
+   "median_px": 14.0,
+   "pct_lt12": 0.0,
+   "pct_lt14": 0.0,
+   "smallest": [
+    [
+     14,
+     "div",
+     "Integrated analysis modules"
+    ],
+    [
+     14,
+     "div",
+     "Step end-to-end workflow"
+    ],
+    [
+     14,
+     "div",
+     "Exportable data files"
+    ],
+    [
+     14,
+     "div",
+     "Analysis & visualization views"
+    ],
+    [
+     14,
+     "li",
+     "Multi-dataset import and merge"
+    ]
+   ]
+  },
+  "plot": null,
+  "overflow_x": 0,
+  "overflow_offenders": [],
+  "root_px": 16,
+  "body_px": 16,
+  "shot": "/tmp/claude-1000/-home-kuhfeldrf-notebooks-peptiline/fe1349c4-3a13-4d32-bf42-e90954c239d2/scratchpad/after_zoom150/shots/chromium_desktop-27-qhd_z1.5_landing.png"
+ },
+ {
+  "browser": "chromium",
+  "profile": "desktop-27-qhd",
+  "desc": "27\" QHD monitor, 100%",
+  "page": "data_transformation",
+  "zoom": 1.5,
+  "ui": {
+   "chars": 1166,
+   "min_px": 13.1,
+   "p10_px": 13.6,
+   "median_px": 14.2,
+   "pct_lt12": 0.0,
+   "pct_lt14": 38.9,
+   "smallest": [
+    [
+     13.1,
+     "a",
+     "Download example file"
+    ],
+    [
+     13.1,
+     "div",
+     "\u00b7"
+    ],
+    [
+     13.1,
+     "a",
+     "Loaded"
+    ],
+    [
+     13.1,
+     "a",
+     "Download example file"
+    ],
+    [
+     13.1,
+     "div",
+     "\u00b7"
+    ]
+   ]
+  },
+  "plot": null,
+  "overflow_x": 0,
+  "overflow_offenders": [],
+  "root_px": 16,
+  "body_px": 16,
+  "shot": "/tmp/claude-1000/-home-kuhfeldrf-notebooks-peptiline/fe1349c4-3a13-4d32-bf42-e90954c239d2/scratchpad/after_zoom150/shots/chromium_desktop-27-qhd_z1.5_data_transformation.png"
+ },
+ {
+  "browser": "chromium",
+  "profile": "desktop-27-qhd",
+  "desc": "27\" QHD monitor, 100%",
+  "page": "data_analysis",
+  "zoom": 1.5,
+  "ui": {
+   "chars": 2291,
+   "min_px": 12.5,
+   "p10_px": 12.8,
+   "median_px": 14.7,
+   "pct_lt12": 0.0,
+   "pct_lt14": 29.2,
+   "smallest": [
+    [
+     12.5,
+     "span",
+     "1"
+    ],
+    [
+     12.5,
+     "span",
+     "2"
+    ],
+    [
+     12.5,
+     "span",
+     "3"
+    ],
+    [
+     12.5,
+     "span",
+     "4"
+    ],
+    [
+     12.5,
+     "span",
+     "5"
+    ]
+   ]
+  },
+  "plot": null,
+  "overflow_x": 0,
+  "overflow_offenders": [],
+  "root_px": 16,
+  "body_px": 16,
+  "shot": "/tmp/claude-1000/-home-kuhfeldrf-notebooks-peptiline/fe1349c4-3a13-4d32-bf42-e90954c239d2/scratchpad/after_zoom150/shots/chromium_desktop-27-qhd_z1.5_data_analysis.png"
+ },
+ {
+  "browser": "chromium",
+  "profile": "desktop-27-qhd",
+  "desc": "27\" QHD monitor, 100%",
+  "page": "heatmap",
+  "zoom": 1.5,
+  "ui": {
+   "chars": 2539,
+   "min_px": 12.5,
+   "p10_px": 13.6,
+   "median_px": 14.7,
+   "pct_lt12": 0.0,
+   "pct_lt14": 22.1,
+   "smallest": [
+    [
+     12.5,
+     "span",
+     "1"
+    ],
+    [
+     12.8,
+     "span",
+     "On the figure \u00b7 drag to reorder, click a name to r"
+    ],
+    [
+     12.8,
+     "a",
+     "Clear"
+    ],
+    [
+     12.8,
+     "a",
+     "Reset order"
+    ],
+    [
+     12.8,
+     "a",
+     "Reset names"
+    ]
+   ]
+  },
+  "plot": null,
+  "overflow_x": 0,
+  "overflow_offenders": [],
+  "root_px": 16,
+  "body_px": 16,
+  "shot": "/tmp/claude-1000/-home-kuhfeldrf-notebooks-peptiline/fe1349c4-3a13-4d32-bf42-e90954c239d2/scratchpad/after_zoom150/shots/chromium_desktop-27-qhd_z1.5_heatmap.png"
+ },
+ {
+  "browser": "firefox",
+  "profile": "laptop-15-scaled",
+  "desc": "15\" 1080p laptop, 150% OS scaling",
+  "page": "landing",
+  "zoom": 1.5,
+  "ui": {
+   "chars": 3674,
+   "min_px": 14,
+   "p10_px": 14,
+   "median_px": 14.0,
+   "pct_lt12": 0.0,
+   "pct_lt14": 0.0,
+   "smallest": [
+    [
+     14,
+     "div",
+     "Integrated analysis modules"
+    ],
+    [
+     14,
+     "div",
+     "Step end-to-end workflow"
+    ],
+    [
+     14,
+     "div",
+     "Exportable data files"
+    ],
+    [
+     14,
+     "div",
+     "Analysis & visualization views"
+    ],
+    [
+     14,
+     "li",
+     "Multi-dataset import and merge"
+    ]
+   ]
+  },
+  "plot": null,
+  "overflow_x": 0,
+  "overflow_offenders": [],
+  "root_px": 16,
+  "body_px": 16,
+  "shot": "/tmp/claude-1000/-home-kuhfeldrf-notebooks-peptiline/fe1349c4-3a13-4d32-bf42-e90954c239d2/scratchpad/after_zoom150/shots/firefox_laptop-15-scaled_z1.5_landing.png"
+ },
+ {
+  "browser": "firefox",
+  "profile": "laptop-15-scaled",
+  "desc": "15\" 1080p laptop, 150% OS scaling",
+  "page": "data_transformation",
+  "zoom": 1.5,
+  "ui": {
+   "chars": 1166,
+   "min_px": 13.1,
+   "p10_px": 13.6,
+   "median_px": 14.2,
+   "pct_lt12": 0.0,
+   "pct_lt14": 38.9,
+   "smallest": [
+    [
+     13.1,
+     "a",
+     "Download example file"
+    ],
+    [
+     13.1,
+     "div",
+     "\u00b7"
+    ],
+    [
+     13.1,
+     "a",
+     "Loaded"
+    ],
+    [
+     13.1,
+     "a",
+     "Download example file"
+    ],
+    [
+     13.1,
+     "div",
+     "\u00b7"
+    ]
+   ]
+  },
+  "plot": null,
+  "overflow_x": 0,
+  "overflow_offenders": [],
+  "root_px": 16,
+  "body_px": 16,
+  "shot": "/tmp/claude-1000/-home-kuhfeldrf-notebooks-peptiline/fe1349c4-3a13-4d32-bf42-e90954c239d2/scratchpad/after_zoom150/shots/firefox_laptop-15-scaled_z1.5_data_transformation.png"
+ },
+ {
+  "browser": "firefox",
+  "profile": "laptop-15-scaled",
+  "desc": "15\" 1080p laptop, 150% OS scaling",
+  "page": "data_analysis",
+  "zoom": 1.5,
+  "ui": {
+   "chars": 2291,
+   "min_px": 12.5,
+   "p10_px": 12.8,
+   "median_px": 14.7,
+   "pct_lt12": 0.0,
+   "pct_lt14": 29.2,
+   "smallest": [
+    [
+     12.5,
+     "span",
+     "1"
+    ],
+    [
+     12.5,
+     "span",
+     "2"
+    ],
+    [
+     12.5,
+     "span",
+     "3"
+    ],
+    [
+     12.5,
+     "span",
+     "4"
+    ],
+    [
+     12.5,
+     "span",
+     "5"
+    ]
+   ]
+  },
+  "plot": null,
+  "overflow_x": 0,
+  "overflow_offenders": [],
+  "root_px": 16,
+  "body_px": 16,
+  "shot": "/tmp/claude-1000/-home-kuhfeldrf-notebooks-peptiline/fe1349c4-3a13-4d32-bf42-e90954c239d2/scratchpad/after_zoom150/shots/firefox_laptop-15-scaled_z1.5_data_analysis.png"
+ },
+ {
+  "browser": "firefox",
+  "profile": "laptop-15-scaled",
+  "desc": "15\" 1080p laptop, 150% OS scaling",
+  "page": "heatmap",
+  "zoom": 1.5,
+  "ui": {
+   "chars": 2539,
+   "min_px": 12.5,
+   "p10_px": 13.6,
+   "median_px": 14.7,
+   "pct_lt12": 0.0,
+   "pct_lt14": 22.1,
+   "smallest": [
+    [
+     12.5,
+     "span",
+     "1"
+    ],
+    [
+     12.8,
+     "span",
+     "On the figure \u00b7 drag to reorder, click a name to r"
+    ],
+    [
+     12.8,
+     "a",
+     "Clear"
+    ],
+    [
+     12.8,
+     "a",
+     "Reset order"
+    ],
+    [
+     12.8,
+     "a",
+     "Reset names"
+    ]
+   ]
+  },
+  "plot": null,
+  "overflow_x": 0,
+  "overflow_offenders": [],
+  "root_px": 16,
+  "body_px": 16,
+  "shot": "/tmp/claude-1000/-home-kuhfeldrf-notebooks-peptiline/fe1349c4-3a13-4d32-bf42-e90954c239d2/scratchpad/after_zoom150/shots/firefox_laptop-15-scaled_z1.5_heatmap.png"
+ },
+ {
+  "browser": "firefox",
+  "profile": "desktop-27-qhd",
+  "desc": "27\" QHD monitor, 100%",
+  "page": "landing",
+  "zoom": 1.5,
+  "ui": {
+   "chars": 3674,
+   "min_px": 14,
+   "p10_px": 14,
+   "median_px": 14.0,
+   "pct_lt12": 0.0,
+   "pct_lt14": 0.0,
+   "smallest": [
+    [
+     14,
+     "div",
+     "Integrated analysis modules"
+    ],
+    [
+     14,
+     "div",
+     "Step end-to-end workflow"
+    ],
+    [
+     14,
+     "div",
+     "Exportable data files"
+    ],
+    [
+     14,
+     "div",
+     "Analysis & visualization views"
+    ],
+    [
+     14,
+     "li",
+     "Multi-dataset import and merge"
+    ]
+   ]
+  },
+  "plot": null,
+  "overflow_x": 0,
+  "overflow_offenders": [],
+  "root_px": 16,
+  "body_px": 16,
+  "shot": "/tmp/claude-1000/-home-kuhfeldrf-notebooks-peptiline/fe1349c4-3a13-4d32-bf42-e90954c239d2/scratchpad/after_zoom150/shots/firefox_desktop-27-qhd_z1.5_landing.png"
+ },
+ {
+  "browser": "firefox",
+  "profile": "desktop-27-qhd",
+  "desc": "27\" QHD monitor, 100%",
+  "page": "data_transformation",
+  "zoom": 1.5,
+  "ui": {
+   "chars": 1166,
+   "min_px": 13.1,
+   "p10_px": 13.6,
+   "median_px": 14.2,
+   "pct_lt12": 0.0,
+   "pct_lt14": 38.9,
+   "smallest": [
+    [
+     13.1,
+     "a",
+     "Download example file"
+    ],
+    [
+     13.1,
+     "div",
+     "\u00b7"
+    ],
+    [
+     13.1,
+     "a",
+     "Loaded"
+    ],
+    [
+     13.1,
+     "a",
+     "Download example file"
+    ],
+    [
+     13.1,
+     "div",
+     "\u00b7"
+    ]
+   ]
+  },
+  "plot": null,
+  "overflow_x": 0,
+  "overflow_offenders": [],
+  "root_px": 16,
+  "body_px": 16,
+  "shot": "/tmp/claude-1000/-home-kuhfeldrf-notebooks-peptiline/fe1349c4-3a13-4d32-bf42-e90954c239d2/scratchpad/after_zoom150/shots/firefox_desktop-27-qhd_z1.5_data_transformation.png"
+ },
+ {
+  "browser": "firefox",
+  "profile": "desktop-27-qhd",
+  "desc": "27\" QHD monitor, 100%",
+  "page": "data_analysis",
+  "zoom": 1.5,
+  "ui": {
+   "chars": 2291,
+   "min_px": 12.5,
+   "p10_px": 12.8,
+   "median_px": 14.7,
+   "pct_lt12": 0.0,
+   "pct_lt14": 29.2,
+   "smallest": [
+    [
+     12.5,
+     "span",
+     "1"
+    ],
+    [
+     12.5,
+     "span",
+     "2"
+    ],
+    [
+     12.5,
+     "span",
+     "3"
+    ],
+    [
+     12.5,
+     "span",
+     "4"
+    ],
+    [
+     12.5,
+     "span",
+     "5"
+    ]
+   ]
+  },
+  "plot": null,
+  "overflow_x": 0,
+  "overflow_offenders": [],
+  "root_px": 16,
+  "body_px": 16,
+  "shot": "/tmp/claude-1000/-home-kuhfeldrf-notebooks-peptiline/fe1349c4-3a13-4d32-bf42-e90954c239d2/scratchpad/after_zoom150/shots/firefox_desktop-27-qhd_z1.5_data_analysis.png"
+ },
+ {
+  "browser": "firefox",
+  "profile": "desktop-27-qhd",
+  "desc": "27\" QHD monitor, 100%",
+  "page": "heatmap",
+  "zoom": 1.5,
+  "ui": {
+   "chars": 2539,
+   "min_px": 12.5,
+   "p10_px": 13.6,
+   "median_px": 14.7,
+   "pct_lt12": 0.0,
+   "pct_lt14": 22.1,
+   "smallest": [
+    [
+     12.5,
+     "span",
+     "1"
+    ],
+    [
+     12.8,
+     "span",
+     "On the figure \u00b7 drag to reorder, click a name to r"
+    ],
+    [
+     12.8,
+     "a",
+     "Clear"
+    ],
+    [
+     12.8,
+     "a",
+     "Reset order"
+    ],
+    [
+     12.8,
+     "a",
+     "Reset names"
+    ]
+   ]
+  },
+  "plot": null,
+  "overflow_x": 0,
+  "overflow_offenders": [],
+  "root_px": 16,
+  "body_px": 16,
+  "shot": "/tmp/claude-1000/-home-kuhfeldrf-notebooks-peptiline/fe1349c4-3a13-4d32-bf42-e90954c239d2/scratchpad/after_zoom150/shots/firefox_desktop-27-qhd_z1.5_heatmap.png"
+ }
+]

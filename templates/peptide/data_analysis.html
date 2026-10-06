@@ -41,9 +41,21 @@
 
 .selector-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 @media(max-width:768px){ .selector-grid { grid-template-columns: 1fr; } }
+/* Two-column inline grids collapse on narrow screens (tablet/phone). */
+@media(max-width:768px){ .stack-sm { grid-template-columns: 1fr !important; } }
+@media(max-width:480px){ .stack-xs { grid-template-columns: 1fr !important; } }
+.stack-sm > *, .stack-xs > * { min-width: 0; }
+@media(max-width:480px){
+    .step-card label { white-space: normal !important; }
+    .step-card div[style*="display:flex"] > label { flex-shrink: 1 !important; min-width: 0; }
+    .step-card select, .step-card input[type=text] { max-width: 100%; }
+}
+@media(max-width:480px){ .da-page { padding-left: 0; padding-right: 0; } .step-card { padding: 12px; } }
+.da-header { flex-wrap: wrap; }
+@media(max-width:480px){ .radio-group label { white-space: normal; } }
 .selector-block label { font-weight: 600; font-size: .95rem; margin-bottom: 4px; display: block; }
 select.multi-select {
-    width: 100%; height: 120px; border: 1px solid #ced4da; border-radius: 4px;
+    width: 100%; height: 12rem; border: 1px solid #ced4da; border-radius: 4px;
     padding: 4px; font-size: .92rem;
 }
 select.multi-select:disabled { background: #f8f9fa; color: #aaa; }
@@ -84,6 +96,9 @@ select.multi-select:disabled { background: #f8f9fa; color: #aaa; }
 #plot-container { width: 100%; overflow-x: auto; }
 
 .page-box { width: 100%; max-width: min(96vw, 1600px); margin: 0 auto; }
+/* Bar/pie output sits outside .page-box; keep it the same width as the controls
+   so charts don't stretch across an entire 27" monitor. */
+#step3-card { max-width: min(96vw, 1600px); margin-left: auto; margin-right: auto; }
 .color-swatch {
     width: 72px; min-width: 0; height: 22px; border-radius: 3px; border: 1px solid #ccc;
     flex-shrink: 1; display: inline-block; overflow: hidden;
@@ -147,7 +162,7 @@ select.multi-select:disabled { background: #f8f9fa; color: #aaa; }
 
         <div style="display:flex; gap:16px; align-items:flex-start; flex-wrap:wrap;">
             <!-- Upload zone -->
-            <div style="flex:1; min-width:200px; max-width:320px;">
+            <div style="flex:1; min-width:min(20rem, 100%); max-width:32rem;">
                 <div class="upload-zone" id="upload-zone">
                     <input type="file" id="merged-file-input" accept=".csv,.xlsx">
                     <div class="drop-text">
@@ -166,7 +181,7 @@ select.multi-select:disabled { background: #f8f9fa; color: #aaa; }
             </div>
 
             <!-- Status -->
-            <div style="flex:2; min-width:220px;">
+            <div style="flex:2; min-width:min(22rem, 100%);">
                 <div id="upload-status-area"></div>
             </div>
         </div>
@@ -239,7 +254,7 @@ select.multi-select:disabled { background: #f8f9fa; color: #aaa; }
         </div>
 
         <!-- 2-column settings layout -->
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:2px;">
+        <div class="stack-sm" style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:2px;">
 
             <!-- Left: Visualization Settings -->
             <div>
@@ -249,7 +264,7 @@ select.multi-select:disabled { background: #f8f9fa; color: #aaa; }
                 <!-- 3x2 grid: four radio groups, then the checkbox stack (left)
                      beside Correlation Type (right, under Metric). align-items:start
                      keeps each cell hugging its content instead of stretching. -->
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px 12px; align-items:start;">
+                <div class="stack-xs" style="display:grid; grid-template-columns:1fr 1fr; gap:6px 12px; align-items:start;">
 
                     <div class="rg-field">
                         <span class="rg-label">Plot Type</span>
@@ -307,7 +322,7 @@ select.multi-select:disabled { background: #f8f9fa; color: #aaa; }
                             </label>
                             <label class="checkbox-row" style="padding-left:22px; gap:6px;" title="ANOVA + Tukey HSD assumes equal variance across groups (the convention in the peptidomics literature). Welch + Games–Howell does not assume equal variance and is more reliable when group spreads differ, as abundance data often do.">
                                 Test:
-                                <select id="significance-method" disabled style="border:1px solid #ced4da; border-radius:4px; padding:2px 6px; font-size:.85rem;">
+                                <select id="significance-method" disabled style="min-width:0; max-width:100%; border:1px solid #ced4da; border-radius:4px; padding:2px 6px; font-size:.85rem;">
                                     <option value="tukey" selected>ANOVA + Tukey HSD (equal variance)</option>
                                     <option value="games-howell">Welch + Games–Howell (unequal variance)</option>
                                 </select>
@@ -331,45 +346,45 @@ select.multi-select:disabled { background: #f8f9fa; color: #aaa; }
             </div>
 
             <!-- Right: Appearance Settings -->
-            <div style="min-width:0; max-width:380px;">
+            <div style="min-width:0; max-width:38rem;">
                 <div style="font-weight:700; font-size:.95rem; margin-bottom:6px;">
                     <u>Appearance Settings:</u>
                 </div>
                 <div style="display:flex; flex-direction:column; gap:4px;">
                     <div style="display:flex; align-items:center; gap:8px; min-width:0;">
-                        <label style="font-weight:600; font-size:.92rem; white-space:nowrap; flex-shrink:0; width:90px;">X-Axis Label</label>
+                        <label style="font-weight:600; font-size:.92rem; white-space:nowrap; flex-shrink:0; width:9rem;">X-Axis Label</label>
                         <input type="text" id="xlabel" placeholder="Auto" title="X-axis label text (blank = auto)" disabled style="flex:1; min-width:0; border:1px solid #ced4da; border-radius:4px; padding:4px 8px; font-size:.92rem;">
-                        <input type="number" id="font-size-xlabel" value="18" min="6" max="48" step="1" title="X-axis label font size" disabled style="width:44px; flex-shrink:0; min-width:0; border:1px solid #ced4da; border-radius:4px; padding:4px 4px; font-size:.92rem;">
+                        <input type="number" id="font-size-xlabel" value="18" min="6" max="48" step="1" title="X-axis label font size" disabled style="width:4.4rem; flex-shrink:0; min-width:0; border:1px solid #ced4da; border-radius:4px; padding:4px 4px; font-size:.92rem;">
                     </div>
                     <div style="display:flex; align-items:center; gap:8px; min-width:0;">
-                        <label style="font-weight:600; font-size:.92rem; white-space:nowrap; flex-shrink:0; width:90px;">X-Axis Ticks</label>
-                        <input type="number" id="font-size-xtick" value="16" min="6" max="48" step="1" title="X-axis tick label font size (category names / numeric ticks)" disabled style="width:44px; flex-shrink:0; min-width:0; border:1px solid #ced4da; border-radius:4px; padding:4px 4px; font-size:.92rem;">
+                        <label style="font-weight:600; font-size:.92rem; white-space:nowrap; flex-shrink:0; width:9rem;">X-Axis Ticks</label>
+                        <input type="number" id="font-size-xtick" value="16" min="6" max="48" step="1" title="X-axis tick label font size (category names / numeric ticks)" disabled style="width:4.4rem; flex-shrink:0; min-width:0; border:1px solid #ced4da; border-radius:4px; padding:4px 4px; font-size:.92rem;">
                     </div>
                     <div style="display:flex; align-items:center; gap:8px; min-width:0;">
-                        <label style="font-weight:600; font-size:.92rem; white-space:nowrap; flex-shrink:0; width:90px;">Y-Axis Label</label>
+                        <label style="font-weight:600; font-size:.92rem; white-space:nowrap; flex-shrink:0; width:9rem;">Y-Axis Label</label>
                         <input type="text" id="ylabel" placeholder="Auto" title="Y-axis label text (blank = auto)" disabled style="flex:1; min-width:0; border:1px solid #ced4da; border-radius:4px; padding:4px 8px; font-size:.92rem;">
-                        <input type="number" id="font-size-ylabel" value="18" min="6" max="48" step="1" title="Y-axis label font size" disabled style="width:44px; flex-shrink:0; min-width:0; border:1px solid #ced4da; border-radius:4px; padding:4px 4px; font-size:.92rem;">
+                        <input type="number" id="font-size-ylabel" value="18" min="6" max="48" step="1" title="Y-axis label font size" disabled style="width:4.4rem; flex-shrink:0; min-width:0; border:1px solid #ced4da; border-radius:4px; padding:4px 4px; font-size:.92rem;">
                     </div>
                     <div style="display:flex; align-items:center; gap:8px; min-width:0;">
-                        <label style="font-weight:600; font-size:.92rem; white-space:nowrap; flex-shrink:0; width:90px;">Y-Axis Ticks</label>
-                        <input type="number" id="font-size-ytick" value="16" min="6" max="48" step="1" title="Y-axis tick label font size (numeric ticks)" disabled style="width:44px; flex-shrink:0; min-width:0; border:1px solid #ced4da; border-radius:4px; padding:4px 4px; font-size:.92rem;">
+                        <label style="font-weight:600; font-size:.92rem; white-space:nowrap; flex-shrink:0; width:9rem;">Y-Axis Ticks</label>
+                        <input type="number" id="font-size-ytick" value="16" min="6" max="48" step="1" title="Y-axis tick label font size (numeric ticks)" disabled style="width:4.4rem; flex-shrink:0; min-width:0; border:1px solid #ced4da; border-radius:4px; padding:4px 4px; font-size:.92rem;">
                     </div>
                     <div style="display:flex; align-items:center; gap:8px; min-width:0;">
-                        <label style="font-weight:600; font-size:.92rem; white-space:nowrap; flex-shrink:0; width:90px;">Legend Title</label>
+                        <label style="font-weight:600; font-size:.92rem; white-space:nowrap; flex-shrink:0; width:9rem;">Legend Title</label>
                         <input type="text" id="legend-title" placeholder="Auto" title="Legend title text (blank = auto)" disabled style="flex:1; min-width:0; border:1px solid #ced4da; border-radius:4px; padding:4px 8px; font-size:.92rem;">
-                        <input type="number" id="font-size-legend-title" value="14" min="6" max="48" step="1" title="Legend title &amp; item font size" disabled style="width:44px; flex-shrink:0; min-width:0; border:1px solid #ced4da; border-radius:4px; padding:4px 4px; font-size:.92rem;">
+                        <input type="number" id="font-size-legend-title" value="14" min="6" max="48" step="1" title="Legend title &amp; item font size" disabled style="width:4.4rem; flex-shrink:0; min-width:0; border:1px solid #ced4da; border-radius:4px; padding:4px 4px; font-size:.92rem;">
                     </div>
                     <div style="display:flex; align-items:center; gap:8px; min-width:0;">
-                        <label style="font-weight:600; font-size:.92rem; white-space:nowrap; flex-shrink:0; width:90px;">Plot Title</label>
+                        <label style="font-weight:600; font-size:.92rem; white-space:nowrap; flex-shrink:0; width:9rem;">Plot Title</label>
                         <input type="text" id="plot-title" placeholder="Auto" title="Plot title text (blank = auto)" disabled style="flex:1; min-width:0; border:1px solid #ced4da; border-radius:4px; padding:4px 8px; font-size:.92rem;">
-                        <input type="number" id="font-size-plot-title" value="18" min="6" max="48" step="1" title="Plot title font size" disabled style="width:44px; flex-shrink:0; min-width:0; border:1px solid #ced4da; border-radius:4px; padding:4px 4px; font-size:.92rem;">
+                        <input type="number" id="font-size-plot-title" value="18" min="6" max="48" step="1" title="Plot title font size" disabled style="width:4.4rem; flex-shrink:0; min-width:0; border:1px solid #ced4da; border-radius:4px; padding:4px 4px; font-size:.92rem;">
                     </div>
                     <div style="display:flex; align-items:center; gap:8px; min-width:0;">
-                        <label style="font-weight:600; font-size:.92rem; white-space:nowrap; flex-shrink:0; width:90px;">Value Labels</label>
-                        <input type="number" id="font-size-value-label" value="12" min="6" max="48" step="1" title="Font size of the numeric values shown above bars/stacked bars and inside pie slices" disabled style="width:44px; flex-shrink:0; min-width:0; border:1px solid #ced4da; border-radius:4px; padding:4px 4px; font-size:.92rem;">
+                        <label style="font-weight:600; font-size:.92rem; white-space:nowrap; flex-shrink:0; width:9rem;">Value Labels</label>
+                        <input type="number" id="font-size-value-label" value="12" min="6" max="48" step="1" title="Font size of the numeric values shown above bars/stacked bars and inside pie slices" disabled style="width:4.4rem; flex-shrink:0; min-width:0; border:1px solid #ced4da; border-radius:4px; padding:4px 4px; font-size:.92rem;">
                     </div>
                     <div style="display:flex; align-items:center; gap:8px; min-width:0;">
-                        <label style="font-weight:600; font-size:.92rem; white-space:nowrap; flex-shrink:0; width:90px;">Color Scheme</label>
+                        <label style="font-weight:600; font-size:.92rem; white-space:nowrap; flex-shrink:0; width:9rem;">Color Scheme</label>
                         <select id="color-scheme" title="Color scheme used for plot series" disabled style="flex:1; min-width:0; border:1px solid #ced4da; border-radius:4px; padding:4px 8px; font-size:.92rem;">
                             <optgroup label="Default">
                                 <option value="HSV">HSV (Default)</option>
