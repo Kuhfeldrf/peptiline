@@ -26,7 +26,10 @@ if not SECRET_KEY:
 
 DEBUG = os.environ.get("DEBUG", "false").lower() == "true"
 
-_default_hosts = ["127.0.0.1", "localhost"]
+# Public custom domain is hard-coded so a deploy that re-applies the
+# DJANGO_ALLOWED_HOSTS/CORS/CSRF secrets can't drop it (that returns HTTP 400).
+_public_host = "peptiline.nws.oregonstate.edu"
+_default_hosts = ["127.0.0.1", "localhost", _public_host]
 _env_hosts = os.environ.get("DJANGO_ALLOWED_HOSTS", "")
 _extra_hosts = [h.strip() for h in _env_hosts.split(",") if h.strip()] if _env_hosts else []
 _azure_host = os.environ.get("WEBSITE_HOSTNAME", "")
@@ -87,14 +90,14 @@ SESSION_COOKIE_AGE = 4 * 60 * 60
 SESSION_SAVE_EVERY_REQUEST = True
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
-_default_cors = ["http://localhost:8000", "http://127.0.0.1:8000"]
+_default_cors = ["http://localhost:8000", "http://127.0.0.1:8000", f"https://{_public_host}"]
 _env_cors = os.environ.get("DJANGO_CORS_ORIGINS", "")
 _extra_cors = [h.strip() for h in _env_cors.split(",") if h.strip()] if _env_cors else []
 if _azure_host:
     _extra_cors.append(f"https://{_azure_host}")
 CORS_ALLOWED_ORIGINS = _default_cors + _extra_cors
 
-_default_csrf = ["http://localhost:8000", "http://127.0.0.1:8000"]
+_default_csrf = ["http://localhost:8000", "http://127.0.0.1:8000", f"https://{_public_host}"]
 _env_csrf = os.environ.get("DJANGO_CSRF_ORIGINS", "")
 _extra_csrf = [h.strip() for h in _env_csrf.split(",") if h.strip()] if _env_csrf else []
 if _azure_host:
