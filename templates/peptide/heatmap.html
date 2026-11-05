@@ -56,7 +56,7 @@
 .selector-block label { font-weight: 600; font-size: .95rem; margin-bottom: 4px; display: block; }
 select.multi-select {
     width: 100%; height: 13rem; border: 1px solid #ced4da; border-radius: 4px;
-    padding: 4px; font-size: .92rem;
+    padding: 4px; font-size: 1rem;
 }
 select.multi-select:disabled { background: #f8f9fa; color: #aaa; }
 
@@ -303,11 +303,11 @@ select.multi-select:disabled { background: #f8f9fa; color: #aaa; }
             <div id="comparison-controls" class="stack-xs control-disabled" style="margin-top:10px; display:grid; grid-template-columns:1fr 1fr; gap:10px 16px; align-items:end;">
                 <div class="selector-block" style="margin:0;">
                     <label style="font-size:.9rem; font-weight:600;">Series A <span class="text-muted" style="font-weight:400;">(+ = higher in A)</span></label>
-                    <select id="series-a" disabled style="width:100%; border:1px solid #ced4da; border-radius:4px; padding:5px 8px; font-size:.9rem;"></select>
+                    <select id="series-a" disabled style="width:100%; border:1px solid #ced4da; border-radius:4px; padding:5px 8px; font-size:1rem;"></select>
                 </div>
                 <div class="selector-block" style="margin:0;">
                     <label style="font-size:.9rem; font-weight:600;">Series B</label>
-                    <select id="series-b" disabled style="width:100%; border:1px solid #ced4da; border-radius:4px; padding:5px 8px; font-size:.9rem;"></select>
+                    <select id="series-b" disabled style="width:100%; border:1px solid #ced4da; border-radius:4px; padding:5px 8px; font-size:1rem;"></select>
                 </div>
                 <div class="rg-field" style="grid-column:1 / -1;">
                     <span class="rg-label">Metric</span>
@@ -360,7 +360,7 @@ select.multi-select:disabled { background: #f8f9fa; color: #aaa; }
                         </span>
                     </label>
                     <select id="items-selector" class="multi-select" multiple size="5" disabled
-                            style="height:11rem; font-size:.90rem; font-family:monospace;"></select>
+                            style="height:11rem; font-size:1rem; font-family:monospace;"></select>
                     <small id="items-selector-hint" class="text-muted" style="display:block; margin-top:2px;">
                         Select Peptide Intervals or Bioactive Functions above to enable
                     </small>
@@ -450,7 +450,7 @@ select.multi-select:disabled { background: #f8f9fa; color: #aaa; }
 
                     <div style="display:flex; align-items:center; gap:8px; min-width:0;">
                         <label style="font-weight:600; font-size:.92rem; white-space:nowrap; flex-shrink:0; width:13rem;">Heatmap Color</label>
-                        <select id="hm-color" title="Colormap for the peptide-count heatmap bars" disabled style="flex:1; min-width:0; border:1px solid #ced4da; border-radius:4px; padding:4px 8px; font-size:.92rem;">
+                        <select id="hm-color" title="Colormap for the peptide-count heatmap bars" disabled style="flex:1; min-width:0; border:1px solid #ced4da; border-radius:4px; padding:4px 8px; font-size:1rem;">
                             <option value="RdYlGn_r">RdYlGn_r (default)</option>
                             <option value="RdYlBu_r">RdYlBu_r</option>
                             <option value="coolwarm">coolwarm</option>
@@ -468,7 +468,7 @@ select.multi-select:disabled { background: #f8f9fa; color: #aaa; }
 
                     <div style="display:flex; align-items:center; gap:8px; min-width:0;">
                         <label style="font-weight:600; font-size:.92rem; white-space:nowrap; flex-shrink:0; width:13rem;">Line Plot Color</label>
-                        <select id="lp-color" title="Colormap for the individual-peptide line traces" disabled style="flex:1; min-width:0; border:1px solid #ced4da; border-radius:4px; padding:4px 8px; font-size:.92rem;">
+                        <select id="lp-color" title="Colormap for the individual-peptide line traces" disabled style="flex:1; min-width:0; border:1px solid #ced4da; border-radius:4px; padding:4px 8px; font-size:1rem;">
                             <option value="Set3">Set3 (default)</option>
                             <option value="Set1">Set1</option>
                             <option value="Set2">Set2</option>
@@ -481,7 +481,7 @@ select.multi-select:disabled { background: #f8f9fa; color: #aaa; }
 
                     <div style="display:flex; align-items:center; gap:8px; min-width:0;">
                         <label style="font-weight:600; font-size:.92rem; white-space:nowrap; flex-shrink:0; width:13rem;">Avg Line Color</label>
-                        <select id="avglp-color" title="Colormap for the averaged-abundance line traces" disabled style="flex:1; min-width:0; border:1px solid #ced4da; border-radius:4px; padding:4px 8px; font-size:.92rem;">
+                        <select id="avglp-color" title="Colormap for the averaged-abundance line traces" disabled style="flex:1; min-width:0; border:1px solid #ced4da; border-radius:4px; padding:4px 8px; font-size:1rem;">
                             <option value="Dark2">Dark2 (default)</option>
                             <option value="Set1">Set1</option>
                             <option value="tab10">tab10</option>
@@ -553,7 +553,7 @@ select.multi-select:disabled { background: #f8f9fa; color: #aaa; }
                     <div style="display:flex; align-items:center; gap:8px; min-width:0;">
                         <label style="font-weight:600; font-size:.92rem; white-space:nowrap; flex-shrink:0; width:19.5rem;">Legend Position</label>
                         <select id="legend-position" title="Right: one combined legend beside the plot, groups stacked with the text going down. Below x-axis: each legend group becomes its own unit under the protein-sequence x-axis, one per row, so no figure width can crowd them — frees the full figure width for the heatmap." disabled
-                                style="flex:1; min-width:0; border:1px solid #ced4da; border-radius:4px; padding:4px 8px; font-size:.92rem;">
+                                style="flex:1; min-width:0; border:1px solid #ced4da; border-radius:4px; padding:4px 8px; font-size:1rem;">
                             <option value="right" selected>Right of plot (combined)</option>
                             <option value="below">Below x-axis</option>
                         </select>

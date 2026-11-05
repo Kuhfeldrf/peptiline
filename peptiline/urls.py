@@ -14,7 +14,6 @@ urlpatterns = [
     path("", views.peptiline_landing, name="peptiline_landing"),
     path("peptiline/", views.peptiline_landing),
     path("supplementals/", views.peptiline_supplementals, name="peptiline_supplementals"),
-    path("about_us/", views.about_us, name="about_us"),
     path("data_transformation/", include("data_transformation.urls")),
     path("data_analysis/", include("data_analysis.urls", namespace="data_analysis")),
     path("heatmap/", include("heatmap_viz.urls", namespace="heatmap_viz")),

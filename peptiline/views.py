@@ -59,6 +59,3 @@ def peptiline_landing(request):
 def peptiline_supplementals(request):
     return render(request, "peptide/peptiline_supplementals.html")
 
-
-def about_us(request):
-    return render(request, "peptide/about_us.html")

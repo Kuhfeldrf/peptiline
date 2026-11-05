@@ -104,6 +104,9 @@
     .dt-export-actions { align-items: center; }
     .dt-corr-opts { display: flex; align-items: center; gap: 8px; margin-right: 4px; }
     .dt-corr-opts select { font-size: 1rem; padding: 2px 4px; border: 1px solid #ced4da; border-radius: 4px; }
+    /* Bootstrap's .form-control pins these to 14px; match the 1rem the rest
+       of the tool pages' dropdowns use. */
+    select.form-control { font-size: 1rem; }
     .dt-corr-logs { display: flex; flex-direction: column; gap: 0; line-height: 1.2; }
     .dt-corr-logs label { display: flex; align-items: center; gap: 4px; font-size: 1rem; color: #555; white-space: nowrap; }
     .dt-corr-logs input { margin: 0; }

@@ -315,7 +315,7 @@ body {
   margin: 0 auto;
   padding: 0 var(--pl-space-3);
   color: var(--pl-color-muted);
-  font-size: var(--pl-text-caption);
+  font-size: var(--pl-text-body);
 }
 
 .pl-footer .pl-footer-content a {
@@ -819,6 +819,58 @@ body {
   font-size: var(--pl-text-caption);
   color: var(--pl-color-muted);
   margin: 0 0 8px;
+}
+
+/* --------------------------------------------------------------------
+   Citation ask
+   Closing section on the landing page: the one place that asks outright,
+   rather than waiting for someone to open the Cite menu.
+   -------------------------------------------------------------------- */
+
+.pl-cite-ask {
+  margin-top: var(--pl-space-6);
+  padding: var(--pl-space-5) var(--pl-space-4);
+  border: 1px solid var(--pl-color-border);
+  border-radius: var(--pl-radius);
+  background: var(--pl-color-bg-secondary);
+  text-align: center;
+}
+
+.pl-cite-ask-icon {
+  width: 48px;
+  height: 48px;
+  margin: 0 auto var(--pl-space-2);
+  border-radius: var(--pl-radius-sm);
+  background: var(--pl-color-bg);
+  border: 1px solid var(--pl-color-border);
+  color: var(--pl-color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+
+.pl-cite-ask h2 {
+  font-size: var(--pl-text-card);
+  font-weight: 600;
+  color: var(--pl-color-text);
+  margin: 0 0 var(--pl-space-2);
+}
+
+.pl-cite-ask p {
+  max-width: 640px;
+  margin: 0 auto var(--pl-space-2);
+  color: var(--pl-color-muted);
+  font-size: var(--pl-text-body);
+}
+
+.pl-cite-ask .pl-cite-ask-ref {
+  max-width: 720px;
+  margin-bottom: var(--pl-space-3);
+  padding-top: var(--pl-space-2);
+  border-top: 1px solid var(--pl-color-border);
+  font-size: var(--pl-text-caption);
+  line-height: 1.6;
 }
 
 /* --------------------------------------------------------------------
