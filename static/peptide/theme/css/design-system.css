@@ -178,6 +178,122 @@ body {
   border-bottom: none;
 }
 
+/* Open on tap and on keyboard focus as well as hover. `:hover` alone leaves
+   the nav menus unreachable on touch devices, and Bootstrap's own `.open` /
+   `.show` rules lose to the override above because this file loads last. */
+.pl-nav-links .dropdown.open > .dropdown-menu,
+.pl-nav-links .dropdown.show > .dropdown-menu,
+.pl-nav-links .dropdown:focus-within > .dropdown-menu {
+  display: block;
+}
+
+/* --------------------------------------------------------------------
+   Cite menu
+   The published citation, reachable from the nav on every page. Reuses
+   the `pl-pub` card from the About page inside a dropdown panel.
+   -------------------------------------------------------------------- */
+
+.pl-nav-links .pl-cite-menu {
+  left: auto;
+  right: 0;
+  width: 430px;
+  max-width: calc(100vw - 2 * var(--pl-space-2));
+  padding: 0;
+}
+
+.pl-nav-links .pl-cite-menu > li {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.pl-cite-menu .pl-pub {
+  border: none;
+  padding: var(--pl-space-3);
+  gap: var(--pl-space-2);
+  white-space: normal;
+}
+
+.pl-cite-menu .pl-pub-title {
+  font-size: 15px;
+  line-height: 1.35;
+}
+
+.pl-cite-menu .pl-pub-meta {
+  margin-bottom: 6px;
+}
+
+/* `.pl-nav-links .dropdown-menu li a` styles every link in a nav dropdown as
+   a full-width row; the links inside this panel run inline in the text. */
+.pl-nav-links .pl-cite-menu a {
+  display: inline;
+  height: auto;
+  padding: 0;
+  font-weight: inherit;
+  border-bottom: none;
+}
+
+.pl-nav-links .pl-cite-menu a:hover {
+  background: none;
+  text-decoration: underline;
+}
+
+.pl-nav-links .pl-cite-menu .pl-pub-meta a {
+  color: var(--pl-color-accent);
+}
+
+.pl-nav-links .pl-cite-menu .pl-link {
+  display: inline-block;
+  font-weight: 600;
+  color: var(--pl-color-accent);
+}
+
+.pl-cite-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--pl-space-1);
+  margin-top: var(--pl-space-2);
+}
+
+.pl-cite-copy {
+  -webkit-appearance: none;
+  appearance: none;
+  background: var(--pl-color-bg-secondary);
+  border: 1px solid var(--pl-color-border);
+  border-radius: var(--pl-radius-sm);
+  color: var(--pl-color-text);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.4;
+  padding: 5px 10px;
+  cursor: pointer;
+  transition: background-color .15s ease, border-color .15s ease, color .15s ease;
+}
+
+.pl-cite-copy:hover {
+  background: var(--pl-color-bg);
+  border-color: var(--pl-color-accent);
+  color: var(--pl-color-primary);
+}
+
+.pl-cite-copy.pl-cite-copied {
+  border-color: var(--pl-color-success);
+  color: var(--pl-color-success);
+}
+
+/* Held off-screen rather than hidden: the execCommand clipboard fallback can
+   only copy from an element that is still selectable. */
+.pl-cite-source {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
 /* --------------------------------------------------------------------
    Footer
    -------------------------------------------------------------------- */
@@ -857,4 +973,15 @@ body {
   #page-content-wrapper { padding-left: 4px; padding-right: 4px; }
   .pl-stats { grid-template-columns: 1fr 1fr; }
   .pl-viz-grid { grid-template-columns: 1fr; }
+  /* `.pl-nav-links` scrolls horizontally at this width, which would clip an
+     absolutely positioned panel. Pin the cite panel below the bar instead. */
+  .pl-nav-links .pl-cite-menu {
+    position: fixed;
+    top: 60px;
+    left: var(--pl-space-2);
+    right: var(--pl-space-2);
+    width: auto;
+    max-width: none;
+  }
+  .pl-cite-menu .pl-pub { padding: var(--pl-space-2); }
 }

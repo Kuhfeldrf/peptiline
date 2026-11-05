@@ -206,21 +206,22 @@ peptiline/
 
 ## Citation
 
-Manuscript under review at the *Journal of Proteome Research* (ACS); citation will be updated on acceptance.
+If you use PeptiLine, please cite:
 
-```
-Kuhfeld R, Nielsen SD-H, Dallas DC. PeptiLine: An Interactive Platform for
-Customizable Functional Peptidomic Analysis. Submitted to the Journal of Proteome Research. 2026.
-```
+Kuhfeld, R. F.; Nielsen, S. D.-H.; Dallas, D. C. PeptiLine: An Interactive Platform for
+Customizable Functional Peptidomic Visualization and Analysis. *J. Proteome Res.* **2026**,
+Article ASAP. <https://doi.org/10.1021/acs.jproteome.5c01102>
 
-**BibTeX:**
+Article page: <https://pubs.acs.org/doi/10.1021/acs.jproteome.5c01102>
+
 ```bibtex
 @article{kuhfeld2026peptiline,
-  title={PeptiLine: An Interactive Platform for Customizable Functional Peptidomic Analysis},
-  author={Kuhfeld, Russell and Nielsen, S{\o}ren D-H and Dallas, David C},
-  journal={Journal of Proteome Research},
-  year={2026},
-  note={Submitted, under review}
+  author  = {Kuhfeld, Russell F. and Nielsen, S{\o}ren D.-H. and Dallas, David C.},
+  title   = {PeptiLine: An Interactive Platform for Customizable Functional Peptidomic Visualization and Analysis},
+  journal = {Journal of Proteome Research},
+  year    = {2026},
+  doi     = {10.1021/acs.jproteome.5c01102},
+  url     = {https://doi.org/10.1021/acs.jproteome.5c01102}
 }
 ```
 
