@@ -3,14 +3,14 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![Django 4.2](https://img.shields.io/badge/django-4.2-092E20.svg)](https://www.djangoproject.com/)
-[![DOI](https://img.shields.io/badge/DOI-ZENODO__DOI__PLACEHOLDER-blue.svg)](https://doi.org/ZENODO_DOI_PLACEHOLDER)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24539950.svg)](https://doi.org/10.5281/zenodo.24539950)
 
 PeptiLine turns peptidomic mass spectrometry output into annotated, statistically compared, and sequence-mapped visualizations, without requiring installation, a programming environment, or a local copy of any bioactivity database.
 
 - **Live application:** https://mbpdb.nws.oregonstate.edu/peptiline/ (no account or install required)
 - **Publication:** *Journal of Proteome Research* (ACS), 2026. DOI: [10.1021/acs.jproteome.5c01102](https://doi.org/10.1021/acs.jproteome.5c01102)
 - **License:** MIT
-- **Archived version:** Zenodo DOI `ZENODO_DOI_PLACEHOLDER` (inserted on code deposit; see [Data and reproducibility](#data-and-reproducibility))
+- **Archived version:** Zenodo concept DOI [10.5281/zenodo.24539950](https://doi.org/10.5281/zenodo.24539950), which always resolves to the latest release (see [Data and reproducibility](#data-and-reproducibility))
 
 ## Table of Contents
 - [Overview](#overview)
@@ -145,7 +145,7 @@ Everything else, including data transformation, UniProt sequence retrieval, stat
 
 ## Data and reproducibility
 
-The manuscript's case study (bitterness in aged Cheddar cheese) used PeptiLine to generate Figures 5-7 and Supplementary Figures S1-S6. Raw mass spectrometry data are deposited at ProteomeXchange, accession **PXD079655**. The exact application version used to generate the manuscript's figures is archived on Zenodo: `ZENODO_DOI_PLACEHOLDER`.
+The manuscript's case study (bitterness in aged Cheddar cheese) used PeptiLine to generate Figures 5-7 and Supplementary Figures S1-S6. The manuscript generated no new mass spectrometry data; it reanalyzes three previously deposited ProteomeXchange datasets: **PXD079655** (aged-Cheddar bitter peptides), **PXD048892** (wound fluid peptidome), and **PXD040033** (hibernating-mammal peptides). The exact application version used to generate the manuscript's figures is archived on Zenodo under the version DOI [10.5281/zenodo.24539951](https://doi.org/10.5281/zenodo.24539951); the concept DOI [10.5281/zenodo.24539950](https://doi.org/10.5281/zenodo.24539950) always resolves to the latest release.
 
 Supporting tables and figures (S1-S15 tables, S1-S5 figures) are served at
 [`/peptiline/supplementals/`](https://mbpdb.nws.oregonstate.edu/peptiline/supplementals/), backed by
@@ -214,6 +214,10 @@ Article ASAP. <https://doi.org/10.1021/acs.jproteome.5c01102>
 
 Article page: <https://pubs.acs.org/doi/10.1021/acs.jproteome.5c01102>
 
+To cite the software itself, use the archived release:
+
+Kuhfeld, R. F.; Nielsen, S. D.-H.; Dallas, D. C. PeptiLine (v1.0.0). Zenodo, 2026. <https://doi.org/10.5281/zenodo.24539951>
+
 ```bibtex
 @article{kuhfeld2026peptiline,
   author  = {Kuhfeld, Russell F. and Nielsen, S{\o}ren D.-H. and Dallas, David C.},
@@ -222,6 +226,16 @@ Article page: <https://pubs.acs.org/doi/10.1021/acs.jproteome.5c01102>
   year    = {2026},
   doi     = {10.1021/acs.jproteome.5c01102},
   url     = {https://doi.org/10.1021/acs.jproteome.5c01102}
+}
+
+@software{kuhfeld2026peptiline_zenodo,
+  author    = {Kuhfeld, Russell F. and Nielsen, S{\o}ren D.-H. and Dallas, David C.},
+  title     = {PeptiLine: An Interactive Platform for Customizable Functional Peptidomic Visualization and Analysis},
+  version   = {v1.0.0},
+  publisher = {Zenodo},
+  year      = {2026},
+  doi       = {10.5281/zenodo.24539951},
+  url       = {https://doi.org/10.5281/zenodo.24539951}
 }
 ```
 
