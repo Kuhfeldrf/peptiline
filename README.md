@@ -8,7 +8,7 @@
 PeptiLine turns peptidomic mass spectrometry output into annotated, statistically compared, and sequence-mapped visualizations, without requiring installation, a programming environment, or a local copy of any bioactivity database.
 
 - **Live application:** https://mbpdb.nws.oregonstate.edu/peptiline/ (no account or install required)
-- **Publication:** *Journal of Proteome Research* (ACS), MS pr-2025-01102w, under review
+- **Publication:** *Journal of Proteome Research* (ACS), 2026. DOI: [10.1021/acs.jproteome.5c01102](https://doi.org/10.1021/acs.jproteome.5c01102)
 - **License:** MIT
 - **Archived version:** Zenodo DOI `ZENODO_DOI_PLACEHOLDER` (inserted on code deposit; see [Data and reproducibility](#data-and-reproducibility))
 
