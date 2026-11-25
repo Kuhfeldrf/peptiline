@@ -323,6 +323,10 @@ body {
   font-weight: 600;
 }
 
+.pl-footer .pl-footer-content a i { margin-right: 2px; }
+
+.pl-footer-sep { margin: 0 10px; }
+
 /* --------------------------------------------------------------------
    Layout primitives
    -------------------------------------------------------------------- */
@@ -949,6 +953,15 @@ body {
 
 .pl-oss .pl-oss-eyebrow { margin-bottom: 6px; }
 
+.pl-oss .pl-oss-star-ask {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  color: #E6EDF3;
+}
+
+.pl-oss-star-ask i { color: #E3B341; }
+
 .pl-oss-repo {
   display: inline-flex;
   align-items: center;
@@ -1173,6 +1186,9 @@ body {
     max-width: none;
   }
   .pl-cite-menu .pl-pub { padding: var(--pl-space-2); }
+  .pl-footer { padding: 8px 0; }
+  .pl-footer .pl-footer-content { padding: 0 var(--pl-space-2); font-size: 13px; line-height: 1.5; }
+  .pl-footer-sep { margin: 0 6px; }
   .pl-oss { padding: var(--pl-space-3) var(--pl-space-2); }
   .pl-oss-mark { font-size: 40px; }
   .pl-oss-main { gap: var(--pl-space-2); }
